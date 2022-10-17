@@ -1,0 +1,139 @@
+[gd_scene load_steps=11 format=3 uid="uid://dkixrvtb3a1f8"]
+
+[ext_resource type="Script" path="res://addons/gdshell/ui/default_ui/default_ui.gd" id="2_7mabp"]
+[ext_resource type="FontFile" uid="uid://b8fo1gccd11mc" path="res://addons/gdshell/ui/fonts/roboto_mono/RobotoMono-Regular.ttf" id="2_cto07"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hcxhe"]
+bg_color = Color(0.113725, 0.133333, 0.160784, 0.705882)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_2tgqt"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ebie4"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_t83jw"]
+bg_color = Color(0.176471, 0.196078, 0.219608, 1)
+expand_margin_left = 3.0
+expand_margin_right = 3.0
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_atmjn"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_eg7qu"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_gepu6"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_b1ltg"]
+
+[node name="gdshell_ui_handler" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("2_7mabp")
+
+[node name="BackgroundPanel" type="Panel" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_hcxhe")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="BackgroundPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="BackgroundPanel/VBoxContainer"]
+layout_mode = 2
+offset_right = 1152.0
+offset_bottom = 648.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_vertical = 3
+
+[node name="HSpacer0" type="Control" parent="BackgroundPanel/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2i(3, 0)
+layout_mode = 2
+anchors_preset = 0
+offset_right = 3.0
+offset_bottom = 648.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="BackgroundPanel/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+offset_left = 7.0
+offset_right = 1145.0
+offset_bottom = 648.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+
+[node name="OutputRichTextLabel" type="RichTextLabel" parent="BackgroundPanel/VBoxContainer/HBoxContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+offset_right = 1138.0
+offset_bottom = 619.0
+size_flags_vertical = 3
+focus_mode = 2
+theme_override_fonts/normal_font = ExtResource("2_cto07")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_2tgqt")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_ebie4")
+scroll_following = true
+selection_enabled = true
+
+[node name="InputBarPanel" type="Panel" parent="BackgroundPanel/VBoxContainer/HBoxContainer/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2i(0, 25)
+layout_mode = 2
+offset_top = 623.0
+offset_right = 1138.0
+offset_bottom = 648.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_t83jw")
+
+[node name="InputHBoxContainer" type="HBoxContainer" parent="BackgroundPanel/VBoxContainer/HBoxContainer/VBoxContainer/InputBarPanel"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="InputPromptLabel" type="Label" parent="BackgroundPanel/VBoxContainer/HBoxContainer/VBoxContainer/InputBarPanel/InputHBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+offset_right = 154.0
+offset_bottom = 25.0
+theme_override_fonts/font = ExtResource("2_cto07")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_atmjn")
+text = "gdsgell@godot$> "
+
+[node name="InputLineEdit" type="LineEdit" parent="BackgroundPanel/VBoxContainer/HBoxContainer/VBoxContainer/InputBarPanel/InputHBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+offset_left = 158.0
+offset_right = 1138.0
+offset_bottom = 25.0
+size_flags_horizontal = 3
+theme_override_fonts/font = ExtResource("2_cto07")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_eg7qu")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_gepu6")
+theme_override_styles/read_only = SubResource("StyleBoxEmpty_b1ltg")
+context_menu_enabled = false
+caret_blink = true
+
+[node name="HSpacer1" type="Control" parent="BackgroundPanel/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2i(3, 0)
+layout_mode = 2
+anchors_preset = 0
+offset_left = 1149.0
+offset_right = 1152.0
+offset_bottom = 648.0
+
+[connection signal="text_submitted" from="BackgroundPanel/VBoxContainer/HBoxContainer/VBoxContainer/InputBarPanel/InputHBoxContainer/InputLineEdit" to="." method="_on_input_line_edit_text_submitted"]
