@@ -40,12 +40,12 @@ _global_script_classes=[{
 "path": "res://addons/gdshell/scripts/gdshell_ui_handler.gd"
 }]
 _global_script_class_icons={
-"GDShellCommand": "",
-"GDShellCommandDB": "",
-"GDShellCommandParser": "",
-"GDShellCommandRunner": "",
-"GDShellMain": "",
-"GDShellUIHandler": ""
+"GDShellCommand": "res://addons/gdshell/icon.png",
+"GDShellCommandDB": "res://addons/gdshell/icon.png",
+"GDShellCommandParser": "res://addons/gdshell/icon.png",
+"GDShellCommandRunner": "res://addons/gdshell/icon.png",
+"GDShellMain": "res://addons/gdshell/icon.png",
+"GDShellUIHandler": "res://addons/gdshell/icon.png"
 }
 
 [application]
@@ -53,6 +53,7 @@ _global_script_class_icons={
 config/name="GDShell"
 run/main_scene="res://addons/gdshell/tests/test.tscn"
 config/features=PackedStringArray("4.0")
+config/icon="res://addons/gdshell/icon.png"
 
 [autoload]
 
@@ -60,6 +61,7 @@ GDShell="*res://addons/gdshell/scripts/gdshell_main.gd"
 
 [debug]
 
+settings/stdout/verbose_stdout=true
 gdscript/warnings/exclude_addons=false
 gdscript/warnings/unsafe_property_access=1
 gdscript/warnings/unsafe_method_access=1

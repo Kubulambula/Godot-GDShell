@@ -1,5 +1,6 @@
 class_name GDShellMain
 extends Node
+@icon("res://addons/gdshell/icon.png")
 
 
 const UI_HANDLER_PATH: String = "res://addons/gdshell/ui/default_ui/default_ui.tscn"
