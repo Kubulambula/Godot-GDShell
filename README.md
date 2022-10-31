@@ -92,6 +92,6 @@ All contributions are very welcome, so feel free to make [issues](https://github
 
 ### License (It's free, baby!)
 GDShell is available under the **MIT license**.
-See [`LICENSE.md`](https://github.com/Kubulambula/Godot-GDShell/LICENSE.md).
+See [`LICENSE.md`](https://github.com/Kubulambula/Godot-GDShell/blob/main/LICENSE.md).
 
-GDShell logo is available under the **Free Art License 1.3**. See [`LOGO_LICENSE.md`](https://github.com/Kubulambula/Godot-GDShell/LOGO_LICENSE.md)
+GDShell logo is available under the **Free Art License 1.3**. See [`LOGO_LICENSE.md`](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/LOGO_LICENSE.md)
