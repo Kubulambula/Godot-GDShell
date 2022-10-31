@@ -83,7 +83,7 @@ Nearly anything your heart desire can be done done!
 
 
 ## Documentation
-See **[Docs](https://github.com/Kubulambula/Godot-GDShell/addons/gdshell/docs/docs.md)**.
+See **[Docs](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/docs.md)**.
 
 
 ## Contributing
