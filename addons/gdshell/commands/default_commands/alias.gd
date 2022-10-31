@@ -3,7 +3,7 @@ extends GDShellCommand
 
 func _init():
 	COMMAND_AUTO_ALIASES = {
-		"unalias": "alias -r"
+		"unalias": "alias -r",
 	}
 
 
@@ -27,3 +27,40 @@ func _main(params: Dictionary) -> Dictionary:
 	
 	output("Alias '%s' added" % params["argv"][1])
 	return DEFAULT_COMMAND_RESULT
+
+
+func _get_manual() -> String:
+	return """
+[b]NAME[/b]
+	{COMMAND_NAME}
+
+[b]AUTO ALIASES[/b]
+	{COMMAND_AUTO_ALIASES}
+
+[b]SYNOPSIS[/b]
+	alias [NEW ALIAS] [NEW ALIAS VALUE]
+	alias -r [ALIAS NAME TO REMOVE]
+	unalias [ALIAS NAME TO REMOVE]
+
+[b]DESCRIPTION[/b]
+	Create / remove an alias.
+	Aliases allow a string to be substituted for another when it is used as the first word of a command.
+	
+	[b]-r, - -remove[/b]
+		remove alias
+
+[b]EXAMPLES[/b]
+	[i]alias print echo[/i]
+		-Create alias [i]print[/i] for [i]echo[/i].
+		 Print "Hello World!" will be substituted to echo "Hello World!"
+	
+	[i]alias -r print[/i]
+		-Removes [i]print[/i] alias 
+		 Print "Hello World!" will no longer will be substituted to echo "Hello World!"
+	
+	[i]unalias print[/i]
+		-Same as [i]alias -r print[/i]
+""".format({
+	"COMMAND_NAME": COMMAND_NAME,
+	"COMMAND_AUTO_ALIASES": COMMAND_AUTO_ALIASES,
+})

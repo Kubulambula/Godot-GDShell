@@ -35,7 +35,7 @@ const LOGO: String = """\
 
 func _init():
 	COMMAND_AUTO_ALIASES = {
-		"neofetch": "gdfetch --i-am-a-linux-nerd-and-tried-to-use-neofetch"
+		"neofetch": "gdfetch --i-am-a-linux-nerd-and-tried-to-use-neofetch",
 	}
 
 
@@ -81,3 +81,37 @@ static func get_info() -> Dictionary:
 		"CPU": OS.get_processor_name(),
 		"GPU": RenderingServer.get_video_adapter_name(),
 	}
+
+
+func _get_manual() -> String:
+	return """
+[b]NAME[/b]
+	{COMMAND_NAME}
+
+[b]AUTO ALIASES[/b]
+	{COMMAND_AUTO_ALIASES}
+
+[b]SYNOPSIS[/b]
+	gdfetch [OPTION]
+
+[b]DESCRIPTION[/b]
+	Get and print information about the current project
+	
+	[b]-s, - -silent[/b]
+		Do not print to the console
+	
+	[b]- -i-am-a-linux-nerd-and-tried-to-use-neofetch[/b]
+		Adds a \"Is the user linux nerd and tried to use neofetch\" value.
+		This is an easter egg and is shown when user uses \"neofetch\" instead of \"gdfetch\".
+
+[b]EXAMPLES[/b]
+	[i]gdfetch[/i]
+		-Prints and returns the information about the current project.
+	
+	[i]gdfetch -s[/i]
+		-Returns the information about the current project, but does not print it to the console.
+		 Can be used as a input for other commands when called silently.
+""".format({
+	"COMMAND_NAME": COMMAND_NAME,
+	"COMMAND_AUTO_ALIASES": COMMAND_AUTO_ALIASES,
+})

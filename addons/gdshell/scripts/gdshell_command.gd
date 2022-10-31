@@ -20,7 +20,6 @@ const DEFAULT_COMMAND_RESULT: Dictionary = {
 @warning_ignore(unsafe_method_access)
 var COMMAND_NAME: String = get_script().get_path().get_file().get_basename()
 var COMMAND_AUTO_ALIASES: Dictionary = {}
-var COMMAND_MANUAL: String = ""
 
 # Waiting for https://github.com/godotengine/godot/pull/65752
 #var _PARENT_PROCESS: GDShellCommandRunner
@@ -53,6 +52,22 @@ func get_ui_handler_rich_text_label() -> RichTextLabel:
 
 func end_command() -> void:
 	command_end.emit()
+
+
+func _get_manual() -> String:
+	return """\
+[b]NAME[/b]
+	{COMMAND_NAME}
+
+[b]AUTO ALIASES[/b]
+	{COMMAND_AUTO_ALIASES}
+
+[b]NO MANUAL[/b]
+	-Override the [b]_get_manual()[/b] function for a custom manual page.
+""".format({
+	"COMMAND_NAME": COMMAND_NAME,
+	"COMMAND_AUTO_ALIASES": COMMAND_AUTO_ALIASES,
+})
 
 
 static func get_default_command_params() -> Dictionary:
