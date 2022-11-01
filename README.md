@@ -7,19 +7,23 @@
 </p>
 
 
-#### :warning: This plugin is still in early development
+#### ⚠️ This plugin is still in early development
 
 
 ## The only console for Godot 4, you'll ever need
 GDShell is a feature-packed in-game console for development, debugging, cheats and/or any other interaction with your game. 
 
 
-## :package: Out of the box
-GDShell works right away after installation with no need for a complex setup. Add you own commands, don't reinvent the wheel and get back to the important stuff that makes your game fun.
+## 📦 Out of the box
+GDShell works right away after installation with no need for a complex setup.
+
+Add you own commands, don't reinvent the wheel and get back to the important stuff that makes your game fun.
 
 
-## :surfer: Easy to use
-Forget creating commands from [`Callable`](https://docs.godotengine.org/en/latest/classes/class_callable.html)s, with messy object and method relations. Now every command is it's own script, resulting in better code organization and project structure by design.
+## 🏄 Easy to use
+Forget creating commands from [`Callable`](https://docs.godotengine.org/en/latest/classes/class_callable.html)s, with messy object and method relations.
+
+Now every command is it's own script, resulting in better code organization and project structure by design.
 
 
 **Just create a script, place it in a command folder and you're good to go!**
@@ -34,7 +38,7 @@ func _main(params):
 ```
 
 
-## :muscle: Simple, yet powerful
+## 💪 Simple, yet powerful
 Don't let the ease of use fool you. GDShell can be used even for more complex tasks like:
 
 * sequential and conditional command chaining
@@ -53,7 +57,7 @@ Don't let the ease of use fool you. GDShell can be used even for more complex ta
 The sky is the limit here. Even if you never need any of these features, you can sleep knowing, that they are here, if you ever will.
 
 
-## :jigsaw: Modular and customizable
+## 🧩 Modular and customizable
 * Do you dislike the default UI?
 * Do you wish to have a new operator?
 * Do you want to have bunch of buttons that call the commands directly without the console interface?
@@ -63,7 +67,7 @@ Every part of GDShell can be modified, extended or replaced as long as you imple
 Nearly anything your heart desire can be done done!
 
 
-## :file_folder: Installation
+## 🧪 Installation
 ### Installation with AssetLib
 1. Open AssetLib in your project (AssetLib button in the top center)
 2. Search for: **GDShell**
@@ -82,15 +86,15 @@ Nearly anything your heart desire can be done done!
 \*Insert examples here\*
 
 
-## :books: Documentation
+## 📚 Documentation
 See **[Docs](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/docs.md)**.
 
 
-## :thumbsup: Contributing
+## 👥 Contributing
 All contributions are very welcome, so feel free to make [issues](https://github.com/Kubulambula/Godot-GDShell/issues), [proposals](https://github.com/Kubulambula/Godot-GDShell/issues/proposal) and [pull requests](https://github.com/Kubulambula/Godot-GDShell/pulls). 
 
 
-### :feelsgood: License (It's free, baby!)
+### ❤️ License (It's free, baby!)
 GDShell is available under the **MIT license**.
 See [`LICENSE.md`](https://github.com/Kubulambula/Godot-GDShell/blob/main/LICENSE.md).
 
