@@ -3,21 +3,49 @@ extends GDShellUIHandler
 
 
 const DEFAULT_FONT: Font = preload("res://addons/gdshell/ui/fonts/roboto_mono/RobotoMono-Regular.ttf")
-
+const BOLD_FONT: Font = preload("res://addons/gdshell/ui/fonts/roboto_mono/RobotoMono-Bold.ttf")
+const ITALICS_FONT: Font = preload("res://addons/gdshell/ui/fonts/roboto_mono/RobotoMono-Italic.ttf")
+const BOLD_ITALICS_FONT: Font = preload("res://addons/gdshell/ui/fonts/roboto_mono/RobotoMono-BoldItalic.ttf")
 
 # This looks scary, doesn't it?
 @export_category("GDShell UI")
 
-@export var font: Font = DEFAULT_FONT:
+@export_group("Fonts")
+@export var default_font: Font = DEFAULT_FONT:
 	set(value):
 		if not value:
 			value = DEFAULT_FONT
-		font = value
+		default_font = value
 		if not is_inside_tree():
 			await ready
-		%OutputRichTextLabel.add_theme_font_override("normal_font", font)
-		%InputPromptLabel.add_theme_font_override("font", font)
-		%InputLineEdit.add_theme_font_override("font", font)
+		%OutputRichTextLabel.add_theme_font_override("normal_font", default_font)
+		%InputPromptLabel.add_theme_font_override("font", default_font)
+		%InputLineEdit.add_theme_font_override("font", default_font)
+@export var bold_font: Font = BOLD_FONT:
+	set(value):
+		if not value:
+			value = BOLD_FONT
+		bold_font = value
+		if not is_inside_tree():
+			await ready
+		%OutputRichTextLabel.add_theme_font_override("normal_font", bold_font)
+@export var italics_font: Font = ITALICS_FONT:
+	set(value):
+		if not value:
+			value = ITALICS_FONT
+		italics_font = value
+		if not is_inside_tree():
+			await ready
+		%OutputRichTextLabel.add_theme_font_override("normal_font", italics_font)
+@export var bold_italics_font: Font = BOLD_ITALICS_FONT:
+	set(value):
+		if not value:
+			value = BOLD_ITALICS_FONT
+		bold_italics_font = value
+		if not is_inside_tree():
+			await ready
+		%OutputRichTextLabel.add_theme_font_override("normal_font", bold_italics_font)
+
 @export_group("Input Bar")
 @export var input_prompt: String = "gdsgell@godot$> ":
 	set(value):
@@ -69,7 +97,7 @@ func _ready():
 	_input_requested.connect(_handle_input)
 	_output_requested.connect(_handle_output)
 	input_line_edit.grab_focus()
-	font = font
+
 
 # Regrab input_line_edit focus when lost
 #func _on_input_line_edit_focus_exited():
