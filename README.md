@@ -11,7 +11,7 @@
 
 
 ## The only console for Godot 4, you'll ever need
-GDShell is a feature-packed in-game console for development, debugging, cheats and/or any other interaction with your game. 
+GDShell is a feature-packed linux-like in-game console for development, debugging, cheats and/or any other interaction with your game. 
 
 
 ## 📦 Out of the box
