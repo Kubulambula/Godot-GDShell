@@ -68,16 +68,17 @@ Nearly anything your heart desire can be done done!
 
 
 ## 🧪 Installation
-### Installation with AssetLib
+### Installation via [AssetLib](https://godotengine.org/asset-library/asset/1526)
 1. Open AssetLib in your project (AssetLib button in the top center)
 2. Search for: **GDShell**
-3. Open **GDShell** and click **Download**
-4. Click **Install**
-5. Go to `Project > Project Settings > Plugins` and check the `Enable` checkbox for GDShell
+3. Open **GDShell**
+4. Click **Download**
+5. Click **Install**
+6. Go to `Project > Project Settings > Plugins` and check the `Enable` checkbox for GDShell
 
 
-### Installation with Git
-1. Clone or download the [latest release](https://github.com/Kubulambula/Godot-GDShell/releases/latest)
+### Installation via Git
+1. **Clone** or **download** the [latest release](https://github.com/Kubulambula/Godot-GDShell/releases/latest)
 2. Copy the `gdshell/` folder into your project's `res://addons/` folder.
 3. Go to `Project > Project Settings > Plugins` and check the `Enable` checkbox for GDShell
 
