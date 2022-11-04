@@ -3,8 +3,10 @@ extends Node
 @icon("res://addons/gdshell/icon.png")
 
 
+const GDSHELL_TOGGLE_UI_ACTION: String = "gdshell_toggle_ui"
+
 const UI_HANDLER_PATH: String = "res://addons/gdshell/ui/default_ui/default_ui.tscn"
-const DEFAULT_COMMAND_DIR: String = "res://addons/gdshell/commands/"
+const COMMAND_DIR_PATH: String = "res://addons/gdshell/commands/"
 
 signal _input_submitted(input: String)
 
@@ -15,6 +17,8 @@ var command_runner: GDShellCommandRunner
 var command_db: GDShellCommandDB
 var ui_handler: GDShellUIHandler
 
+var execute_autorun_on_startup: bool = true
+var handle_gdshell_toggle_ui_action: bool = true
 
 
 func _ready() -> void:
@@ -26,14 +30,16 @@ func _setup() -> void:
 	command_runner._PARENT_GDSHELL = self
 	add_child(command_runner)
 	
+	# TODO some safety checks
 	@warning_ignore(unsafe_cast, unsafe_method_access)
 	ui_handler = (load(UI_HANDLER_PATH).instantiate() as GDShellUIHandler)
 	ui_handler._PARENT_GDSHELL = self
+	ui_handler.set_visible(false)
 	add_child(ui_handler)
 	
 	command_db = GDShellCommandDB.new()
-	command_db.add_commands_in_directory(DEFAULT_COMMAND_DIR)
-	if "autorun" in command_db.get_all_command_names():
+	command_db.add_commands_in_directory(COMMAND_DIR_PATH)
+	if "autorun" in command_db.get_all_command_names() and execute_autorun_on_startup:
 		execute("autorun")
 
 
@@ -94,3 +100,10 @@ static func get_gdshell_version() -> String:
 	if config.load("res://addons/gdshell/plugin.cfg"):
 		return "Unknown"
 	return str(config.get_value("plugin", "version", "Unknown"))
+
+
+func _input(event: InputEvent) -> void:
+	if not handle_gdshell_toggle_ui_action:
+		return
+	if event.is_action(GDSHELL_TOGGLE_UI_ACTION) and not event.is_echo() and event.is_pressed():
+		ui_handler.toggle_visible()

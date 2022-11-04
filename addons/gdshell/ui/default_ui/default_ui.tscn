@@ -1,7 +1,10 @@
-[gd_scene load_steps=11 format=3 uid="uid://dkixrvtb3a1f8"]
+[gd_scene load_steps=14 format=3 uid="uid://dkixrvtb3a1f8"]
 
 [ext_resource type="Script" path="res://addons/gdshell/ui/default_ui/default_ui.gd" id="2_7mabp"]
 [ext_resource type="FontFile" uid="uid://b8fo1gccd11mc" path="res://addons/gdshell/ui/fonts/roboto_mono/RobotoMono-Regular.ttf" id="2_cto07"]
+[ext_resource type="FontFile" uid="uid://by5705qqqugvi" path="res://addons/gdshell/ui/fonts/roboto_mono/RobotoMono-Bold.ttf" id="2_ncxo2"]
+[ext_resource type="FontFile" uid="uid://6d4ig2mw72j" path="res://addons/gdshell/ui/fonts/roboto_mono/RobotoMono-BoldItalic.ttf" id="2_xle7x"]
+[ext_resource type="FontFile" uid="uid://bullucnra3kbg" path="res://addons/gdshell/ui/fonts/roboto_mono/RobotoMono-Italic.ttf" id="3_k4u6q"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hcxhe"]
 bg_color = Color(0.113725, 0.133333, 0.160784, 0.705882)
@@ -82,6 +85,9 @@ offset_bottom = 619.0
 size_flags_vertical = 3
 focus_mode = 2
 theme_override_fonts/normal_font = ExtResource("2_cto07")
+theme_override_fonts/bold_font = ExtResource("2_ncxo2")
+theme_override_fonts/italics_font = ExtResource("3_k4u6q")
+theme_override_fonts/bold_italics_font = ExtResource("2_xle7x")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_2tgqt")
 theme_override_styles/normal = SubResource("StyleBoxEmpty_ebie4")
 scroll_following = true

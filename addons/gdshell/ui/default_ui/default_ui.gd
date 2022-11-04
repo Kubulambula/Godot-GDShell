@@ -82,26 +82,18 @@ const BOLD_ITALICS_FONT: Font = preload("res://addons/gdshell/ui/fonts/roboto_mo
 var _is_input_requested: bool = true:
 	set(value):
 		_is_input_requested = value
-		
-		if _is_input_requested:
-			input_line_edit.editable = true
-			input_line_edit.grab_focus()
-			input_bar_panel.get_theme_stylebox(&"panel").bg_color = input_bar_color
-		else:
-			input_line_edit.editable = false
-			input_bar_panel.get_theme_stylebox(&"panel").bg_color = input_bar_uneditable_color
+		input_line_edit.editable = value
+		input_bar_panel.get_theme_stylebox(&"panel").bg_color = (
+				input_bar_color if value 
+				else input_bar_uneditable_color
+		)
 
 
 func _ready():
-	set_deferred(&"_is_input_requested", true)
+	visibility_changed.connect(_on_visibility_changed)
 	_input_requested.connect(_handle_input)
 	_output_requested.connect(_handle_output)
-	input_line_edit.grab_focus()
-
-
-# Regrab input_line_edit focus when lost
-#func _on_input_line_edit_focus_exited():
-#	input_line_edit.grab_focus.call_deferred() # You have to call it deffered or it will not work
+	set_deferred(&"_is_input_requested", true)
 
 
 func _handle_input(out: String) -> void:
@@ -126,3 +118,10 @@ func _get_output_rich_text_label() -> RichTextLabel:
 
 func _get_input_prompt() -> String:
 	return input_prompt
+
+
+func _on_visibility_changed() -> void:
+	if visible:
+		input_line_edit.call_deferred(&"grab_focus")
+	else:
+		input_line_edit.release_focus()
