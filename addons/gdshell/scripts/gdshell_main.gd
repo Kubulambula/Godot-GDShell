@@ -3,15 +3,14 @@ extends Node
 @icon("res://addons/gdshell/icon.png")
 
 
-const GDSHELL_TOGGLE_UI_ACTION: String = "gdshell_toggle_ui"
-
-const UI_HANDLER_PATH: String = "res://addons/gdshell/ui/default_ui/default_ui.tscn"
-const COMMAND_DIR_PATH: String = "res://addons/gdshell/commands/"
-
 signal _input_submitted(input: String)
 
-var _is_command_awaiting_input: bool = false
-var _input_temp: String = ""
+const GDSHELL_TOGGLE_UI_ACTION: String = "gdshell_toggle_ui"
+
+const COMMAND_DIR_PATH: String = "res://addons/gdshell/commands/"
+
+const UI_HANDLER_PATH: String = "res://addons/gdshell/ui/default_ui/default_ui.tscn"
+const GDSHELL_CANVAS_LAYER: int = 100
 
 var command_runner: GDShellCommandRunner
 var command_db: GDShellCommandDB
@@ -20,26 +19,46 @@ var ui_handler: GDShellUIHandler
 var execute_autorun_on_startup: bool = true
 var handle_gdshell_toggle_ui_action: bool = true
 
+# Internal helper variables
+var _is_command_awaiting_input: bool = false
+var _input_buffer: String = ""
+
 
 func _ready() -> void:
-	_setup()
+	setup_command_runner()
+	setup_command_db(COMMAND_DIR_PATH)
+	setup_ui_handler(load_ui_handler_from_path(UI_HANDLER_PATH), true)
+	
+	if execute_autorun_on_startup:
+		execute_autorun()
 
 
-func _setup() -> void:
+func setup_command_runner() -> void:
 	command_runner = GDShellCommandRunner.new()
 	command_runner._PARENT_GDSHELL = self
 	add_child(command_runner)
-	
-	# TODO some safety checks
-	@warning_ignore(unsafe_cast, unsafe_method_access)
-	ui_handler = (load(UI_HANDLER_PATH).instantiate() as GDShellUIHandler)
+
+
+func setup_command_db(command_dir_path: String="") -> void:
+	command_db = GDShellCommandDB.new()
+	if not command_dir_path.is_empty():
+		command_db.add_commands_in_directory(command_dir_path)
+
+
+func setup_ui_handler(handler: GDShellUIHandler, add_as_child: bool=true) -> void:
+	ui_handler = handler
 	ui_handler._PARENT_GDSHELL = self
 	ui_handler.set_visible(false)
-	add_child(ui_handler)
 	
-	command_db = GDShellCommandDB.new()
-	command_db.add_commands_in_directory(COMMAND_DIR_PATH)
-	if "autorun" in command_db.get_all_command_names() and execute_autorun_on_startup:
+	if add_as_child:
+		var canvas_layer: CanvasLayer = CanvasLayer.new()
+		canvas_layer.layer = GDSHELL_CANVAS_LAYER
+		canvas_layer.add_child(handler)
+		add_child(canvas_layer)
+
+
+func execute_autorun() -> void:
+	if "autorun" in command_db.get_all_command_names():
 		execute("autorun")
 
 
@@ -50,11 +69,11 @@ func execute(input: String) -> Dictionary:
 	return command_sequence
 
 
-func _get_ui_handler() -> GDShellUIHandler:
+func get_ui_handler() -> GDShellUIHandler:
 	return ui_handler
 
 
-func _get_ui_handler_rich_text_label() -> RichTextLabel:
+func get_ui_handler_rich_text_label() -> RichTextLabel:
 	return ui_handler._get_output_rich_text_label()
 
 
@@ -76,23 +95,27 @@ func _submit_input(input: String) -> void:
 		return
 	
 	
-	_input_temp += input
-	var command_sequence: Dictionary = GDShellCommandParser.parse(_input_temp, command_db)
+	_input_buffer += input
+	var command_sequence: Dictionary = GDShellCommandParser.parse(_input_buffer, command_db)
 	match command_sequence["status"]:
 		GDShellCommandParser.ParserResultStatus.OK:
-			_request_output_from_ui_handler((ui_handler._get_input_prompt() if input == _input_temp else "") + input, true)
-			_input_temp = ""
+			_request_output_from_ui_handler((ui_handler._get_input_prompt() if input == _input_buffer else "") + input, true)
+			_input_buffer = ""
 			await command_runner.execute(command_sequence)
 			ui_handler._input_requested.emit("")
 		GDShellCommandParser.ParserResultStatus.UNTERMINATED:
-			_request_output_from_ui_handler((ui_handler._get_input_prompt() if input == _input_temp else "") + input, true)
+			_request_output_from_ui_handler((ui_handler._get_input_prompt() if input == _input_buffer else "") + input, true)
 			ui_handler._input_requested.emit("> ")
 		GDShellCommandParser.ParserResultStatus.ERROR:
-			_request_output_from_ui_handler(ui_handler._get_input_prompt() + _input_temp, true)
-			_input_temp = ""
+			_request_output_from_ui_handler(ui_handler._get_input_prompt() + _input_buffer, true)
+			_input_buffer = ""
 			# TODO better error announcement
 			_request_output_from_ui_handler("[color=red]%s[/color]" % command_sequence["result"]["error"], true)
 			ui_handler._input_requested.emit("")
+
+
+static func load_ui_handler_from_path(path: String) -> GDShellUIHandler:
+	return load(path).instantiate() as GDShellUIHandler
 
 
 static func get_gdshell_version() -> String:

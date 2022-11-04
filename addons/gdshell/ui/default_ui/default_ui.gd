@@ -1,11 +1,13 @@
 @tool
 extends GDShellUIHandler
+# The default ui extends a PanelContainer instead of a plain Control
 
 
 const DEFAULT_FONT: Font = preload("res://addons/gdshell/ui/fonts/roboto_mono/RobotoMono-Regular.ttf")
 const BOLD_FONT: Font = preload("res://addons/gdshell/ui/fonts/roboto_mono/RobotoMono-Bold.ttf")
 const ITALICS_FONT: Font = preload("res://addons/gdshell/ui/fonts/roboto_mono/RobotoMono-Italic.ttf")
 const BOLD_ITALICS_FONT: Font = preload("res://addons/gdshell/ui/fonts/roboto_mono/RobotoMono-BoldItalic.ttf")
+
 
 # This looks scary, doesn't it?
 @export_category("GDShell UI")
@@ -47,9 +49,11 @@ const BOLD_ITALICS_FONT: Font = preload("res://addons/gdshell/ui/fonts/roboto_mo
 		%OutputRichTextLabel.add_theme_font_override("bold_italics_font", bold_italics_font)
 
 @export_group("Input Bar")
-@export var input_prompt: String = "gdsgell@godot$> ":
+@export var input_prompt: String = "gdshell@{PROJECT_NAME}:~$ ":
 	set(value):
-		input_prompt = value
+		input_prompt = value.format({
+			"PROJECT_NAME": ProjectSettings.get_setting("application/config/name")
+		})
 		if not is_inside_tree():
 			await ready
 		%InputPromptLabel.text = input_prompt

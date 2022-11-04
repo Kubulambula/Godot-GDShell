@@ -134,8 +134,8 @@ func _handle_output(out: String, append_new_line: bool=true) -> void:
 
 
 func _handle_get_ui_handler() -> GDShellUIHandler:
-	return _PARENT_GDSHELL._get_ui_handler()
+	return _PARENT_GDSHELL.get_ui_handler()
 
 
 func _handle_get_ui_handler_rich_text_label() -> RichTextLabel:
-	return _PARENT_GDSHELL._get_ui_handler_rich_text_label()
+	return _PARENT_GDSHELL.get_ui_handler_rich_text_label()
