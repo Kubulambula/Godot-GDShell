@@ -28,7 +28,7 @@ const BOLD_ITALICS_FONT: Font = preload("res://addons/gdshell/ui/fonts/roboto_mo
 		bold_font = value
 		if not is_inside_tree():
 			await ready
-		%OutputRichTextLabel.add_theme_font_override("normal_font", bold_font)
+		%OutputRichTextLabel.add_theme_font_override("bold_font", bold_font)
 @export var italics_font: Font = ITALICS_FONT:
 	set(value):
 		if not value:
@@ -36,7 +36,7 @@ const BOLD_ITALICS_FONT: Font = preload("res://addons/gdshell/ui/fonts/roboto_mo
 		italics_font = value
 		if not is_inside_tree():
 			await ready
-		%OutputRichTextLabel.add_theme_font_override("normal_font", italics_font)
+		%OutputRichTextLabel.add_theme_font_override("italics_font", italics_font)
 @export var bold_italics_font: Font = BOLD_ITALICS_FONT:
 	set(value):
 		if not value:
@@ -44,7 +44,7 @@ const BOLD_ITALICS_FONT: Font = preload("res://addons/gdshell/ui/fonts/roboto_mo
 		bold_italics_font = value
 		if not is_inside_tree():
 			await ready
-		%OutputRichTextLabel.add_theme_font_override("normal_font", bold_italics_font)
+		%OutputRichTextLabel.add_theme_font_override("bold_italics_font", bold_italics_font)
 
 @export_group("Input Bar")
 @export var input_prompt: String = "gdsgell@godot$> ":
