@@ -47,13 +47,13 @@ func _get_manual() -> String:
 [b]DESCRIPTION[/b]
 	Returns an empty result with 0 or 1 as an error. Can be used as constant in command chains.
 	
-	[b]-t, - -true[/b]
+	[b]-t, --true[/b]
 		Returns 0 as an error (success)
 	
-	[b]-f, - -false[/b]
+	[b]-f, --false[/b]
 		Returns 1 as an error (failed)
 	
-	[b]-r, - -random[/b]
+	[b]-r, --random[/b]
 		Randomly returns 0 or 1 as an error
 
 [b]EXAMPLES[/b]

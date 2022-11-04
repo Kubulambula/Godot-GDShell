@@ -46,7 +46,7 @@ func _get_manual() -> String:
 	Create / remove an alias.
 	Aliases allow a string to be substituted for another when it is used as the first word of a command.
 	
-	[b]-r, - -remove[/b]
+	[b]-r, --remove[/b]
 		remove alias
 
 [b]EXAMPLES[/b]

@@ -97,10 +97,10 @@ func _get_manual() -> String:
 [b]DESCRIPTION[/b]
 	Get and print information about the current project
 	
-	[b]-s, - -silent[/b]
+	[b]-s, --silent[/b]
 		Do not print to the console
 	
-	[b]- -i-am-a-linux-nerd-and-tried-to-use-neofetch[/b]
+	[b]--i-am-a-linux-nerd-and-tried-to-use-neofetch[/b]
 		Adds a \"Is the user linux nerd and tried to use neofetch\" value.
 		This is an easter egg and is shown when user uses \"neofetch\" instead of \"gdfetch\".
 
