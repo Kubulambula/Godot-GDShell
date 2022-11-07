@@ -33,7 +33,7 @@ Every command is it's own script, resulting in better code organization and proj
 extends GDShellCommand
 # res://addons/gdshell/commands/hello.gd
 
-func _main(params):
+func _main(argv, data):
     output("Hello World!")
     return {}
 ```
