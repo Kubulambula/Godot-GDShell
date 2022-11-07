@@ -95,7 +95,7 @@ func _execute_command(path: String, params: Dictionary, in_background: bool=fals
 		_background_commands.append(command)
 	
 	@warning_ignore(redundant_await)
-	var result = await command._main(params)
+	var result = await command._main(params["argv"], params["data"])
 	
 	if typeof(result) != TYPE_DICTIONARY:
 		push_error("[GDShell] The '%s' command does not return a value of TYPE_DICTIONARY.

@@ -7,7 +7,7 @@ func _init():
 	}
 
 
-func _main(_params: Dictionary) -> Dictionary:
+func _main(_argv: Array, _data) -> Dictionary:
 	# Truly unbelieveable progrmming skills
 	get_ui_handler_rich_text_label().clear()
 	return DEFAULT_COMMAND_RESULT

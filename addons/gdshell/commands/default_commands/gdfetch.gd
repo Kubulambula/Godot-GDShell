@@ -39,13 +39,13 @@ func _init():
 	}
 
 
-func _main(params: Dictionary) -> Dictionary:
+func _main(argv: Array, data) -> Dictionary:
 	var info: Dictionary = get_info()
 	
-	if "--i-am-a-linux-nerd-and-tried-to-use-neofetch" in params["argv"]:
+	if "--i-am-a-linux-nerd-and-tried-to-use-neofetch" in argv:
 		info["Is the user linux nerd and tried to use neofetch"] = "Yes"
 	
-	if not ("-s" in params["argv"] or "--silent" in params["argv"]):
+	if not ("-s" in argv or "--silent" in argv):
 		output(construct_output(LOGO, info), false)
 	
 	return {"data": info}

@@ -26,7 +26,7 @@ var COMMAND_AUTO_ALIASES: Dictionary = {}
 var _PARENT_PROCESS
 
 
-func _main(_params: Dictionary) -> Dictionary:
+func _main(_argv: Array, _data) -> Dictionary:
 	return DEFAULT_COMMAND_RESULT
 
 

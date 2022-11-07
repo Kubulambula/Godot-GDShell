@@ -8,14 +8,14 @@ func _init():
 	}
 
 
-func _main(params: Dictionary) -> Dictionary:
-	if not params["argv"].size() > 1:
+func _main(argv: Array, data) -> Dictionary:
+	if not argv.size() > 1:
 		output("What manual page do you want?\nFor example, try '%s %s'" % [COMMAND_NAME, COMMAND_NAME])
 		return DEFAULT_COMMAND_RESULT
 	
 	var command_db: GDShellCommandDB = _PARENT_PROCESS._PARENT_GDSHELL.command_db
 	
-	var command_name: String = params["argv"][1]
+	var command_name: String = argv[1]
 	while true:
 		if not command_name in command_db._aliases:
 			break
@@ -32,10 +32,10 @@ func _main(params: Dictionary) -> Dictionary:
 	var manual: String = command._get_manual() if command else ""
 	command.queue_free()
 	
-	if not "-s" in params["argv"] or "-silent" in params["argv"]:
+	if not "-s" in argv or "-silent" in argv:
 		var line: int = get_ui_handler_rich_text_label().get_line_count()
 		output(manual)
-		get_ui_handler_rich_text_label().scroll_to_line(line)
+		get_ui_handler_rich_text_label().call_deferred(&"scroll_to_line", line)
 	
 	return {"data": manual}
 

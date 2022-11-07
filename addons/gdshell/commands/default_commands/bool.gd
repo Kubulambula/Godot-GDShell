@@ -13,11 +13,11 @@ func _init():
 	}
 
 
-func _main(params: Dictionary) -> Dictionary:
-	if not params["argv"].size() > 1:
+func _main(argv: Array, data) -> Dictionary:
+	if not argv.size() > 1:
 		return TRUE
 		
-	match params["argv"][1]:
+	match argv[1]:
 		"-t", "--true":
 			return TRUE
 		"-f", "--false":
@@ -28,7 +28,7 @@ func _main(params: Dictionary) -> Dictionary:
 		_:
 			return {
 				"error": ERR_INVALID_PARAMETER,
-				"error_string": "Parameter '%s' not recognized" % params["argv"][1],
+				"error_string": "Parameter '%s' not recognized" % argv[1],
 				"data": null,
 			}
 
