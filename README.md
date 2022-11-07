@@ -84,7 +84,7 @@ Nearly anything your heart desire can be done done!
 3. Go to `Project > Project Settings > Plugins` and check the `Enable` checkbox for GDShell
 
 
-You can also checkout the [Installing plugins](https://docs.godotengine.org/en/latest/tutorials/plugins/editor/installing_plugins.html) docs
+You can also checkout the Godot's [Installing plugins](https://docs.godotengine.org/en/latest/tutorials/plugins/editor/installing_plugins.html) docs
 
 
 ## Exaple usage
