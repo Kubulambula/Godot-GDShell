@@ -107,6 +107,7 @@ func _handle_input(out: String) -> void:
 
 func _handle_output(output: String, append_new_line: bool=true) -> void:
 	output_rich_text_label.append_text(("%s\n" if append_new_line else "%s") % output)
+	output_rich_text_label.scroll_to_line(output_rich_text_label.get_line_count())
 
 
 func _on_input_line_edit_text_submitted(input: String) -> void:
