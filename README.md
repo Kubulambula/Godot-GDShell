@@ -20,7 +20,6 @@ Add you own commands, don't reinvent the wheel and get back to the important stu
 
 
 
-
 ## 🏄 Easy to use
 Forget creating commands from [`Callable`](https://docs.godotengine.org/en/latest/classes/class_callable.html)s, with messy object and method relations.
 
@@ -49,7 +48,6 @@ Don't let the ease of use fool you. GDShell can be used even for more complex ta
 * executing commands in background
 
     `wait_for_godot& ; think_about_your_game_project`
-
 
 * command result passing
 
@@ -87,12 +85,10 @@ Nearly anything your heart desire can be done done!
 You can also checkout the Godot's [Installing plugins](https://docs.godotengine.org/en/latest/tutorials/plugins/editor/installing_plugins.html) docs
 
 
-## Exaple usage
-\*Insert examples here\*
+## 📚 Documentation & Tutorials
+See the **[Docs](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/docs.md)** page.
 
-
-## 📚 Documentation
-See **[Docs](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/docs.md)**.
+For command examples, you can checkout the **[default commands](https://github.com/Kubulambula/Godot-GDShell/tree/main/addons/gdshell/commands/default_commands)**.
 
 
 ## 👥 Contributing
