@@ -2,7 +2,7 @@
 
 <p align="center">
   <a href="https://github.com/Kubulambula/Godot-GDShell">
-    <img src="https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/logo_text.png" width="700" alt="GDShell logo">
+    <img src="https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/assets/logo_text.png" width="700" alt="GDShell logo">
   </a>
 </p>
 
@@ -86,7 +86,7 @@ You can also checkout the Godot's [Installing plugins](https://docs.godotengine.
 
 
 ## 📚 Documentation & Tutorials
-See the **[Docs](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/docs.md)** page.
+See the **[Docs](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/docs.md)** page.
 
 For command examples, you can checkout the **[default commands](https://github.com/Kubulambula/Godot-GDShell/tree/main/addons/gdshell/commands/default_commands)**.
 
