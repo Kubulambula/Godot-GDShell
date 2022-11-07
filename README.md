@@ -10,8 +10,7 @@
 #### ⚠️ This plugin is still in early development
 
 
-## The only console for Godot 4, you'll ever need
-GDShell is a feature-packed in-game console for development, debugging, cheats and/or any other interaction with your game. 
+Feature-packed linux-like in-game console for development, debugging, cheats and/or any other interaction with your game.
 
 
 ## 📦 Out of the box
@@ -20,10 +19,12 @@ GDShell works right away after installation with no need for a complex setup.
 Add you own commands, don't reinvent the wheel and get back to the important stuff that makes your game fun.
 
 
+
+
 ## 🏄 Easy to use
 Forget creating commands from [`Callable`](https://docs.godotengine.org/en/latest/classes/class_callable.html)s, with messy object and method relations.
 
-Now every command is it's own script, resulting in better code organization and project structure by design.
+Every command is it's own script, resulting in better code organization and project structure by design.
 
 
 **Just create a script, place it in a command folder and you're good to go!**
@@ -68,18 +69,22 @@ Nearly anything your heart desire can be done done!
 
 
 ## 🧪 Installation
-### Installation with AssetLib
+### Installation via [AssetLib](https://godotengine.org/asset-library/asset/1526)
 1. Open AssetLib in your project (AssetLib button in the top center)
 2. Search for: **GDShell**
-3. Open **GDShell** and click **Download**
-4. Click **Install**
-5. Go to `Project > Project Settings > Plugins` and check the `Enable` checkbox for GDShell
+3. Open **GDShell**
+4. Click **Download**
+5. Click **Install**
+6. Go to `Project > Project Settings > Plugins` and check the `Enable` checkbox for GDShell
 
 
-### Installation with Git
-1. Clone or download the [latest release](https://github.com/Kubulambula/Godot-GDShell/releases/latest)
+### Installation via Git
+1. **Clone** or **download** the [latest release](https://github.com/Kubulambula/Godot-GDShell/releases/latest)
 2. Copy the `gdshell/` folder into your project's `res://addons/` folder.
 3. Go to `Project > Project Settings > Plugins` and check the `Enable` checkbox for GDShell
+
+
+You can also checkout the [Installing plugins](https://docs.godotengine.org/en/latest/tutorials/plugins/editor/installing_plugins.html) docs
 
 
 ## Exaple usage
