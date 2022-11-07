@@ -106,7 +106,7 @@ GDShell logo is available under the **Free Art License 1.3**. See [`LOGO_LICENSE
 **- Can I use GDShell in my project?**
 
 Yes! You can use GDShell in any kind of project - free or commercial.<br>
-The ONLY condition is to credit the GDShell creators in your project according to MIT license.
+The ONLY condition is to credit the GDShell creators in your project according to [MIT license](https://github.com/Kubulambula/Godot-GDShell/blob/main/LICENSE.md).
 
 ---
 
