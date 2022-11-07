@@ -13,6 +13,7 @@ If you are new to this plugin, it's recommended that you read the [Introduction]
 
 
 # Pages
+
 ## Getting started
 - [Introduction]()
 - [Step by step]()
@@ -21,7 +22,7 @@ If you are new to this plugin, it's recommended that you read the [Introduction]
 ## Tutorials
 - [GDShell syntax]()
 - [Commands]()
-- [CustomUI]()
+- [Custom UI]()
 
 ## References
 - [GDShellCommand]()
