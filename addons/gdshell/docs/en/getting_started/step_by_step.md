@@ -62,6 +62,6 @@ For more information you can continue by reading the [GDShell syntax](https://gi
 
 
 ## But how I do make my own commands?
-Continue by reading the [Your first command](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/tutorials/your_first_command.md) page.
+Continue by reading the [Your first command](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/getting_started/your_first_command.md) page.
 
 
