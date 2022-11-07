@@ -95,14 +95,14 @@ For command examples, you can checkout the **[default commands](https://github.c
 All contributions are very welcome, so feel free to make [issues](https://github.com/Kubulambula/Godot-GDShell/issues), [proposals](https://github.com/Kubulambula/Godot-GDShell/issues/proposal) and [pull requests](https://github.com/Kubulambula/Godot-GDShell/pulls). 
 
 
-### ❤️ License (It's free, baby!)
+## ❤️ License (It's free, baby!)
 GDShell is available under the **MIT license**.
 See [`LICENSE.md`](https://github.com/Kubulambula/Godot-GDShell/blob/main/LICENSE.md).
 
 GDShell logo is available under the **Free Art License 1.3**. See [`LOGO_LICENSE.md`](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/LOGO_LICENSE.md)
 
 
-# ❔ FAQ
+## ❔ FAQ
 **- Can I use GDShell in my project?**
 
 Yes! You can use GDShell in any kind of project - free or commercial.<br>
