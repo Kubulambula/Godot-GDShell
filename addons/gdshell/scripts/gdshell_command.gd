@@ -38,8 +38,8 @@ func input(out: String="") -> String:
 	return await _PARENT_PROCESS._handle_input(self, out)
 
 
-func output(out: String, append_new_line: bool=true) -> void:
-	_PARENT_PROCESS._handle_output(out, append_new_line)
+func output(out, append_new_line: bool=true) -> void:
+	_PARENT_PROCESS._handle_output(str(out), append_new_line)
 
 
 func get_ui_handler() -> GDShellUIHandler:
