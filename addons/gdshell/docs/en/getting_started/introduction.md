@@ -35,4 +35,4 @@ This approach also makes the GDShell commands more organized, resulting in a cle
 
 
 ## So how do I use it?
-Continue by reading on the [Step by step page](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/getting_started/step_by_step.md)
+Continue by reading on the [Step by step](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/getting_started/step_by_step.md) page.
