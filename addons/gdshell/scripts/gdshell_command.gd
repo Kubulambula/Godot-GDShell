@@ -59,7 +59,3 @@ func _get_manual() -> String:
 	"COMMAND_NAME": COMMAND_NAME,
 	"COMMAND_AUTO_ALIASES": COMMAND_AUTO_ALIASES,
 })
-
-
-static func get_default_command_result() -> Dictionary:
-	return DEFAULT_COMMAND_RESULT
