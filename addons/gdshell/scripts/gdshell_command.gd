@@ -65,9 +65,5 @@ func _get_manual() -> String:
 })
 
 
-static func get_default_command_params() -> Dictionary:
-	return DEFAULT_COMMAND_PARAMS
-
-
 static func get_default_command_result() -> Dictionary:
 	return DEFAULT_COMMAND_RESULT
