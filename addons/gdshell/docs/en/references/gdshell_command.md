@@ -1,3 +1,12 @@
+[link_variant]: https://docs.godotengine.org/en/stable/classes/class_variant.html
+[link_bool]: https://docs.godotengine.org/en/latest/classes/class_bool.html
+[link_string]: https://docs.godotengine.org/en/latest/classes/class_string.html
+[link_array]: https://docs.godotengine.org/en/stable/classes/class_array.html
+[link_dictionary]: https://docs.godotengine.org/en/latest/classes/class_dictionary.html
+[link_rich_text_label]: https://docs.godotengine.org/en/latest/classes/class_richtextlabel.html
+[link_gdshell_command_runner]: https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/references/gdshell_command_runner.md
+[link_gdshell_ui_handler]: https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/references/gdshell_ui_handler.md
+
 <a href="https://github.com/Kubulambula/Godot-GDShell">
   <img src="https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/assets/logo.png" align="left" width="80" height="80">
 </a>
@@ -18,22 +27,22 @@
 
 | | | |
 | --- | --- | --- |
-| [`String`](https://docs.godotengine.org/en/latest/classes/class_string.html)  | [COMMAND_NAME](#string-command_name)  | `script name` |
-| [`Dictionary`](https://docs.godotengine.org/en/latest/classes/class_dictionary.html)  | [COMMAND_AUTO_ALIASES](#dictionary-command_auto_aliases)  | {} |
-| [`GDShellCommandRunner`](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/references/gdshell_command_runner.md) | [_PARENT_PROCESS](#gdshellcommandrunner-_parent_process) | null |
+| [`String`][link_string]  | [COMMAND_NAME](#string-command_name)  | `script name` |
+| [`Dictionary`][link_dictionary]  | [COMMAND_AUTO_ALIASES](#dictionary-command_auto_aliases)  | {} |
+| [`GDShellCommandRunner`][link_gdshell_command_runner] | [_PARENT_PROCESS](#gdshellcommandrunner-_parent_process) | null |
 | | | |
 
 
 ### Methods
 | | | |
 | --- | --- | --- |
-| [`Dictionary`](https://docs.godotengine.org/en/latest/classes/class_dictionary.html) | [_main](#_main) ([Array](https://docs.godotengine.org/en/stable/classes/class_array.html) argv, [Variant](https://docs.godotengine.org/en/stable/classes/class_variant.html) data) | `virtual` |
-| [`String`](https://docs.godotengine.org/en/latest/classes/class_string.html) | [_get_manual](#_get_manual) () | `virtual` |
-| [`Dictionary`](https://docs.godotengine.org/en/latest/classes/class_dictionary.html) | [execute](#execute) ([`String`](https://docs.godotengine.org/en/latest/classes/class_string.html) command) | |
-| [`String`](https://docs.godotengine.org/en/latest/classes/class_string.html) | [input](#input) ([`String`](https://docs.godotengine.org/en/latest/classes/class_string.html) out) | |
-| `void` | [output](#output) ([`String`](https://docs.godotengine.org/en/latest/classes/class_string.html) out, [`bool`](https://docs.godotengine.org/en/latest/classes/class_bool.html) append_new_line=true) | |
-| [`GDShellUIHandler`](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/references/gdshell_ui_handler.md) | [get_ui_handler](#get_ui_handler) () | |
-| [`RichTextLabel`](https://docs.godotengine.org/en/latest/classes/class_richtextlabel.html) | [get_ui_handler_rich_text_label](#get_ui_handler_rich_text_label) () | |
+| [`Dictionary`][link_dictionary] | [_main](#_main) ([Array][link_array] argv, [Variant][link_variant] data) | `virtual` |
+| [`String`][link_string] | [_get_manual](#_get_manual) () | `virtual` |
+| [`Dictionary`][link_dictionary] | [execute](#execute) ([`String`][link_string] command) | |
+| [`String`][link_string] | [input](#input) ([`String`][link_string] out) | |
+| `void` | [output](#output) ([`String`][link_string] out, [`bool`][link_bool] append_new_line=true) | |
+| [`GDShellUIHandler`][link_gdshell_ui_handler] | [get_ui_handler](#get_ui_handler) () | |
+| [`RichTextLabel`][link_rich_text_label] | [get_ui_handler_rich_text_label](#get_ui_handler_rich_text_label) () | |
 | | | |
 
 
@@ -50,7 +59,7 @@
 
 ### Constants
 
-#### [`Dictionary`](https://docs.godotengine.org/en/latest/classes/class_dictionary.html) DEFAULT_COMMAND_RESULT
+#### [`Dictionary`][link_dictionary] DEFAULT_COMMAND_RESULT
 
 
 ---
@@ -58,11 +67,11 @@
 
 ### Property descriptions
 
-#### [`String`](https://docs.godotengine.org/en/latest/classes/class_string.html) COMMAND_NAME
+#### [`String`][link_string] COMMAND_NAME
 
-#### [`Dictionary`](https://docs.godotengine.org/en/latest/classes/class_dictionary.html) COMMAND_AUTO_ALIASES
+#### [`Dictionary`][link_dictionary] COMMAND_AUTO_ALIASES
 
-#### [`GDShellCommandRunner`](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/references/gdshell_command_runner.md) _PARENT_PROCESS
+#### [`GDShellCommandRunner`][link_gdshell_command_runner] _PARENT_PROCESS
 
 
 ---
@@ -71,22 +80,22 @@
 ### Method descriptions
 
 <span id="_main"><span>
-#### [`Dictionary`](https://docs.godotengine.org/en/latest/classes/class_dictionary.html) _main ([`Array`](https://docs.godotengine.org/en/stable/classes/class_array.html) argv, [`Variant`](https://docs.godotengine.org/en/stable/classes/class_variant.html) data) - `virtual`
+#### [`Dictionary`][link_dictionary] _main ([`Array`][link_array] argv, [`Variant`][link_variant] data) - `virtual`
 
 <span id="_get_manual"><span>
-#### [`String`](https://docs.godotengine.org/en/latest/classes/class_string.html) _get_manual () - `virtual`
+#### [`String`][link_string] _get_manual () - `virtual`
 
 <span id="execute"><span>
-#### [`Dictionary`](https://docs.godotengine.org/en/latest/classes/class_dictionary.html) execute ([`String`](https://docs.godotengine.org/en/latest/classes/class_string.html) command)
+#### [`Dictionary`][link_dictionary] execute ([`String`][link_string] command)
 
 <span id="input"><span>
-#### [`String`](https://docs.godotengine.org/en/latest/classes/class_string.html) input ([`String`](https://docs.godotengine.org/en/latest/classes/class_string.html) out)
+#### [`String`][link_string] input ([`String`][link_string] out)
 
 <span id="output"><span>
-#### `void` output ([`String`](https://docs.godotengine.org/en/latest/classes/class_string.html) out, [`bool`](https://docs.godotengine.org/en/latest/classes/class_bool.html) append_new_line=true)
+#### `void` output ([`String`][link_string] out, [`bool`][link_bool] append_new_line=true)
 
 <span id="get_ui_handler"><span>
-#### [`GDShellUIHandler`](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/references/gdshell_ui_handler.md) get_ui_handler ()
+#### [`GDShellUIHandler`][link_gdshell_ui_handler] get_ui_handler ()
 
 <span id="get_ui_handler_rich_text_label"><span>
-#### [`RichTextLabel`](https://docs.godotengine.org/en/latest/classes/class_richtextlabel.html) get_ui_handler_rich_text_label ()
+#### [`RichTextLabel`][link_rich_text_label] get_ui_handler_rich_text_label ()
