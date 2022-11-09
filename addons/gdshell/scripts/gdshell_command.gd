@@ -45,10 +45,6 @@ func get_ui_handler_rich_text_label() -> RichTextLabel:
 	return _PARENT_PROCESS._handle_get_ui_handler_rich_text_label()
 
 
-func end_command() -> void:
-	command_end.emit()
-
-
 func _get_manual() -> String:
 	return """\
 [b]NAME[/b]
