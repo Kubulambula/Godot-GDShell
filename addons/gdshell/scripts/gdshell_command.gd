@@ -6,11 +6,6 @@ extends Node
 signal command_end
 
 
-const DEFAULT_COMMAND_PARAMS: Dictionary = {
-		"argv": [],
-		"data": null,
-	}
-
 const DEFAULT_COMMAND_RESULT: Dictionary = {
 		"error": 0,
 		"error_string": "No error description",
