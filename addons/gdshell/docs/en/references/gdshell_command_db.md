@@ -10,6 +10,18 @@
 # GDShellCommandDB
 
 
+### Properties
+
+| | | |
+| --- | --- | --- |
+| [`Dictionary`][link_dictionary]  | [\_commands](#dictionary-_commands)  | {} |
+| [`Dictionary`][link_dictionary]  | [\_aliases](#dictionary-_aliases)  | {} |
+| | | |
+
+
+---
+
+
 ### Methods
 | | | |
 | --- | --- | --- |
@@ -26,6 +38,16 @@
 | [`bool`][link_bool] | [is_file_gdshell_command](#is_file_gdshell_command) ([`String`][link_string] path) | `static` |
 | [`Dictionary`][link_dictionary] | [get_command_name_and_autoaliases](#get_command_name_and_autoaliases) ([`String`][link_string] path) | `static` |
 | | | |
+
+
+---
+
+
+### Property descriptions
+
+#### [`Dictionary`][link_dictionary] \_commands
+
+#### [`Dictionary`][link_dictionary] \_aliases
 
 
 ---
