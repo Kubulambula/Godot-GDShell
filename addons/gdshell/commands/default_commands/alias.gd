@@ -18,7 +18,7 @@ func _main(argv: Array, data) -> Dictionary:
 		success = _PARENT_PROCESS._PARENT_GDSHELL.command_db.remove_alias(argv[2])
 		if success:
 			output("Alias '%s' removed" % argv[2])
-		return DEFAULT_COMMAND_PARAMS
+		return DEFAULT_COMMAND_RESULT
 	
 	success = _PARENT_PROCESS._PARENT_GDSHELL.command_db.add_alias(argv[1], argv[2])
 	if not success:
