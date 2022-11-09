@@ -25,8 +25,8 @@ func _main(_argv: Array, _data) -> Dictionary:
 	return DEFAULT_COMMAND_RESULT
 
 
-func execute(_input: String) -> Dictionary:
-	return await _PARENT_PROCESS._handle_execute(_input)
+func execute(command: String) -> Dictionary:
+	return await _PARENT_PROCESS._handle_execute(command)
 
 
 func input(out: String="") -> String:

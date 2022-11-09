@@ -119,8 +119,8 @@ func _execute_command(path: String, params: Dictionary, in_background: bool=fals
 # GDShellCommand-GDShell interface functions #
 ##############################################
 
-func _handle_execute(input: String) -> Dictionary:
-	return await _PARENT_GDSHELL.execute(input)
+func _handle_execute(command: String) -> Dictionary:
+	return await _PARENT_GDSHELL.execute(command)
 
 
 func _handle_input(command: GDShellCommand, out: String) -> String:

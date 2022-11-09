@@ -62,8 +62,8 @@ func execute_autorun() -> void:
 		execute("autorun")
 
 
-func execute(input: String) -> Dictionary:
-	var command_sequence: Dictionary = GDShellCommandParser.parse(input, command_db)
+func execute(command: String) -> Dictionary:
+	var command_sequence: Dictionary = GDShellCommandParser.parse(command, command_db)
 	if command_sequence["status"] == GDShellCommandParser.ParserResultStatus.OK:
 		return await command_runner.execute(command_sequence)
 	return command_sequence
