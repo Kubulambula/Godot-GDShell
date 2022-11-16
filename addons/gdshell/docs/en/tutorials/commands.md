@@ -6,6 +6,8 @@
 
 This tutorial is a follow-up to the [Your first command](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/getting_started/your_first_command.md) page.
 
+Also check out the [`GDShellCommand` reference](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/references/gdshell_command.md) 
+
 
 ## Changing the name and auto aliases
 
