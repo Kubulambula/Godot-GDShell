@@ -18,11 +18,11 @@ extends GDShellCommand
 # res://addons/gdshell/commands/hello.gd
 
 func _init():
-  COMMAND_NAME = "sayHello" # The `hello` command renamed to `sayHello`
+	COMMAND_NAME = "sayHello" # The `hello` command renamed to `sayHello`
 
 func _main(argv, data):
-  output("Hello World!")
-  return {}
+	output("Hello World!")
+	return {}
 ```
 
 You can change the auto aliases ([`COMMAND_AUTO_ALIASES`](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/references/gdshell_command.md#dictionary-command_auto_aliases)) of the command the same way with the same rules.
@@ -32,17 +32,17 @@ extends GDShellCommand
 # res://addons/gdshell/commands/hello.gd
 
 func _init():
-  COMMAND_NAME = "sayHello" # The `hello` command renamed to `sayHello`
+	COMMAND_NAME = "sayHello" # The `hello` command renamed to `sayHello`
   
-  COMMAND_AUTO_ALIASES = {
-    "sayHelloAlias": "sayHello", # `sayHelloAlias` is alias to `sayHello`
-    "abc": "sayHelloAlias --argument", # Aliases can be aliases to other aliases. Event with arguments
-    "original_name": "command_2", # Auto aliases can be created even for other commands
-  }
+  	COMMAND_AUTO_ALIASES = {
+		"sayHelloAlias": "sayHello", # `sayHelloAlias` is alias to `sayHello`
+		"abc": "sayHelloAlias --argument", # Aliases can be aliases to other aliases. Event with arguments
+		"original_name": "command_2", # Auto aliases can be created even for other commands
+  	}
 
 func _main(argv, data):
-  output("Hello World!")
-  return {}
+	output("Hello World!")
+  	return {}
 ```
 
 Note that the aliases do not have to be tied to the same command. `command_1` can set aliases for `command_2` without it knowing.
@@ -72,8 +72,8 @@ extends GDShellCommand
 # res://addons/gdshell/commands/hello.gd
 
 func _main(argv, data):
-  output("Data: %s" % str(data)) # Prints the passed data to the command.
-  return {}
+	output("Data: %s" % str(data)) # Prints the passed data to the command.
+	return {}
 ```
 
 ### Passing data
@@ -95,11 +95,11 @@ extends GDShellCommand
 func _main(argv, data):
   # All the returns below are the same 
   
-  return {}
+	return {}
   
-  return DEFAULT_COMMAND_RESULT
+	return DEFAULT_COMMAND_RESULT
   
-  return {
+	return {
 		"error": 0,
 		"error_string": "No error description",
 		"data": null,
@@ -113,8 +113,8 @@ extends GDShellCommand
 # res://addons/gdshell/commands/hello.gd
 
 func _main(argv, data):
-  # The data will now be preserved and passed as it contains non-default value
-  return {"data": "Some return data"}
+	# The data will now be preserved and passed as it contains non-default value
+	return {"data": "Some return data"}
 ```
 
 
@@ -131,9 +131,9 @@ extends GDShellCommand
 # res://addons/gdshell/commands/hello.gd
 
 func _main(argv, data):
-  return {
-    "error": 1, # Error 1 - command failer with error code 1
-  }
+	return {
+		"error": 1, # Error 1 - command failer with error code 1
+	}
 ```
 
 Additionally you can add an error description to clearly communicate what error occured.
@@ -143,10 +143,10 @@ extends GDShellCommand
 # res://addons/gdshell/commands/hello.gd
 
 func _main(argv, data):
-  return {
-    "error": 1, # Error 1 - command failer with error code 1
-    "error_string": "Waiting for Godot took too long!", # Added error description
-  }
+	return {
+		"error": 1, # Error 1 - command failer with error code 1
+		"error_string": "Waiting for Godot took too long!", # Added error description
+	}
 ```
 
 Note that the if the command fails, the console will not print anything on its own. If you want an error message appear, you must print that the command failed inside the command yourself.
@@ -162,15 +162,61 @@ extends GDShellCommand
 # res://addons/gdshell/commands/command_2.gd
 
 func _main(argv, data):
-  var called_command_result = execute("command_1") # Executes command_1
-  output("%s" % called_command_result["data"]) # Prints command_1 data
-  return {}
+	var called_command_result = execute("command_1") # Executes command_1
+	output("%s" % called_command_result["data"]) # Prints command_1 data
+	return {}
 ```
 
 You can execute either a simple command or a chain of multiple commands.
 ```gdscript
 execute("command_1 --argument | command_2 --argument --other_argument | command_3") # result of command_3 will be returned
 ```
+
+
+## Background commands
+
+Your commands can be executed in the background, if they are run with the `&` suffix (`command --argument &`).
+
+These commands immediately return [`GDShellCommand.DEFAULT_COMMAND_RESULT`](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/references/gdshell_command.md#dictionary-default_command_result) and another command can be run immediately, so you loose the potential return value of the command in background. The command however continues as usual and will end when the [`_main()`](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/references/gdshell_command.md#_main) method ends.
+
+So why would you want a command that runs in the background? For example you want your command to log the game's FPS, but still be able to use any other commands.
+
+You can do this in the built-in [`_process()`](https://docs.godotengine.org/en/latest/classes/class_node.html#class-node-method-process) method as the command is a [Node](https://docs.godotengine.org/en/latest/classes/class_node.html#class-node) in the SceneTree.
+
+```gdscript
+extends GDShellCommand
+# res://addons/gdshell/commands/log_fps.gd
+
+func _main(argv, data):
+	await command_end
+	return {}
+
+func _process(_delta):
+	print(Engine.get_frames_per_second()) # print FPS
+```
+
+The [`command_end`](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/references/gdshell_command.md#command_end-) si a built-in signal that the you can use to end the [`_main()`](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/references/gdshell_command.md#_main) method from outside. As you can see, the signal is never emmited, so that the command will run forever.
+
+Now let's see how the code would look if the command would end after 10 frames.
+
+```gdscript
+extends GDShellCommand
+# res://addons/gdshell/commands/log_fps.gd
+
+var frame_count = 0
+
+func _main(argv, data):
+	await command_end
+	return {}
+
+func _process(_delta):
+	print(Engine.get_frames_per_second()) # print FPS
+	frame_count += 1
+	if frame_count > 10:
+		command_end.emit()
+```
+
+Note that there is no built-in way to terminate a command that will run forever. The command must either end itself or be terminated by another command.
 
 ## Command manual
 
@@ -184,11 +230,11 @@ extends GDShellCommand
 # res://addons/gdshell/commands/hello.gd
 
 func _main(argv, data):
-  output("Hello World!")
-  return {}
+	output("Hello World!")
+	return {}
 
 func _get_manual():
-  return """\
+	return """\
 [b]NAME[/b]
 	{COMMAND_NAME}
 
@@ -200,7 +246,7 @@ func _get_manual():
 """.format({
 	"COMMAND_NAME": COMMAND_NAME,
 	"COMMAND_AUTO_ALIASES": COMMAND_AUTO_ALIASES,
-})
+	})
 ```
 
 ## UIHandler direct access
