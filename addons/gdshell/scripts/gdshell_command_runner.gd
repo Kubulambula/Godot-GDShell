@@ -43,6 +43,7 @@ func execute(command_sequence: Dictionary) -> Dictionary:
 				var params: Dictionary = command_sequence["result"][current_token]["data"]["params"]
 				
 				if not current_command_flags & F_EXECUTE_CONDITION_MET:
+					current_command_flags = F_EXECUTE_CONDITION_MET
 					continue
 				
 				if current_command_flags & F_PIPE_PREVIOUS:
