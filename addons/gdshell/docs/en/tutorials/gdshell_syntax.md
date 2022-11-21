@@ -42,14 +42,62 @@ World
 
 ## Background
 
+Any command can be executed in background using the `&` operator. These commands are detached from the user input, but still can access output.
+These commands are great for anything that is supposed to run for a longer period of time while still allowing you to use other commands.
+
+Commands sent into background will return [`GDShellCommand.DEFAULT_COMMAND_RESULT`](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/references/gdshell_command.md#dictionary-default_command_result) and another command can be run immediately. While the background command is still running.
+
+The command ends after the [`_main()`](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/references/gdshell_command.md#_main) returns giving you total control over its lifetime.
+
+Commands can be sent into backgroun using this syntax: `command_name &` or `command_name&`
+
+For more information see [Backgroun commands](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/tutorials/commands.md#background-commands)
+
 
 ## Pipe
 
+Any command can accept any other command's result data. This happens when you use the `|` operator. When using the pipe, the result data of the first command will be passed to the next command.
 
-## OR
+`command_1 | command_2` - result data of `command_1` will be passed to `command_2`
+
+The command after the pipe is executed only after the first one ends and returns its result, but you want to be careful around background commands as they will always return [`GDShellCommand.DEFAULT_COMMAND_RESULT`](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/references/gdshell_command.md#dictionary-default_command_result) before ending themself.
+
+`gdfetch | echo` - outputs `gdfetch` graphics, passes the data to `echo` and echo prints the data<br>
+`gdfetch& | echo` - outputs `gdfetch` graphics, but the returned data is null, so `echo` does not print anythig
+
+For more information see [Command data](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/tutorials/commands.md#command-data)
 
 
 ## AND
 
+The conditional AND (`&&`) operator is used for creating complex command chains.
+
+`command_1 && command_2`
+
+In the previous example the `command_2` is executed if, and only if the `command_1` returns error code `0`.
+If the command returns anythig else, the `command_2` is not executed.
+
+`true && echo "I executed!"` - outputs "I executed!"<br>
+`false && echo "I executed!"` - outputs nothing. `echo` was not executed
+
+
+## OR
+
+The conditional OR (`||`) operator is the polar opposite to conditional AND (`&&`) with the same syntax.
+
+`command_1 || command_2`
+
+The only difference is, that the `command_2` in the example above is executed only if the `command_1` fails.
+
+`false || echo "I executed!"` - outputs "I executed!"<br>
+`true || echo "I executed!"` - outputs nothing. `echo` was not executed
+
 
 ## Not
+
+The `!` operator can be used together with contitional (`&&` and `||`) operators to create more complex command chains.
+The `!` operator simply changes the result error code while keeping the command result data, following this rule:
+- If the error code is `0`, it gets changed to `1`
+- If the error code is not `0`, it gets changed to `0`
+
+You can use the operator like this: `!false && echo "I false was changed to \"true\""`
