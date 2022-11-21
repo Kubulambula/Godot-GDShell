@@ -25,6 +25,11 @@ var _input_buffer: String = ""
 
 
 func _ready() -> void:
+	if get_parent() == get_tree().root: # is singleton
+		setup_with_default_values()
+
+
+func setup_with_default_values() -> void:
 	setup_command_runner()
 	setup_command_db(COMMAND_DIR_PATH)
 	setup_ui_handler(load_ui_handler_from_path(UI_HANDLER_PATH), true)
