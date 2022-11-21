@@ -27,6 +27,8 @@ var _input_buffer: String = ""
 func _ready() -> void:
 	if get_parent() == get_tree().root: # is singleton
 		setup_with_default_values()
+	else:
+		push_warning("GDShellMain was instanced directly. Don't forget to set it up manually.")
 
 
 func setup_with_default_values() -> void:
