@@ -16,9 +16,7 @@ const DEFAULT_COMMAND_RESULT: Dictionary = {
 var COMMAND_NAME: String = get_script().get_path().get_file().get_basename()
 var COMMAND_AUTO_ALIASES: Dictionary = {}
 
-# Waiting for https://github.com/godotengine/godot/pull/65752
-#var _PARENT_PROCESS: GDShellCommandRunner
-var _PARENT_PROCESS
+var _PARENT_PROCESS: GDShellCommandRunner
 
 
 func _main(_argv: Array, _data) -> Dictionary:

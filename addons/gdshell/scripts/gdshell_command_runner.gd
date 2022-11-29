@@ -10,9 +10,7 @@ const F_BACKGROUND: int = 1 << 2
 const F_NEGATED: int = 1 << 3
 
 
-# Waiting for https://github.com/godotengine/godot/pull/65752
-#var _PARENT_GDSHELL: GDShellMain
-var _PARENT_GDSHELL
+var _PARENT_GDSHELL: GDShellMain
 
 
 var _background_commands: Array[GDShellCommand] = []

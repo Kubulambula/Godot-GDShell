@@ -38,9 +38,7 @@ enum ParserResultStatus {
 # ERROR - result is the error token Dictionary
 # UNTERMINATED - result is an empty Array - new input is necessary
 
-# Waiting for https://github.com/godotengine/godot/pull/65752
-#static func parse(input: String, command_db: GDShellCommandDB) -> Dictionary:
-static func parse(input: String, command_db) -> Dictionary:
+static func parse(input: String, command_db: GDShellCommandDB) -> Dictionary:
 	var tokens: Array[Dictionary] = tokenize(input, command_db)
 	
 	if tokens.is_empty():
@@ -150,9 +148,8 @@ static func parse(input: String, command_db) -> Dictionary:
 	
 	return {"status": ParserResultStatus.OK, "result": command_sequence}
 
-# Waiting for https://github.com/godotengine/godot/pull/65752
-#static func _construct_command(from: Array[String], command_db: GDShellCommandDB) -> Dictionary:
-static func _construct_command(from: Array[String], command_db) -> Dictionary:
+
+static func _construct_command(from: Array[String], command_db: GDShellCommandDB) -> Dictionary:
 	if from.size() == 0:
 		# Empty commands will be filtered out
 		return {
@@ -187,7 +184,7 @@ static func _construct_command(from: Array[String], command_db) -> Dictionary:
 
 
 # `from` - token array ; `at` - index of the operator
-# `binary` - determines if the oprator mush have left AND RIGHT operands
+# `lect`, `right` - determines if the oprator mush have left or RIGHT operands
 static func _validate_operator(from: Array[Dictionary], at: int, left: bool, right: bool) -> Dictionary:
 	if left:
 		if not at > 0:
@@ -236,9 +233,8 @@ static func _validate_operator(from: Array[Dictionary], at: int, left: bool, rig
 				}
 	return {"status": ParserResultStatus.OK}
 
-# Waiting for https://github.com/godotengine/godot/pull/65752
-#static func tokenize(input: String, command_db: GDShellCommandDB) -> Array[Dictionary]:
-static func tokenize(input: String, command_db) -> Array[Dictionary]:
+
+static func tokenize(input: String, command_db: GDShellCommandDB) -> Array[Dictionary]:
 	var tokens: Array[Dictionary] = []
 	var current: int = 0
 	
@@ -360,9 +356,7 @@ static func _tokenize_sequence(_input: String, current: int) -> Dictionary:
 	return _token(TokenType.SEQUENCE, current, 1, ";")
 
 
-# Waiting for https://github.com/godotengine/godot/pull/65752
-#static func _unalias_tokens(tokens: Array[Dictionary], command_db: GDShellCommandDB) -> Array[Dictionary]:
-static func _unalias_tokens(tokens: Array[Dictionary], command_db) -> Array[Dictionary]:
+static func _unalias_tokens(tokens: Array[Dictionary], command_db: GDShellCommandDB) -> Array[Dictionary]:
 	if tokens.size() == 0:
 		return tokens
 	if tokens[-1]["type"] == TokenType.UNTERMINATED_TEXT:
