@@ -3,3 +3,4 @@
 
 project.godot
 tests/
+**/assets/*.import
