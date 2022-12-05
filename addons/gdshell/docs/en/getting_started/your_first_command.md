@@ -65,6 +65,8 @@ func _main(argv, data):
 #         World!
 ```
 
+If you want to have more complex command arguments with options like `do_something --somethig=crash`, checkout [`argv_parse_options()`](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/references/gdshell_command.md#argv_parse_options)
+
 
 ## I want a more complex command
 Continue by reading on the [Commands](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/tutorials/commands.md) page.
