@@ -1,7 +1,11 @@
 # Godot 4+ specific ignores
 .godot/
 
+# GDShell specific ignores
 project.godot
 tests/
-addons/monitor_overlay/
 **/assets/*.import
+
+# Ignore all addons expecpt GDShell (for plugin integrations)
+addons/*
+!gdshell/*
