@@ -10,6 +10,10 @@ func _main(argv: Array, _data) -> Dictionary:
 	var safe_to_edit_properties = _get_safe_to_edit_property_names(monitor)
 	var options: Dictionary = argv_parse_options(argv, true, false)
 	
+	if argv.size() == 1:
+		output("Not enought arguments. Run 'man monitor' to see all available options")
+		return DEFAULT_COMMAND_RESULT
+	
 	if "options" in options:
 		output("Available monitor options:\n[name : type]")
 		for option in monitor.get_script().get_script_property_list()\
