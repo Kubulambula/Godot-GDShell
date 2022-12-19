@@ -29,5 +29,5 @@ The following are likely to be added at some point in the future.
   - for what you actually intend to add
   -->
 
-- `ls`: list scene
+- [`ls`](ls.md): list scene
 - [`scn`](scn.md): handles getting setting and editing the scene tree

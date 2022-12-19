@@ -2,7 +2,7 @@
   <img src="https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/assets/logo.png" align="left" width="80" height="80">
 </a>
 
-# GDShell Command List
+# GDShell Command `scn`
 
 > [!warning]
 > This command is not currently implemented. 
@@ -27,9 +27,12 @@ The node or scene is removed by calling the `queue_free()` method on it, NOT `fr
 
 The `scn kill <scene>` command calls the `free()` method on the scene that it is applied to. Doing this on a kinimatic body, root, or the command line nodes will promt a warning. Use the `-F` flag to override it. 
 
+It is reccommended you only use the kill method when a scene is being unresponseave to `scn free` and you know it will be safe to terminate its process. 
+
 ## Closing Notes
 
 For all of the commands, using `-F` flag will override all safeties. 
 
 - `res://` is not required as it is the assumed defult
 - `instance` can be replaced with `ins` for speed
+- `scene` is a valid alias for this command.
