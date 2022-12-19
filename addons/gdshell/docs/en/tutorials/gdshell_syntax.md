@@ -49,7 +49,7 @@ Commands sent into background will return [`GDShellCommand.DEFAULT_COMMAND_RESUL
 
 The command ends after the [`_main()`](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/references/gdshell_command.md#_main) returns giving you total control over its lifetime.
 
-Commands can be sent into backgroun using this syntax: `command_name &` or `command_name&`
+Commands can be sent into background using this syntax: `command_name &` or `command_name&`
 
 For more information see [Backgroun commands](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/tutorials/commands.md#background-commands)
 
