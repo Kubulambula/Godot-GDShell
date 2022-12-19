@@ -7,7 +7,7 @@
 > [!warning]
 > This command is not currently implemented. 
 
-The `ls` command is used to handle scene manipulation. 
+The `ls` command is used to list the current scenes tree. 
 
 Syntax: ``ls (scene path)`` command prints a tree view layout of the scene tree. For example: 
 
