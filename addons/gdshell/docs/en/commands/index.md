@@ -4,7 +4,7 @@
 
 # GDShell Command List
 
-All commands are subject to change. This article is simply a list of commands, each command has its own article explaining syntax, flags, and useage. 
+All commands are subject to change. This article is simply a list of commands, each command has its own article explaining syntax, flags, and usage. 
 
 <!--
   - Your README.md says you are trying to mimic the feel of BASH, so
@@ -12,12 +12,12 @@ All commands are subject to change. This article is simply a list of commands, e
   - to change any you feel could be better!
   -->
 
-Command arguments in brackets `()` are optional, arguments arguments in `{}` are sometimes required, in `<>` are always required. This article does not exaustively list the arguments, only the basic ones. 
+Command arguments in brackets `()` are optional, arguments in `{}` are sometimes required, in `<>` are always required. This article does not exaustively list the arguments, only the basic ones. 
 
 The following are **curently implemented** in some way or another: 
 - [`gdfetch`](gdfetch.md): Prints basic project information to the terminal. 
 - [`man (command)`](man.md): Prints manual info about the command specified. (Defult value: `man man`)
-- [`echo <string>`](echo.md): Prints back the string passed in .
+- [`echo <string>`](echo.md): Prints back the string passed in.
 - [`clear`](clear.md): Clears the terminals text. 
 - [`bool`](bool.md): Sets a boolean value in code. <!-- can you confirm? Your code isnt super clear. -->
 
