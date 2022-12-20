@@ -38,7 +38,7 @@ The `📜` emoji indicates that it has a script attached, which can be CTRL clic
 The `🎬` emoji indicates that it is a scene and not a stray node. 
 The nodes have in brackets thier type next to them, unless its name is its type, in which case that can be excuded. 
 
-if the nested nodes end without one at the base level, it will end with the following instead of what is demomontration above. 
+if the nested nodes end without one at the base level, it will end with the following instead of what is demonstration above. 
 
 ```
 |   └── NodeName
