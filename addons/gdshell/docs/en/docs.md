@@ -21,7 +21,7 @@ If you are new to this plugin, it's recommended that you read the [Introduction]
 
 ## Tutorials
 - [GDShell syntax](tutorials/gdshell_syntax.md)
-- [Commands](tutorials/custom_commands.md)
+- [Custom commands](tutorials/custom_commands.md)
 - [Custom UI](tutorials/custom_ui.md)
 - [Using GDShell without UI](tutorials/using_gdshell_without_ui.md)
 
