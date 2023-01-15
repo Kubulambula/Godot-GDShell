@@ -4,7 +4,7 @@
 
 # Default Command List
 
-All commands are subject to change. This article is simply a list of commands, each command has its own article explaining syntax, flags, and usage. 
+This article is a list of default commands. Each command has its own article explaining syntax, flags, and usage. All commands are subject to change.
 
 <!--
   - Your README.md says you are trying to mimic the feel of BASH, so
