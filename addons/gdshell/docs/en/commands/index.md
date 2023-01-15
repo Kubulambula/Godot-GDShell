@@ -2,7 +2,7 @@
   <img src="https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/assets/logo.png" align="left" width="80" height="80">
 </a>
 
-# GDShell Command List
+# Default Command List
 
 All commands are subject to change. This article is simply a list of commands, each command has its own article explaining syntax, flags, and usage. 
 
