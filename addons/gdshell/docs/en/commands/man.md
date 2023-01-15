@@ -15,7 +15,7 @@ Syntax: ``man (command)``
 
 You can specify a command to list the manual article for, for example `man gdfetch` will print the manual for the `gdfetch` command. If no command is specified, it will default to the manual article for the manual (being the same as `man man`). 
 
-The manual command simply calls the passed commands `_get_manual()` function. 
+The manual command gets the manual by calling the passed commands `_get_manual()` function. See [Custom commands](custom_commands.md#command-manual)
 
 ## Flags
 
