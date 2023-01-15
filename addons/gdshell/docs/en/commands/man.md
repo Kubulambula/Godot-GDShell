@@ -7,6 +7,8 @@
 > [!alert]
 > Not all arguments and flags in this docs article are currently implemented. 
 
+Command arguments in brackets `()` are optional, arguments in `{}` are sometimes required, in `<>` are always required. This article does not exaustively list the arguments, only the basic ones. 
+
 The `man` command is used to retrieve information and manuals for commands. 
 
 Syntax: ``man (command)``
