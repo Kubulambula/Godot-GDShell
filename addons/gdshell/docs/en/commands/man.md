@@ -7,7 +7,7 @@
 > [!alert]
 > Not all arguments and flags in this docs article are currently implemented. 
 
-The `man` command is used to retrive information about the terminal and its commands. 
+The `man` command is used to retrieve information and manuals for commands. 
 
 Syntax: ``man (command)``
 
