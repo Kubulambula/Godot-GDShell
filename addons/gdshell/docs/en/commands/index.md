@@ -22,12 +22,3 @@ The following are **curently implemented** in some way or another:
 - [`bool`](bool.md): Sets a boolean value in code. <!-- can you confirm? Your code isnt super clear. -->
 
 
-The following are likely to be added at some point in the future. 
-<!-- 
-  - Your existing docs aren't super clear on what commands you intend to add, 
-  - So I needed to take some liberties with this, feel free to edit it as needed.
-  - for what you actually intend to add
-  -->
-
-- [`ls`](ls.md): list scene
-- [`scn`](scn.md): handles getting setting and editing the scene tree
