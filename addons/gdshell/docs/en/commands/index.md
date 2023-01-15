@@ -19,6 +19,6 @@ The following are **curently implemented** in some way or another:
 - [`man`](man.md): Prints manual info about the command specified.
 - [`echo`](echo.md): Prints back the string passed in.
 - [`clear`](clear.md): Clears the terminals text. 
-- [`bool`](bool.md): Sets a boolean value in code. <!-- can you confirm? Your code isnt super clear. -->
+- [`bool`](bool.md): Sets a boolean value in code.
 
 
