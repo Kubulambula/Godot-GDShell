@@ -2,7 +2,7 @@
   <img src="https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/assets/logo.png" align="left" width="80" height="80">
 </a>
 
-# GDShell Command `man`
+# `man`
 
 > [!alert]
 > Not all arguments and flags in this docs article are currently implemented. 
