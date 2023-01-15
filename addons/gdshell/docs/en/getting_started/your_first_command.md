@@ -69,4 +69,4 @@ If you want to have more complex command arguments with options like `do_somethi
 
 
 ## I want a more complex command
-Continue by reading on the [Commands](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/tutorials/commands.md) page.
+Continue by reading on the [Custom Commands](../tutorials/custom_commands.md) page.
