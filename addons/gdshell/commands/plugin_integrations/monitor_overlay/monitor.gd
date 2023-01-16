@@ -2,11 +2,19 @@ extends GDShellCommand
 
 
 const MONITOR_FILE_PATH: String = "res://addons/monitor_overlay/monitor_overlay.gd"
-const MONITOR_NODE_NAME: String = "GDShellMonitorOverlay"
+const MONITOR_NODE_NAME: String = "GDShellMonitorOverlayIntegration"
 
 
 func _main(argv: Array, _data) -> Dictionary:
 	var monitor: Node = _get_monitor_overlay()
+	if monitor == null:
+		output("[color=red]Cannot access Monitor Overlay. Make sure you have 'Monitor Overlay' plugin installed and try again")
+		return {
+			"error": 1,
+			"error_string": "MonitorOverlay not installed",
+			"data": null,
+		}
+	
 	var safe_to_edit_properties = _get_safe_to_edit_property_names(monitor)
 	var options: Dictionary = argv_parse_options(argv, true, false)
 	
@@ -33,18 +41,21 @@ func _main(argv: Array, _data) -> Dictionary:
 func _get_monitor_overlay() -> Node:
 	if not _PARENT_PROCESS._PARENT_GDSHELL.has_node(NodePath(MONITOR_NODE_NAME)):
 		if not ResourceLoader.exists(MONITOR_FILE_PATH):
-			output("[color=red]Cannot access Monitor Overlay. Make sure you have 'Monitor Overlay' plugin installed and try again")
 			return null
+		
 		@warning_ignore(unsafe_method_access, unsafe_cast)
 		var monitor: Node = ResourceLoader.load(MONITOR_FILE_PATH, "GDScript").new() as Node
+		# Sets the name of the MonitorOverlay Node to make it clear that it belongs to and is managed by GDShell
 		monitor.name = StringName(MONITOR_NODE_NAME)
 		monitor.unique_name_in_owner = true
+		# disable the fps monitor as it is enabled  by default
 		monitor.set("fps", false)
 		_PARENT_PROCESS._PARENT_GDSHELL.add_child(monitor)
 	
 	return _PARENT_PROCESS._PARENT_GDSHELL.get_node(NodePath(MONITOR_NODE_NAME))
 
 
+# returns names of properties of monitor_overlay.gd script that areused for monitor ui control
 func _get_safe_to_edit_property_names(monitor: Object) -> Array:
 	return monitor.get_script().get_script_property_list()\
 			.filter(func(x): return x["type"] != TYPE_NIL and x["name"][0] != "_")\
