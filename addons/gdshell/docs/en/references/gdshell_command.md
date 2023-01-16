@@ -8,7 +8,7 @@
 [link_gdshell_ui_handler]: https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/references/gdshell_ui_handler.md
 
 <a href="https://github.com/Kubulambula/Godot-GDShell">
-  <img src="../assets/logo.png" align="left" width="80" height="80">
+  <img src="../../../docs/assets/logo.png" align="left" width="80" height="80">
 </a>
 
 

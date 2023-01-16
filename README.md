@@ -2,7 +2,7 @@
 
 <p align="center">
   <a href="https://github.com/Kubulambula/Godot-GDShell">
-    <img src="../assets/logo.png" width="700" alt="GDShell logo">
+    <img src="addons/gdshell/docs/assets/logo.png" width="700" alt="GDShell logo">
   </a>
 </p>
 
