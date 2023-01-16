@@ -2,7 +2,7 @@
 
 <p align="center">
   <a href="https://github.com/Kubulambula/Godot-GDShell">
-    <img src="https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/assets/logo_text.png" width="700" alt="GDShell logo">
+    <img src="../assets/logo.png" width="700" alt="GDShell logo">
   </a>
 </p>
 
@@ -86,7 +86,7 @@ You can also checkout the Godot's [Installing plugins](https://docs.godotengine.
 
 
 ## 📚 Documentation & Tutorials
-See the **[Docs](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/docs.md)** page.
+See the **[Docs](addons/gdshell/docs/en/docs.md)** page.
 
 For command examples, you can checkout the **[default commands](https://github.com/Kubulambula/Godot-GDShell/tree/main/addons/gdshell/commands/default_commands)**.
 
@@ -97,16 +97,16 @@ All contributions are very welcome, so feel free to make [issues](https://github
 
 ## ❤️ License (It's free, baby!)
 GDShell is available under the **MIT license**.
-See [`LICENSE.md`](https://github.com/Kubulambula/Godot-GDShell/blob/main/LICENSE.md).
+See [`LICENSE.md`](LICENSE.md).
 
-GDShell logo is available under the **Free Art License 1.3**. See [`LOGO_LICENSE.md`](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/LOGO_LICENSE.md)
+GDShell logo is available under the **Free Art License 1.3**. See [`LOGO_LICENSE.md`](addons/gdshell/LOGO_LICENSE.md)
 
 
 ## ❔ FAQ
 **- Can I use GDShell in my project?**
 
 Yes! You can use GDShell in any kind of project - free or commercial.<br>
-The ONLY condition is to credit the GDShell creators in your project according to MIT license. See [`LICENSE.md`](https://github.com/Kubulambula/Godot-GDShell/blob/main/LICENSE.md)
+The ONLY condition is to credit the GDShell creators in your project according to MIT license. See [`LICENSE.md`](LICENSE.md)
 
 ---
 

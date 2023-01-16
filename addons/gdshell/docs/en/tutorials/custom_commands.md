@@ -1,19 +1,19 @@
 <a href="https://github.com/Kubulambula/Godot-GDShell">
-  <img src="https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/assets/logo.png" align="left" width="80" height="80">
+  <img src="../assets/logo.png" align="left" width="80" height="80">
 </a>
 
 # Custom commands
 
-This tutorial is a follow-up to the [Your first command](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/getting_started/your_first_command.md) page.
+This tutorial is a follow-up to the [Your first command](../getting_started/your_first_command.md) page.
 
-Also check out the [`GDShellCommand` reference](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/references/gdshell_command.md) 
+Also check out the [`GDShellCommand` reference](../references/gdshell_command.md) 
 
 
 ## Changing the name and auto aliases
 
 By default the command name is the name of the file (`../commands/hello.gd` -> `hello`). But sometimes you want the name to be different from the file name.
 
-You can achieve this by changing the [`COMMAND_NAME`](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/references/gdshell_command.md#string-command_name) variable inside the `_init()` method. If you change the command name at any other time, the command name will stay the same.
+You can achieve this by changing the [`COMMAND_NAME`](../references/gdshell_command.md#string-command_name) variable inside the `_init()` method. If you change the command name at any other time, the command name will stay the same.
 
 ```gdscript
 extends GDShellCommand
@@ -27,7 +27,7 @@ func _main(argv, data):
 	return {}
 ```
 
-You can change the auto aliases ([`COMMAND_AUTO_ALIASES`](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/references/gdshell_command.md#dictionary-command_auto_aliases)) of the command the same way with the same rules.
+You can change the auto aliases ([`COMMAND_AUTO_ALIASES`](../references/gdshell_command.md#dictionary-command_auto_aliases)) of the command the same way with the same rules.
 
 ```gdscript
 extends GDShellCommand
@@ -67,7 +67,7 @@ Any command can accept any other command's result data. This happens when you us
 
 Command result data is of type [`Variant`](https://docs.godotengine.org/en/latest/classes/class_variant.html), so it can hold any value, including your custom objects.
 
-You can access the result data as the [`_main()`](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/references/gdshell_command.md#_main) function argument just as the `argv`. If there is no data passed, the value of `data` will be `null`.
+You can access the result data as the [`_main()`](../references/gdshell_command.md#_main) function argument just as the `argv`. If there is no data passed, the value of `data` will be `null`.
 
 ```gdscript
 extends GDShellCommand
@@ -157,7 +157,7 @@ Note that the if the command fails, the console will not print anything on its o
 ## Executing commads inside of commands
 
 If your command relies on another commands result, you don't have to type `command_1 | command_2` every time. Just type `command_2` and execute `command_1` inside of it.
-You can call commands inside other commands by using the [`execute()`](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/references/gdshell_command.md#execute) method.
+You can call commands inside other commands by using the [`execute()`](../references/gdshell_command.md#execute) method.
 
 ```gdscript
 extends GDShellCommand
@@ -179,7 +179,7 @@ execute("command_1 --argument | command_2 --argument --other_argument | command_
 
 Your commands can be executed in the background, if they are run with the `&` suffix (`command --argument &`).
 
-These commands immediately return [`GDShellCommand.DEFAULT_COMMAND_RESULT`](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/references/gdshell_command.md#dictionary-default_command_result) and another command can be run immediately, so you loose the potential return value of the command in background. The command however continues as usual and will end when the [`_main()`](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/references/gdshell_command.md#_main) method ends.
+These commands immediately return [`GDShellCommand.DEFAULT_COMMAND_RESULT`](../references/gdshell_command.md#dictionary-default_command_result) and another command can be run immediately, so you loose the potential return value of the command in background. The command however continues as usual and will end when the [`_main()`](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/references/gdshell_command.md#_main) method ends.
 
 So why would you want a command that runs in the background? For example you want your command to log the game's FPS, but still be able to use any other commands.
 
@@ -197,7 +197,7 @@ func _process(_delta):
 	print(Engine.get_frames_per_second()) # print FPS
 ```
 
-The [`command_end`](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/references/gdshell_command.md#command_end-) si a built-in signal that the you can use to end the [`_main()`](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/references/gdshell_command.md#_main) method from outside. As you can see, the signal is never emmited, so that the command will run forever.
+The [`command_end`](../references/gdshell_command.md#command_end-) si a built-in signal that the you can use to end the [`_main()`](../references/gdshell_command.md#_main) method from outside. As you can see, the signal is never emmited, so that the command will run forever.
 
 Now let's see how the code would look if the command would end after 10 frames.
 
@@ -222,7 +222,7 @@ Note that there is no built-in way to terminate a command that will run forever.
 
 ## Command manual
 
-The default `man` command accesses the command's manual and prints it to the console. It get's the manual via the [`_get_manual()`](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/references/gdshell_command.md#_get_manual) method.
+The default `man` command accesses the command's manual and prints it to the console. It get's the manual via the [`_get_manual()`](../references/gdshell_command.md#_get_manual) method.
 This method is supposed to be overridden to return a manual of the command as [`String`](https://docs.godotengine.org/en/latest/classes/class_string.html).
 
 You can optionally use [`BBCode`](https://docs.godotengine.org/en/latest/tutorials/ui/bbcode_in_richtextlabel.html) for enhanced and cool looks.
@@ -253,14 +253,14 @@ func _get_manual():
 
 ## UIHandler direct access
 
-UIHandler is a [`GDShellUIHandler`](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/references/gdshell_ui_handler.md) instance, that has the responsibility over the console window, that the command runs in.
+UIHandler is a [`GDShellUIHandler`](../references/gdshell_ui_handler.md) instance, that has the responsibility over the console window, that the command runs in.
 
 Sometimes, you want your command to change the appearance of the console. You might want to split the window in half and have two separate consoles.
 You would have to make this feature yourself and the command would have to call the methods in your custom UIHandler.
-So to make things easier, you can use the [`get_ui_handler()`](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/references/gdshell_command.md#get_ui_handler) method to get the instance of the UIHandler, that handler the current console window.
+So to make things easier, you can use the [`get_ui_handler()`](../references/gdshell_command.md#get_ui_handler) method to get the instance of the UIHandler, that handler the current console window.
 
 But most of the time you just want to access the UIHandler's [`RichTextLabel`](https://docs.godotengine.org/en/latest/classes/class_richtextlabel.html), so you can for example get the whole console text and erase it.
-For this you can use the [`get_ui_handler_rich_text_label()`](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/references/gdshell_command.md#get_ui_handler_rich_text_label) method.
+For this you can use the [`get_ui_handler_rich_text_label()`](../references/gdshell_command.md#get_ui_handler_rich_text_label) method.
 
 The example below is from the `clear` default command.
 

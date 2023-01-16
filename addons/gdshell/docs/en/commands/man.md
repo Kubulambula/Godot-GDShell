@@ -1,10 +1,10 @@
 <a href="https://github.com/Kubulambula/Godot-GDShell">
-  <img src="https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/assets/logo.png" align="left" width="80" height="80">
+  <img src="../assets/logo.png" align="left" width="80" height="80">
 </a>
 
 # `man`
 
-> [!alert]
+> ⚠️
 > Not all arguments and flags in this docs article are currently implemented. 
 
 Command arguments in brackets `()` are optional, arguments in `{}` are sometimes required, in `<>` are always required. This article does not exaustively list the arguments, only the basic ones. 
