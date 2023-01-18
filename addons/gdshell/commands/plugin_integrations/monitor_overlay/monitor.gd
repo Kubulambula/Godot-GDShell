@@ -3,6 +3,47 @@ extends GDShellCommand
 
 const MONITOR_FILE_PATH: String = "res://addons/monitor_overlay/monitor_overlay.gd"
 const MONITOR_NODE_NAME: String = "GDShellMonitorOverlayIntegration"
+# Workaround until https://github.com/godotengine/godot/pull/69624 gets merged
+const TYPE_NAMES: Array[String] = [
+	"Nil",
+	"bool",
+	"int",
+	"float",
+	"String",
+	"Vector2",
+	"Vector2i",
+	"Rect2",
+	"Rect2i",
+	"Vector3",
+	"Vector3i",
+	"Transform2D",
+	"Vector4",
+	"Vector4i",
+	"Plane",
+	"Quaternion",
+	"AABB",
+	"Basis",
+	"Transform3D",
+	"Projection",
+	"Color",
+	"StringName",
+	"NodePath",
+	"RID",
+	"Object",
+	"Callable",
+	"Signal",
+	"Dictionary",
+	"Array",
+	"PackedByteArray",
+	"PackedInt32Array",
+	"PackedInt64Array",
+	"PackedFloat32Array",
+	"PackedFloat64Array",
+	"PackedStringArray",
+	"PackedVector2Array",
+	"PackedVector3Array",
+	"PackedColorArray",
+]
 
 
 func _main(argv: Array, _data) -> Dictionary:
@@ -15,7 +56,7 @@ func _main(argv: Array, _data) -> Dictionary:
 			"data": null,
 		}
 	
-	var safe_to_edit_properties = _get_safe_to_edit_property_names(monitor)
+	var safe_to_edit_properties: Array[Dictionary] = _get_monitor_overlay_safe_to_edit_properties(monitor)
 	var options: Dictionary = argv_parse_options(argv, true, false)
 	
 	if argv.size() == 1:
@@ -23,12 +64,9 @@ func _main(argv: Array, _data) -> Dictionary:
 		return DEFAULT_COMMAND_RESULT
 	
 	if "options" in options:
-		output("Available monitor options:\n[name : type]")
-		for option in monitor.get_script().get_script_property_list()\
-				.filter(func(x): return x["type"] != TYPE_NIL and x["name"][0] != "_")\
-				.map(func(x): return [x["name"], x["type"]]):
-			output("%s : %s" % option)
-		
+		output("Available monitor options [name : type]")
+		for property in safe_to_edit_properties:
+			output("[color=beige]%s[/color] : [color=aquamarine]%s[/color]" % [property.name, TYPE_NAMES[property.type]])
 		return DEFAULT_COMMAND_RESULT
 	
 	for option in options:
@@ -41,7 +79,7 @@ func _main(argv: Array, _data) -> Dictionary:
 func _get_monitor_overlay() -> Node:
 	if not _PARENT_PROCESS._PARENT_GDSHELL.has_node(NodePath(MONITOR_NODE_NAME)):
 		if not ResourceLoader.exists(MONITOR_FILE_PATH):
-			return null
+			return null # MonitorOverlay is not installed
 		
 		@warning_ignore(unsafe_method_access, unsafe_cast)
 		var monitor: Node = ResourceLoader.load(MONITOR_FILE_PATH, "GDScript").new() as Node
@@ -55,11 +93,12 @@ func _get_monitor_overlay() -> Node:
 	return _PARENT_PROCESS._PARENT_GDSHELL.get_node(NodePath(MONITOR_NODE_NAME))
 
 
-# returns names of properties of monitor_overlay.gd script that areused for monitor ui control
-func _get_safe_to_edit_property_names(monitor: Object) -> Array:
-	return monitor.get_script().get_script_property_list()\
-			.filter(func(x): return x["type"] != TYPE_NIL and x["name"][0] != "_")\
-			.map(func(x): return x["name"])
+# returns a list of properties that are used for MonitorOverlay UI control
+func _get_monitor_overlay_safe_to_edit_properties(monitor: Object) -> Array[Dictionary]:
+	return monitor.get_script().get_script_property_list().filter(
+			func(x): 
+				return x["type"] != TYPE_NIL and x["name"][0] != "_"
+	)
 
 
 func _get_manual() -> String:
