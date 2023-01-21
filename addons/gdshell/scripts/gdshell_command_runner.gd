@@ -1,6 +1,6 @@
+@icon("res://addons/gdshell/icon.png")
 class_name GDShellCommandRunner
 extends Node
-@icon("res://addons/gdshell/icon.png")
 
 
 # Command execution flags

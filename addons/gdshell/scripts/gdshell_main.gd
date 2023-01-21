@@ -1,6 +1,6 @@
+@icon("res://addons/gdshell/icon.png")
 class_name GDShellMain
 extends Node
-@icon("res://addons/gdshell/icon.png")
 
 
 signal _input_submitted(input: String)

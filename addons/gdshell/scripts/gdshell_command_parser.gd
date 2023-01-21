@@ -1,6 +1,6 @@
+@icon("res://addons/gdshell/icon.png")
 class_name GDShellCommandParser
 extends RefCounted
-@icon("res://addons/gdshell/icon.png")
 
 
 enum TokenType {

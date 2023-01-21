@@ -1,7 +1,6 @@
+@icon("res://addons/gdshell/icon.pg")
 class_name GDShellCommand
 extends Node
-@icon("res://addons/gdshell/icon.png")
-
 
 signal command_end
 
