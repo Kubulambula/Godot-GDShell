@@ -1,6 +1,6 @@
+@icon("res://addons/gdshell/icon.png")
 class_name GDShellUIHandler
 extends Control
-@icon("res://addons/gdshell/icon.png")
 
 
 signal _input_requested(output: String)
