@@ -1,4 +1,4 @@
-@icon("res://addons/gdshell/icon.pg")
+@icon("res://addons/gdshell/icon.png")
 class_name GDShellCommand
 extends Node
 
