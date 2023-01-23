@@ -1,5 +1,5 @@
 <a href="https://github.com/Kubulambula/Godot-GDShell">
-  <img src="https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/assets/logo.png" align="left" width="80" height="80">
+  <img src="../../../docs/assets/logo.png" align="left" width="80" height="80">
 </a>
 
 # Introduction
@@ -28,11 +28,11 @@ That works and is really simple, but what if you want to run a command in backgr
 What if you want to run the command every frame as to log the FPS?
 What if you want the command to respond to the user input at runtime without freezing your project?
 
-Because every GDShell command is in it's own file and extends the [`GDShellCommand`](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/references/gdshell_command.md) class, 
+Because every GDShell command is in it's own file and extends the [`GDShellCommand`](../references/gdshell_command.md) class, 
 it can be instanced on it's own as a Node and be managed in parallel with other commands.
 
 This approach also makes the GDShell commands more organized, resulting in a clean file structure, that is easy to follow and refactor.
 
 
 ## So how do I use it?
-Continue by reading on the [Step by step](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/getting_started/step_by_step.md) page.
+Continue by reading on the [Step by step](step_by_step.md) page.

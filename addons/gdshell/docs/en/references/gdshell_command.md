@@ -8,7 +8,7 @@
 [link_gdshell_ui_handler]: https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/references/gdshell_ui_handler.md
 
 <a href="https://github.com/Kubulambula/Godot-GDShell">
-  <img src="https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/assets/logo.png" align="left" width="80" height="80">
+  <img src="../../../docs/assets/logo.png" align="left" width="80" height="80">
 </a>
 
 
@@ -16,8 +16,8 @@
 
 
 ## Tutorials
-- [Your first command](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/getting_started/your_first_command.md)
-- [Commands](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/tutorials/commands.md)
+- [Your first command](../getting_started/your_first_command.md)
+- [Custom Commands](../tutorials/custom_commands.md)
 
 
 ---

@@ -1,6 +1,6 @@
+@icon("res://addons/gdshell/icon.png")
 class_name GDShellCommandDB
 extends RefCounted
-@icon("res://addons/gdshell/icon.png")
 
 
 var _commands: Dictionary = {}

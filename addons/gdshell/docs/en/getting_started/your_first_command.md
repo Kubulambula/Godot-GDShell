@@ -1,19 +1,19 @@
 <a href="https://github.com/Kubulambula/Godot-GDShell">
-  <img src="https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/assets/logo.png" align="left" width="80" height="80">
+  <img src="../../../docs/assets/logo.png" align="left" width="80" height="80">
 </a>
 
 # Your first command
 
-[`GDShellCommand` reference](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/references/gdshell_command.md)
+[`GDShellCommand` reference](../references/gdshell_command.md)
 
 ## Creating a command
 
-By default GDShell recursively scans the `res://addons/gdshell/commands/` directory for scripts extending [`GDShellCommand`](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/references/gdshell_command.md) and adds them to [`GDShellCommandDB`](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/references/gdshell_command_db.md).
+By default GDShell recursively scans the `res://addons/gdshell/commands/` directory for scripts extending [`GDShellCommand`](../references/gdshell_command.md) and adds them to [`GDShellCommandDB`](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/references/gdshell_command_db.md).
 All the commands in GDShellCommandDB are able to be called by the user at any time.
 
 The command can be called by the name of it's file (`../commands/hello.gd` -> `hello`)
 
-To create a command, create a new script, that extends [`GDShellCommand`](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/references/gdshell_command.md).<br>
+To create a command, create a new script, that extends [`GDShellCommand`](../references/gdshell_command.md).<br>
 Inside this command, you must create a `_main(argv, data)` function, that returns a [`Dictionary`](https://docs.godotengine.org/en/latest/classes/class_dictionary.html?highlight=Dictionary).
 This is the function, that will be called, when the command starts.
 
@@ -65,8 +65,9 @@ func _main(argv, data):
 #         World!
 ```
 
-If you want to have more complex command arguments with options like `do_something --somethig=crash`, checkout [`argv_parse_options()`](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/references/gdshell_command.md#argv_parse_options)
+
+If you want to have more complex command arguments with options like `do_something --somethig=crash`, checkout [`argv_parse_options()`](../references/gdshell_command.md#argv_parse_options)
 
 
 ## I want a more complex command
-Continue by reading on the [Commands](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/tutorials/commands.md) page.
+Continue by reading on the [Custom Commands](../tutorials/custom_commands.md) page.
