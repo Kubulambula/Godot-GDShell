@@ -3,6 +3,9 @@ extends GDShellCommand
 
 const MONITOR_FILE_PATH: String = "res://addons/monitor_overlay/monitor_overlay.gd"
 const MONITOR_NODE_NAME: String = "GDShellMonitorOverlayIntegration"
+
+const OPTIONS_FLAGS: Array[String] = ["o", "O", "options", "OPTIONS"]
+
 # Workaround until https://github.com/godotengine/godot/pull/69624 gets merged
 const TYPE_NAMES: Array[String] = [
 	"Nil",
@@ -49,29 +52,31 @@ const TYPE_NAMES: Array[String] = [
 func _main(argv: Array, _data) -> Dictionary:
 	var monitor: Node = _get_monitor_overlay()
 	if monitor == null:
-		output("[color=red]Cannot access Monitor Overlay. Make sure you have 'Monitor Overlay' plugin installed and try again")
+		output("Cannot access Monitor Overlay. Make sure you have 'Monitor Overlay' plugin installed and try again")
 		return {
 			"error": 1,
-			"error_string": "MonitorOverlay not installed",
+			"error_string": "Cannot access Monitor Overlay. Make sure you have 'Monitor Overlay' plugin installed and try again",
+			"data": null,
+		}
+	
+	if argv.size() == 1:
+		output("Not enought arguments. Run 'man monitor' to see all available options")
+		return {
+			"error": 2,
+			"error_string": "Not enought arguments. Run 'man monitor' to see all available options",
 			"data": null,
 		}
 	
 	var safe_to_edit_properties: Array[Dictionary] = _get_monitor_overlay_safe_to_edit_properties(monitor)
-	var options: Dictionary = argv_parse_options(argv, true, false)
+	var options: Dictionary = GDShellCommand.argv_parse_options(argv, true, false)
 	
-	if argv.size() == 1:
-		output("Not enought arguments. Run 'man monitor' to see all available options")
-		return DEFAULT_COMMAND_RESULT
+	if OPTIONS_FLAGS.any(func(option): return option in options): # If any OPTION_FLAG is in options
+		_print_available_options(safe_to_edit_properties)
+		# Delete all option flags so that _edit_monitor_properties_with_options() does not have to deal with them
+		for option in OPTIONS_FLAGS:
+			options.erase(option)
 	
-	if "options" in options:
-		output("Available monitor options [name : type]")
-		for property in safe_to_edit_properties:
-			output("[color=beige]%s[/color] : [color=aquamarine]%s[/color]" % [property.name, TYPE_NAMES[property.type]])
-		return DEFAULT_COMMAND_RESULT
-	
-	for option in options:
-		if option in safe_to_edit_properties:
-			monitor.set(option, str_to_var(options[option]))
+	_edit_monitor_properties_with_options(monitor, safe_to_edit_properties, options)
 	
 	return DEFAULT_COMMAND_RESULT
 
@@ -96,9 +101,30 @@ func _get_monitor_overlay() -> Node:
 # returns a list of properties that are used for MonitorOverlay UI control
 func _get_monitor_overlay_safe_to_edit_properties(monitor: Object) -> Array[Dictionary]:
 	return monitor.get_script().get_script_property_list().filter(
-			func(x): 
-				return x["type"] != TYPE_NIL and x["name"][0] != "_"
+			func(property): 
+				return property["type"] != TYPE_NIL and property["name"][0] != "_"
 	)
+
+
+func _print_available_options(safe_to_edit_properties: Array[Dictionary]) -> void:
+	get_ui_handler_rich_text_label().scroll_to_line.call_deferred(get_ui_handler_rich_text_label().get_line_count() - 1)
+	
+	output("Available monitor options ([color=BISQUE]name[/color] : [color=AQUAMARINE]type[/color])")
+	for property in safe_to_edit_properties:
+		output("[color=BISQUE]%s[/color] : [color=AQUAMARINE]%s[/color]" % [
+			property["name"],
+			TYPE_NAMES[property["type"]]
+		])
+
+
+func _edit_monitor_properties_with_options(monitor: Node, safe_to_edit_properties: Array[Dictionary], options: Dictionary) -> void:
+	var safe_to_edit_property_names: Array[String] = safe_to_edit_properties.map(func(property): return property["name"])
+	
+	for option in options:
+		if option in safe_to_edit_property_names:
+			monitor.set(option, str_to_var(options[option]))
+		else:
+			output("Parameter '[color=LIGHT_CORAL]%s[/color]' is not a valid option. Run '[color=AQUAMARINE]monitor --options[/color]' to see all available options" % option)
 
 
 func _get_manual() -> String:
