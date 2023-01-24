@@ -143,9 +143,14 @@ func _get_manual() -> String:
 	
 	[b]-option=value[/b]
 		Sets the option variable of MonitorOverlay node to the value.
-		To see all the available options, run: [i]monitor -options[/i]
+		All option values are parsed by str_to_var()
+		
+		To see all the available options, run: [i]monitor --options[/i]
 
 [b]EXAMPLES[/b]
+	[i]monitor --options[/i]
+		-Shows all available monitor options and their types
+	
 	[i]monitor -fps=true[/i]
 		-Enables fps monitor
 	
