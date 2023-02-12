@@ -2,7 +2,6 @@
 class_name GDShellMain
 extends Node
 
-
 signal _input_submitted(input: String)
 
 const GDSHELL_TOGGLE_UI_ACTION: String = "gdshell_toggle_ui"
@@ -25,7 +24,7 @@ var _input_buffer: String = ""
 
 
 func _ready() -> void:
-	if get_parent() == get_tree().root: # is singleton
+	if get_parent() == get_tree().root:  # is singleton
 		setup_with_default_values()
 	else:
 		push_warning("GDShellMain was instanced directly. Don't forget to set it up manually.")
@@ -35,7 +34,7 @@ func setup_with_default_values() -> void:
 	setup_command_runner()
 	setup_command_db(COMMAND_DIR_PATH)
 	setup_ui_handler(load_ui_handler_from_path(UI_HANDLER_PATH), true)
-	
+
 	if execute_autorun_on_startup:
 		execute_autorun()
 
@@ -46,17 +45,17 @@ func setup_command_runner() -> void:
 	add_child(command_runner)
 
 
-func setup_command_db(command_dir_path: String="") -> void:
+func setup_command_db(command_dir_path: String = "") -> void:
 	command_db = GDShellCommandDB.new()
 	if not command_dir_path.is_empty():
 		command_db.add_commands_in_directory(command_dir_path)
 
 
-func setup_ui_handler(handler: GDShellUIHandler, add_as_child: bool=true) -> void:
+func setup_ui_handler(handler: GDShellUIHandler, add_as_child: bool = true) -> void:
 	ui_handler = handler
 	ui_handler._PARENT_GDSHELL = self
 	ui_handler.set_visible(false)
-	
+
 	if add_as_child:
 		var canvas_layer: CanvasLayer = CanvasLayer.new()
 		canvas_layer.layer = GDSHELL_CANVAS_LAYER
@@ -84,7 +83,7 @@ func get_ui_handler_rich_text_label() -> RichTextLabel:
 	return ui_handler._get_output_rich_text_label()
 
 
-func _request_input_from_ui_handler(out: String="") -> String:
+func _request_input_from_ui_handler(out: String = "") -> String:
 	_is_command_awaiting_input = true
 	ui_handler._input_requested.emit(out)
 	return await _input_submitted
@@ -100,18 +99,21 @@ func _submit_input(input: String) -> void:
 		_request_output_from_ui_handler(input, true)
 		_input_submitted.emit(input)
 		return
-	
-	
+
 	_input_buffer += input
 	var command_sequence: Dictionary = GDShellCommandParser.parse(_input_buffer, command_db)
 	match command_sequence["status"]:
 		GDShellCommandParser.ParserResultStatus.OK:
-			_request_output_from_ui_handler((ui_handler._get_input_prompt() if input == _input_buffer else "") + input, true)
+			_request_output_from_ui_handler(
+				(ui_handler._get_input_prompt() if input == _input_buffer else "") + input, true
+			)
 			_input_buffer = ""
 			await command_runner.execute(command_sequence)
 			ui_handler._input_requested.emit("")
 		GDShellCommandParser.ParserResultStatus.UNTERMINATED:
-			_request_output_from_ui_handler((ui_handler._get_input_prompt() if input == _input_buffer else "") + input, true)
+			_request_output_from_ui_handler(
+				(ui_handler._get_input_prompt() if input == _input_buffer else "") + input, true
+			)
 			ui_handler._input_requested.emit("> ")
 		GDShellCommandParser.ParserResultStatus.ERROR:
 			_request_output_from_ui_handler(ui_handler._get_input_prompt() + _input_buffer, true)

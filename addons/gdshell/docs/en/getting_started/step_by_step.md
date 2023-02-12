@@ -1,5 +1,5 @@
 <a href="https://github.com/Kubulambula/Godot-GDShell">
-  <img src="../../../docs/assets/logo.png" align="left" width="80" height="80">
+  <img src="https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/assets/logo.png" align="left" width="80" height="80">
 </a>
 
 # Step by step
@@ -58,10 +58,10 @@ Arguments are separated by spaces and passed to the command in left to right ord
 
 **Shortly:** The first word is the command that is called and all the words after are arguments for that command.
 
-For more information you can continue by reading the [GDShell syntax](../tutorials/gdshell_syntax.md) page.
+For more information you can continue by reading the [GDShell syntax](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/tutorials/gdshell_syntax.md) page.
 
 
 ## But how I do make my own commands?
-Continue by reading the [Your first command](your_first_command.md) page.
+Continue by reading the [Your first command](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/getting_started/your_first_command.md) page.
 
 

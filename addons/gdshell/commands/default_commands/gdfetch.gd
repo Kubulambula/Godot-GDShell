@@ -1,6 +1,5 @@
 extends GDShellCommand
 
-
 const LOGO: String = """\
 						   &&&&&&&                            
 					  &&&&&       &&&&&                       
@@ -41,31 +40,32 @@ func _init():
 
 func _main(argv: Array, data) -> Dictionary:
 	var info: Dictionary = get_info()
-	
+
 	if "--i-am-a-linux-nerd-and-tried-to-use-neofetch" in argv:
 		info["Is the user linux nerd and tried to use neofetch"] = "Yes"
-	
+
 	if not ("-s" in argv or "--silent" in argv):
 		output(construct_output(LOGO, info), false)
-	
+
 	return {"data": info}
 
 
-func construct_output(graphics: String, info: Dictionary, skip_lines: int=3) -> String:
+func construct_output(graphics: String, info: Dictionary, skip_lines: int = 3) -> String:
 	var out: String = ""
-	var unused_info_keys: Array[String] = info.keys()
-	
+	var unused_info_keys: Array[String]
+	unused_info_keys.append_array(info.keys())
+
 	for line in graphics.split("\n", false):
 		out += line
-		
+
 		if skip_lines > 0:
 			skip_lines -= 1
 		elif not unused_info_keys.is_empty():
 			out += "  [color=#478cbf]%s[/color]: %s" % [unused_info_keys[0], info[unused_info_keys[0]]]
 			unused_info_keys.remove_at(0)
-		
+
 		out += "\n"
-	
+
 	return out
 
 
@@ -84,7 +84,8 @@ static func get_info() -> Dictionary:
 
 
 func _get_manual() -> String:
-	return """
+	return (
+		"""
 [b]NAME[/b]
 	{COMMAND_NAME}
 
@@ -111,7 +112,11 @@ func _get_manual() -> String:
 	[i]gdfetch -s[/i]
 		-Returns the information about the current project, but does not print it to the console.
 		 Can be used as a input for other commands when called silently.
-""".format({
-	"COMMAND_NAME": COMMAND_NAME,
-	"COMMAND_AUTO_ALIASES": COMMAND_AUTO_ALIASES,
-})
+"""
+		. format(
+			{
+				"COMMAND_NAME": COMMAND_NAME,
+				"COMMAND_AUTO_ALIASES": COMMAND_AUTO_ALIASES,
+			}
+		)
+	)

@@ -8,7 +8,7 @@
 [link_gdshell_ui_handler]: https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/references/gdshell_ui_handler.md
 
 <a href="https://github.com/Kubulambula/Godot-GDShell">
-  <img src="../../../docs/assets/logo.png" align="left" width="80" height="80">
+  <img src="https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/assets/logo.png" align="left" width="80" height="80">
 </a>
 
 
@@ -16,8 +16,8 @@
 
 
 ## Tutorials
-- [Your first command](../getting_started/your_first_command.md)
-- [Custom Commands](../tutorials/custom_commands.md)
+- [Your first command](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/getting_started/your_first_command.md)
+- [Commands](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/tutorials/commands.md)
 
 
 ---
@@ -37,14 +37,13 @@
 
 | | | |
 | --- | --- | --- |
-| [`Dictionary`][link_dictionary] | [\_main](#_main) ([`Array`][link_array] argv, [`Variant`][link_variant] data) | `virtual` |
+| [`Dictionary`][link_dictionary] | [\_main](#_main) ([Array][link_array] argv, [Variant][link_variant] data) | `virtual` |
 | [`String`][link_string] | [\_get_manual](#_get_manual) () | `virtual` |
 | [`Dictionary`][link_dictionary] | [execute](#execute) ([`String`][link_string] command) | |
 | [`String`][link_string] | [input](#input) ([`String`][link_string] out) | |
 | `void` | [output](#output) ([`String`][link_string] out, [`bool`][link_bool] append_new_line=true) | |
 | [`GDShellUIHandler`][link_gdshell_ui_handler] | [get_ui_handler](#get_ui_handler) () | |
 | [`RichTextLabel`][link_rich_text_label] | [get_ui_handler_rich_text_label](#get_ui_handler_rich_text_label) () | |
-| [`Dictionary`](link_dictionary) | [argv_parse_options](#argv_parse_options) ([`Array`][link_array] argv, [`bool`][link_bool] strip_name_dashes=false, [`bool`][link_bool] next_arg_as_value=false)| `static` |
 | | | |
 
 
@@ -101,7 +100,3 @@
 
 <span id="get_ui_handler_rich_text_label"><span>
 #### [`RichTextLabel`][link_rich_text_label] get_ui_handler_rich_text_label ()
-
-<span id="argv_parse_options"><span>
-#### [`Dictionary`][link_dictionary] argv_parse_options ([`Array`][link_array] argv, [`bool`][link_bool] strip_name_dashes=false, [`bool`][link_bool] next_arg_as_value=false)
-

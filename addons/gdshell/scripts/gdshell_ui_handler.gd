@@ -2,10 +2,8 @@
 class_name GDShellUIHandler
 extends Control
 
-
 signal _input_requested(output: String)
 signal _output_requested(output: String, append_new_line: bool)
-
 
 var _PARENT_GDSHELL: GDShellMain
 

@@ -2,7 +2,6 @@
 class_name GDShellCommandDB
 extends RefCounted
 
-
 var _commands: Dictionary = {}
 var _aliases: Dictionary = {}
 
@@ -16,7 +15,7 @@ func add_command(path: String) -> bool:
 	return true
 
 
-func add_commands_in_directory(path: String, recursive: bool=true) -> void:
+func add_commands_in_directory(path: String, recursive: bool = true) -> void:
 	for command in get_command_file_paths_in_directory(path, recursive):
 		add_command(command)
 
@@ -30,7 +29,10 @@ func get_command_path(command_name: String) -> String:
 
 
 func get_all_command_names() -> Array[String]:
-	return _commands.keys()
+	var commands: Array[String]
+	for key in _commands.keys():
+		commands.push_back(key)
+	return commands
 
 
 func add_alias(alias: String, command: String) -> bool:
@@ -50,7 +52,7 @@ func get_all_aliases() -> Dictionary:
 	return _aliases.duplicate()
 
 
-static func get_file_paths_in_directory(path: String, recursive: bool=true) -> Array[String]:
+static func get_file_paths_in_directory(path: String, recursive: bool = true) -> Array[String]:
 	var paths: Array[String] = []
 	var dir: DirAccess = DirAccess.open(path)
 	if dir != null:
@@ -59,17 +61,19 @@ static func get_file_paths_in_directory(path: String, recursive: bool=true) -> A
 		while path:
 			if dir.current_is_dir():
 				if recursive:
-					paths += get_file_paths_in_directory(dir.get_current_dir().path_join(path), true)
+					paths.append_array(get_file_paths_in_directory(dir.get_current_dir().path_join(path), true))
 			else:
 				paths.append(dir.get_current_dir().path_join(path))
 			path = dir.get_next()
 		dir.list_dir_end()
 	if paths.is_empty():
-		push_warning("[GDShell] No commands found in directory. Check the'GDShellCommandDB.get_file_paths_from_directory() argument'")
+		push_warning(
+			"[GDShell] No commands found in directory. Check the'GDShellCommandDB.get_file_paths_from_directory() argument'"
+		)
 	return paths
 
 
-static func get_command_file_paths_in_directory(path: String, recursive: bool=true) -> Array[String]:
+static func get_command_file_paths_in_directory(path: String, recursive: bool = true) -> Array[String]:
 	return get_file_paths_in_directory(path, recursive).filter(func(x): return is_file_gdshell_command(x))
 
 
@@ -77,11 +81,11 @@ static func is_file_gdshell_command(path: String) -> bool:
 	var res: Resource = ResourceLoader.load(path, "GDScript")
 	if not res is GDScript:
 		return false
-	
+
 	var script: Object = (res as GDScript).new()
 	if not script is GDShellCommand:
 		return false
-	
+
 	return true
 
 
@@ -90,11 +94,11 @@ static func get_command_name_and_auto_aliases(path: String) -> Dictionary:
 	var res: Resource = ResourceLoader.load(path, "GDScript")
 	if not res is GDScript:
 		return out
-	
+
 	var script: Object = (res as GDScript).new()
 	if not script is GDShellCommand:
 		return out
-	
+
 	out["name"] = (script as GDShellCommand).COMMAND_NAME
 	out["aliases"] = (script as GDShellCommand).COMMAND_AUTO_ALIASES
 	return out
