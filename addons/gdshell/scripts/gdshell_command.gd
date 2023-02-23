@@ -72,8 +72,7 @@ static func argv_parse_options(argv: Array, strip_name_dashes: bool = false, nex
 					and i+1 < argv.size() and argv[i+1][0] != "-"
 			):
 				option_value = argv[i+1]
-
+			
 			options[option_name] = option_value
-
-	return options
 	
+	return options
