@@ -2,6 +2,7 @@
 class_name GDShellCommand
 extends Node
 
+
 signal command_end
 
 const DEFAULT_COMMAND_RESULT: Dictionary = {
@@ -42,7 +43,7 @@ func get_ui_handler_rich_text_label() -> RichTextLabel:
 
 func _get_manual() -> String:
 	return (
-		"""\
+"""
 [b]NAME[/b]
 	{COMMAND_NAME}
 
@@ -51,8 +52,7 @@ func _get_manual() -> String:
 
 [b]NO MANUAL[/b]
 	-Override the [b]_get_manual()[/b] function for a custom manual page.
-"""
-		. format(
+""".format(
 			{
 				"COMMAND_NAME": COMMAND_NAME,
 				"COMMAND_AUTO_ALIASES": COMMAND_AUTO_ALIASES,

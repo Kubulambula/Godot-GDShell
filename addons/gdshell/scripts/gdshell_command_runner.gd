@@ -2,6 +2,7 @@
 class_name GDShellCommandRunner
 extends Node
 
+
 # Command execution flags
 const F_EXECUTE_CONDITION_MET: int = 1 << 0
 const F_PIPE_PREVIOUS: int = 1 << 1
@@ -22,60 +23,60 @@ func execute(command_sequence: Dictionary) -> Dictionary:
 			"error_string": 'Cannot execute command sequence. See "data" for the command_sequence',
 			"data": command_sequence,
 		}
-
+	
 	_is_running_command = true
-
+	
 	var current_token: int = 0
 	var current_command_flags: int = F_EXECUTE_CONDITION_MET
 	var last_command_result: Dictionary = GDShellCommand.DEFAULT_COMMAND_RESULT
-
+	
 	while current_token < command_sequence["result"].size():
 		match command_sequence["result"][current_token]["type"]:
 			GDShellCommandParser.ParserBlockType.COMMAND:
 				var command: String = command_sequence["result"][current_token]["data"]["command"]
 				var params: Dictionary = command_sequence["result"][current_token]["data"]["params"]
-
+				
 				if not current_command_flags & F_EXECUTE_CONDITION_MET:
 					current_command_flags = F_EXECUTE_CONDITION_MET
 					continue
-
+				
 				if current_command_flags & F_PIPE_PREVIOUS:
 					params["data"] = last_command_result["data"]
-
+				
 				if current_command_flags & F_BACKGROUND:
 					last_command_result = GDShellCommand.DEFAULT_COMMAND_RESULT
 					_execute_command(command, params)
 				else:
 					last_command_result = await _execute_command(command, params)
-
+				
 				if current_command_flags & F_NEGATED:
 					last_command_result["error"] = 0 if last_command_result["error"] else 1
-
+				
 				current_command_flags = F_EXECUTE_CONDITION_MET
-
+			
 			GDShellCommandParser.ParserBlockType.BACKGROUND:
 				current_command_flags |= F_BACKGROUND
-
+			
 			GDShellCommandParser.ParserBlockType.NOT:
 				current_command_flags |= F_NEGATED
-
+			
 			GDShellCommandParser.ParserBlockType.PIPE:
 				current_command_flags |= F_PIPE_PREVIOUS
-
+			
 			GDShellCommandParser.ParserBlockType.AND:
 				if last_command_result["error"]:
 					current_command_flags ^= F_EXECUTE_CONDITION_MET
 				else:
 					current_command_flags |= F_EXECUTE_CONDITION_MET
-
+			
 			GDShellCommandParser.ParserBlockType.OR:
 				if last_command_result["error"]:
 					current_command_flags |= F_EXECUTE_CONDITION_MET
 				else:
 					current_command_flags ^= F_EXECUTE_CONDITION_MET
-
+		
 		current_token += 1
-
+	
 	_is_running_command = false
 	return last_command_result
 
@@ -86,15 +87,12 @@ func _execute_command(path: String, params: Dictionary, in_background: bool = fa
 	command._PARENT_PROCESS = self
 	if in_background:
 		_background_commands.append(command)
-
+	
 	var result = await command._main(params["argv"], params["data"])
-
+	
 	if typeof(result) != TYPE_DICTIONARY:
-		push_error(
-			(
-				"[GDShell] The '%s' command does not return a value of TYPE_DICTIONARY.\n'GDShellCommand.DEFAULT_COMMAND_RESULT' will be returned instead."
+		push_error("[GDShell] The '%s' command does not return a value of TYPE_DICTIONARY.\n'GDShellCommand.DEFAULT_COMMAND_RESULT' will be returned instead."
 				% params["argv"][0]
-			)
 		)
 		# This assert statement acts as a hard error in the editor
 		assert(
@@ -106,10 +104,10 @@ func _execute_command(path: String, params: Dictionary, in_background: bool = fa
 		result = GDShellCommand.DEFAULT_COMMAND_RESULT
 	else:
 		result.merge(GDShellCommand.DEFAULT_COMMAND_RESULT)
-
+	
 	command.queue_free()
 	_background_commands.erase(command)
-
+	
 	return result
 
 

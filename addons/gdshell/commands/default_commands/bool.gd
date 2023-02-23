@@ -1,17 +1,29 @@
 extends GDShellCommand
 
-const TRUE: Dictionary = {"error": 0, "data": "true"}
-const FALSE: Dictionary = {"error": 1, "error_string": "This is not an error, but false.", "data": "false"}
+
+const TRUE: Dictionary = {
+	"error": 0,
+	"data": "true",
+}
+const FALSE: Dictionary = {
+	"error": 1,
+	"error_string": "This is not an error, but false.",
+	"data": "false",
+}
 
 
 func _init():
-	COMMAND_AUTO_ALIASES = {"true": "bool -t", "false": "bool -f", "random": "bool -r"}
+	COMMAND_AUTO_ALIASES = {
+		"true": "bool -t",
+		"false": "bool -f",
+		"random": "bool -r",
+	}
 
 
 func _main(argv: Array, data) -> Dictionary:
 	if not argv.size() > 1:
 		return TRUE
-
+	
 	match argv[1]:
 		"-t", "--true":
 			return TRUE
@@ -30,7 +42,7 @@ func _main(argv: Array, data) -> Dictionary:
 
 func _get_manual() -> String:
 	return (
-		"""
+"""
 [b]NAME[/b]
 	{COMMAND_NAME}
 
@@ -64,8 +76,7 @@ func _get_manual() -> String:
 	[i]bool -r && echo "true" || echo "false"[/i]
 		-Prints "true" or "false" randomly
 		 Same as: random && echo "true" || echo "false"
-"""
-		. format(
+""".format(
 			{
 				"COMMAND_NAME": COMMAND_NAME,
 				"COMMAND_AUTO_ALIASES": COMMAND_AUTO_ALIASES,

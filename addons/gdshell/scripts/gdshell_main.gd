@@ -2,6 +2,7 @@
 class_name GDShellMain
 extends Node
 
+
 signal _input_submitted(input: String)
 
 const GDSHELL_TOGGLE_UI_ACTION: String = "gdshell_toggle_ui"
@@ -34,7 +35,7 @@ func setup_with_default_values() -> void:
 	setup_command_runner()
 	setup_command_db(COMMAND_DIR_PATH)
 	setup_ui_handler(load_ui_handler_from_path(UI_HANDLER_PATH), true)
-
+	
 	if execute_autorun_on_startup:
 		execute_autorun()
 
@@ -55,7 +56,7 @@ func setup_ui_handler(handler: GDShellUIHandler, add_as_child: bool = true) -> v
 	ui_handler = handler
 	ui_handler._PARENT_GDSHELL = self
 	ui_handler.set_visible(false)
-
+	
 	if add_as_child:
 		var canvas_layer: CanvasLayer = CanvasLayer.new()
 		canvas_layer.layer = GDSHELL_CANVAS_LAYER
@@ -99,7 +100,7 @@ func _submit_input(input: String) -> void:
 		_request_output_from_ui_handler(input, true)
 		_input_submitted.emit(input)
 		return
-
+	
 	_input_buffer += input
 	var command_sequence: Dictionary = GDShellCommandParser.parse(_input_buffer, command_db)
 	match command_sequence["status"]:
@@ -116,10 +117,14 @@ func _submit_input(input: String) -> void:
 			)
 			ui_handler._input_requested.emit("> ")
 		GDShellCommandParser.ParserResultStatus.ERROR:
-			_request_output_from_ui_handler(ui_handler._get_input_prompt() + _input_buffer, true)
+			_request_output_from_ui_handler(
+				ui_handler._get_input_prompt() + _input_buffer, true
+			)
 			_input_buffer = ""
 			# TODO better error announcement
-			_request_output_from_ui_handler("[color=red]%s[/color]" % command_sequence["result"]["error"], true)
+			_request_output_from_ui_handler(
+				"[color=red]%s[/color]" % command_sequence["result"]["error"], true
+			)
 			ui_handler._input_requested.emit("")
 
 

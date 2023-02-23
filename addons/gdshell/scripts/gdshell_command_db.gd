@@ -2,6 +2,7 @@
 class_name GDShellCommandDB
 extends RefCounted
 
+
 var _commands: Dictionary = {}
 var _aliases: Dictionary = {}
 
@@ -81,11 +82,11 @@ static func is_file_gdshell_command(path: String) -> bool:
 	var res: Resource = ResourceLoader.load(path, "GDScript")
 	if not res is GDScript:
 		return false
-
+	
 	var script: Object = (res as GDScript).new()
 	if not script is GDShellCommand:
 		return false
-
+	
 	return true
 
 
@@ -94,11 +95,11 @@ static func get_command_name_and_auto_aliases(path: String) -> Dictionary:
 	var res: Resource = ResourceLoader.load(path, "GDScript")
 	if not res is GDScript:
 		return out
-
+	
 	var script: Object = (res as GDScript).new()
 	if not script is GDShellCommand:
 		return out
-
+	
 	out["name"] = (script as GDShellCommand).COMMAND_NAME
 	out["aliases"] = (script as GDShellCommand).COMMAND_AUTO_ALIASES
 	return out

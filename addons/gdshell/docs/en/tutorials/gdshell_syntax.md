@@ -1,5 +1,5 @@
 <a href="https://github.com/Kubulambula/Godot-GDShell">
-  <img src="https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/assets/logo.png" align="left" width="80" height="80">
+  <img src="../../../docs/assets/logo.png" align="left" width="80" height="80">
 </a>
 
 # GDShell syntax
@@ -45,13 +45,13 @@ World
 Any command can be executed in background using the `&` operator. These commands are detached from the user input, but still can access output.
 These commands are great for anything that is supposed to run for a longer period of time while still allowing you to use other commands.
 
-Commands sent into background will return [`GDShellCommand.DEFAULT_COMMAND_RESULT`](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/references/gdshell_command.md#dictionary-default_command_result) and another command can be run immediately. While the background command is still running.
+Commands sent into background will return [`GDShellCommand.DEFAULT_COMMAND_RESULT`](../references/gdshell_command.md#dictionary-default_command_result) and another command can be run immediately. While the background command is still running.
 
-The command ends after the [`_main()`](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/references/gdshell_command.md#_main) returns giving you total control over its lifetime.
+The command ends after the [`_main()`](../references/gdshell_command.md#_main) returns giving you total control over its lifetime.
 
-Commands can be sent into backgroun using this syntax: `command_name &` or `command_name&`
+Commands can be sent into background using this syntax: `command_name &` or `command_name&`
 
-For more information see [Backgroun commands](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/tutorials/commands.md#background-commands)
+For more information see [Backgroun commands](custom_commands.md#background-commands)
 
 
 ## Pipe
@@ -60,12 +60,12 @@ Any command can accept any other command's result data. This happens when you us
 
 `command_1 | command_2` - result data of `command_1` will be passed to `command_2`
 
-The command after the pipe is executed only after the first one ends and returns its result, but you want to be careful around background commands as they will always return [`GDShellCommand.DEFAULT_COMMAND_RESULT`](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/references/gdshell_command.md#dictionary-default_command_result) before ending themself.
+The command after the pipe is executed only after the first one ends and returns its result, but you want to be careful around background commands as they will always return [`GDShellCommand.DEFAULT_COMMAND_RESULT`](../references/gdshell_command.md#dictionary-default_command_result) before ending themself.
 
 `gdfetch | echo` - outputs `gdfetch` graphics, passes the data to `echo` and echo prints the data<br>
 `gdfetch& | echo` - outputs `gdfetch` graphics, but the returned data is null, so `echo` does not print anythig
 
-For more information see [Command data](https://github.com/Kubulambula/Godot-GDShell/blob/main/addons/gdshell/docs/en/tutorials/commands.md#command-data)
+For more information see [Command data](custom_commands.md#command-data)
 
 
 ## AND
