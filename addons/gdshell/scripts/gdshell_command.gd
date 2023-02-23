@@ -59,3 +59,21 @@ func _get_manual() -> String:
 			}
 		)
 	)
+
+
+static func argv_parse_options(argv: Array, strip_name_dashes: bool = false, next_arg_as_value: bool = false) -> Dictionary:
+	var options: Dictionary = {}
+	for i in argv.size():
+		if argv[i][0] == "-":
+			var option_name: String = argv[i].get_slice("=", 0).lstrip("-") if strip_name_dashes else argv[i].get_slice("=", 0)
+			var option_value: String = argv[i].get_slice("=", 1) if "=" in argv[i] else ""
+			if (
+					option_value.length() == 0 and next_arg_as_value and not "=" in argv[i]
+					and i+1 < argv.size() and argv[i+1][0] != "-"
+			):
+				option_value = argv[i+1]
+
+			options[option_name] = option_value
+
+	return options
+	
