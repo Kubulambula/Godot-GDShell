@@ -383,7 +383,7 @@ static func _unalias_tokens(tokens: Array[Dictionary], command_db: GDShellComman
 		for i in tokens.size():
 			if tokens[i]["type"] == TokenType.TOKEN_SEQUENCE:
 				var token_sequence: Dictionary = tokens.pop_at(i)
-				@warning_ignore(unsafe_method_access)
+				@warning_ignore("unsafe_method_access")
 				for ii in token_sequence["content"].size():
 					tokens.insert(i+ii, token_sequence["content"][ii])
 				break # Break because the indexing has changed because of the inserting

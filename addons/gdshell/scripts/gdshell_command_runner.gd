@@ -33,7 +33,7 @@ func execute(command_sequence: Dictionary) -> Dictionary:
 	var current_command_flags: int = F_EXECUTE_CONDITION_MET
 	var last_command_result: Dictionary = GDShellCommand.DEFAULT_COMMAND_RESULT
 	
-	@warning_ignore(unsafe_method_access)
+	@warning_ignore("unsafe_method_access")
 	while current_token < command_sequence["result"].size():
 		match command_sequence["result"][current_token]["type"]:
 			GDShellCommandParser.ParserBlockType.COMMAND:
@@ -86,14 +86,14 @@ func execute(command_sequence: Dictionary) -> Dictionary:
 
 
 func _execute_command(path: String, params: Dictionary, in_background: bool=false) -> Dictionary:
-	@warning_ignore(unsafe_method_access, unsafe_cast)
+	@warning_ignore("unsafe_method_access", "unsafe_cast")
 	var command: GDShellCommand = ResourceLoader.load(path, "GDScript").new() as GDShellCommand
 	add_child(command)
 	command._PARENT_PROCESS = self
 	if in_background:
 		_background_commands.append(command)
 	
-	@warning_ignore(redundant_await)
+	@warning_ignore("redundant_await")
 	var result = await command._main(params["argv"], params["data"])
 	
 	if typeof(result) != TYPE_DICTIONARY:
@@ -105,7 +105,7 @@ func _execute_command(path: String, params: Dictionary, in_background: bool=fals
 				See the Errors for more information about the failing command.""")
 		result = GDShellCommand.DEFAULT_COMMAND_RESULT
 	else:
-		@warning_ignore(unsafe_method_access)
+		@warning_ignore("unsafe_method_access")
 		result.merge(GDShellCommand.DEFAULT_COMMAND_RESULT)
 	
 	command.queue_free()
