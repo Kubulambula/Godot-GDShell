@@ -27,7 +27,7 @@ func _main(argv: Array, data) -> Dictionary:
 	
 	# It's checked if the command is in command_db, co it's ok unless someone inserts data manually
 	@warning_ignore("unsafe_cast") 
-  var command: GDShellCommand = (
+	var command: GDShellCommand = (
 		ResourceLoader.load(command_db.get_command_path(command_name), "GDScript").new() as GDShellCommand
 	)
 
