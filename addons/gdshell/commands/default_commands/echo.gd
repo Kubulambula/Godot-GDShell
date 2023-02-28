@@ -12,6 +12,7 @@ func _main(argv: Array, data) -> Dictionary:
 	if not out.is_empty():
 		output(out)
 	
+	@warning_ignore("incompatible_ternary")
 	return {"data": null if out.is_empty() else out}
 
 

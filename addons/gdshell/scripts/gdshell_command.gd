@@ -11,6 +11,7 @@ const DEFAULT_COMMAND_RESULT: Dictionary = {
 	"data": null,
 }
 
+@warning_ignore("unsafe_method_access")
 var COMMAND_NAME: String = get_script().get_path().get_file().get_basename()
 var COMMAND_AUTO_ALIASES: Dictionary = {}
 

@@ -30,10 +30,15 @@ func get_command_path(command_name: String) -> String:
 
 
 func get_all_command_names() -> Array[String]:
-	var commands: Array[String]
+	# This is required as GD4 doesn't allow upcast from Array -> Array[String]
+	# see: https://www.reddit.com/r/godot/comments/10rqh9g/problem_with_typed_arrays_since_40_beta_17/
+	# see: https://docs.godotengine.org/en/latest/classes/class_dictionary.html#class-dictionary-method-keys
+	var keys: Array[String]
 	for key in _commands.keys():
-		commands.push_back(key)
-	return commands
+		if key is String:
+			keys.append(key)
+
+	return keys
 
 
 func add_alias(alias: String, command: String) -> bool:

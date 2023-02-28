@@ -26,9 +26,11 @@ func _main(argv: Array, data) -> Dictionary:
 		return {"error": 2, "error_string": "Command not found"}
 	
 	# It's checked if the command is in command_db, co it's ok unless someone inserts data manually
-	var command: GDShellCommand = (
+	@warning_ignore("unsafe_cast") 
+  var command: GDShellCommand = (
 		ResourceLoader.load(command_db.get_command_path(command_name), "GDScript").new() as GDShellCommand
 	)
+
 	var manual: String = command._get_manual() if command else ""
 	command.queue_free()
 	

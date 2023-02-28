@@ -55,8 +55,7 @@ func _main(argv: Array, data) -> Dictionary:
 
 func construct_output(graphics: String, info: Dictionary, skip_lines: int = 3) -> String:
 	var out: String = ""
-	var unused_info_keys: Array[String]
-	unused_info_keys.append_array(info.keys())
+	var unused_info_keys: Array = info.keys()
 	
 	for line in graphics.split("\n", false):
 		out += line
