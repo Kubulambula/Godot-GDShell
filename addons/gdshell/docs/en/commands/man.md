@@ -22,7 +22,7 @@ The manual command gets the manual by calling the passed commands `_get_manual()
 ## Flags
 
 - `-L` or `--list`: List all avaible commands, sorted into core and every module you have added. 
-- `-D` or `--docs`: Links you to the apropriate documentation instead of printing in the terminal. 
+<!-- - `-D` or `--docs`: Links you to the apropriate documentation instead of printing in the terminal. --> <!-- TODO -->
 
 ## Aliases
 
