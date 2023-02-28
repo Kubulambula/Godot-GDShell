@@ -74,6 +74,7 @@ func _main(argv: Array, _data) -> Dictionary:
 		_print_available_options(safe_to_edit_properties)
 		# Delete all option flags so that _edit_monitor_properties_with_options() does not have to deal with them
 		for option in OPTIONS_FLAGS:
+			@warning_ignore("return_value_discarded")
 			options.erase(option)
 	
 	_edit_monitor_properties_with_options(monitor, safe_to_edit_properties, options)
@@ -86,7 +87,7 @@ func _get_monitor_overlay() -> Node:
 		if not ResourceLoader.exists(MONITOR_FILE_PATH):
 			return null # MonitorOverlay is not installed
 		
-		@warning_ignore(unsafe_method_access, unsafe_cast)
+		@warning_ignore("unsafe_cast", "unsafe_method_access")
 		var monitor: Node = ResourceLoader.load(MONITOR_FILE_PATH, "GDScript").new() as Node
 		# Sets the name of the MonitorOverlay Node to make it clear that it belongs to and is managed by GDShell
 		monitor.name = StringName(MONITOR_NODE_NAME)
@@ -100,6 +101,7 @@ func _get_monitor_overlay() -> Node:
 
 # returns a list of properties that are used for MonitorOverlay UI control
 func _get_monitor_overlay_safe_to_edit_properties(monitor: Object) -> Array[Dictionary]:
+	@warning_ignore("unsafe_method_access")
 	return monitor.get_script().get_script_property_list().filter(
 			func(property): 
 				return property["type"] != TYPE_NIL and property["name"][0] != "_"
@@ -118,7 +120,7 @@ func _print_available_options(safe_to_edit_properties: Array[Dictionary]) -> voi
 
 
 func _edit_monitor_properties_with_options(monitor: Node, safe_to_edit_properties: Array[Dictionary], options: Dictionary) -> void:
-	var safe_to_edit_property_names: Array[String] = safe_to_edit_properties.map(func(property): return property["name"])
+	var safe_to_edit_property_names: Array = safe_to_edit_properties.map(func(property): return property["name"])
 	
 	for option in options:
 		if option in safe_to_edit_property_names:
@@ -140,6 +142,9 @@ func _get_manual() -> String:
 
 [b]DESCRIPTION[/b]
 	Uses Monitor Overlay plugin by @HungryProton to show various information about performance
+	
+	[b]-o, --options[/b]
+		Displays all available MonitorOverlay options and their types.
 	
 	[b]-option=value[/b]
 		Sets the option variable of MonitorOverlay node to the value.
