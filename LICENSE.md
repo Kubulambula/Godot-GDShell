@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2022-2023 Jakub Janšta (Kubulambula).
+Copyright (c) 2022-2023 Jakub Janšta (Kubulambula).<br>
 Copyright (c) 2022-2023 GDShell [contributors](https://github.com/Kubulambula/Godot-GDShell/graphs/contributors).
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
