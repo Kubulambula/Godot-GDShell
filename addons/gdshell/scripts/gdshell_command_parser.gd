@@ -32,11 +32,11 @@ enum ParserResultStatus {
 	ERROR,
 }
 
-
 # status - ParserResultStatus:
 # OK - result is an Array of Dictionaries (ParserBlockTypes)
 # ERROR - result is the error token Dictionary
 # UNTERMINATED - result is an empty Array - new input is necessary
+
 
 static func parse(input: String, command_db: GDShellCommandDB) -> Dictionary:
 	var tokens: Array[Dictionary] = tokenize(input, command_db)
@@ -128,15 +128,17 @@ static func parse(input: String, command_db: GDShellCommandDB) -> Dictionary:
 			
 			_:
 				return {
-					"status": ParserResultStatus.ERROR, 
-					"result": {
-						"error": {
-							"char": tokens[i]["start_char"], 
+					"status": ParserResultStatus.ERROR,
+					"result":
+					{
+						"error":
+						{
+							"char": tokens[i]["start_char"],
 							"error": "Unknown token",
 						}
 					}
 				}
-	
+
 	# Empty the `command_construction_temp`
 	var command: Dictionary = _construct_command(command_construction_temp, command_db)
 	if command["status"] == ParserResultStatus.ERROR:
@@ -144,7 +146,6 @@ static func parse(input: String, command_db: GDShellCommandDB) -> Dictionary:
 	command_sequence.push_back(command["data"])
 	
 	command_sequence = command_sequence.filter(func(x: Dictionary): return not x.is_empty())
-	
 	
 	return {"status": ParserResultStatus.OK, "result": command_sequence}
 
@@ -161,20 +162,19 @@ static func _construct_command(from: Array[String], command_db: GDShellCommandDB
 	if command_path.is_empty():
 		return {
 			"status": ParserResultStatus.ERROR,
-			"result": {
-				"error": {
-					"char": 0, 
-					"error": "Unknown command: %s" % from[0]}
-				},
+			"result": {"error": {"char": 0, "error": "Unknown command: %s" % from[0]}},
 		}
-		
+	
 	return {
 		"status": ParserResultStatus.OK,
-		"data": {
+		"data":
+		{
 			"type": ParserBlockType.COMMAND,
-			"data": {
+			"data":
+			{
 				"command": command_path,
-				"params": {
+				"params":
+				{
 					"argv": from.duplicate(true),
 					"data": null,
 				}
@@ -190,44 +190,55 @@ static func _validate_operator(from: Array[Dictionary], at: int, left: bool, rig
 		if not at > 0:
 			return {
 				"status": ParserResultStatus.ERROR,
-				"result": {
-					"error": {
-						"char": from[at]["start_char"], 
-						"error": "Missing operand"
+				"result":
+				{
+					"error":
+					{
+						"char": from[at]["start_char"],
+						"error": "Missing operand",
 					}
 				}
 			}
-		if from[at-1]["type"] != TokenType.TEXT:
-			if from[at-1]["type"] == TokenType.BACKGROUND and from[at]["type"] == TokenType.BACKGROUND:
+		if from[at - 1]["type"] != TokenType.TEXT:
+			if from[at - 1]["type"] == TokenType.BACKGROUND and from[at]["type"] == TokenType.BACKGROUND:
 				return {
 					"status": ParserResultStatus.ERROR,
-					"result": {
-						"error": {
-							"char": from[at]["start_char"], 
-							"error": "Missing operand"
+					"result": 
+					{
+						"error":
+						{
+							"char": from[at]["start_char"],
+							"error": "Missing operand",
 						}
 					}
 				}
 	
 	if right:
-		if not at < from.size()-1:
+		if not at < from.size() - 1:
 			return {
 				"status": ParserResultStatus.ERROR,
-				"result": {
-					"error": {
-						"char": from[at]["start_char"] + from[at]["consumed"], 
-						"error": "Missing operand"
+				"result":
+				{
+					"error":
+					{
+						"char": from[at]["start_char"] + from[at]["consumed"],
+						"error": "Missing operand",
 					}
 				}
 			}
-		if from[at+1]["type"] != TokenType.TEXT:
-			if from[at+1]["type"] != TokenType.NOT or (from[at+1]["type"] == TokenType.NOT and from[at]["type"] == TokenType.NOT):
+		if from[at + 1]["type"] != TokenType.TEXT:
+			if (
+				from[at + 1]["type"] != TokenType.NOT
+				or (from[at + 1]["type"] == TokenType.NOT and from[at]["type"] == TokenType.NOT)
+			):
 				return {
 					"status": ParserResultStatus.ERROR,
-					"result": {
-						"error": {
-							"char": from[at]["start_char"] + from[at]["consumed"], 
-							"error": "Missing operand"
+					"result":
+					{
+						"error":
+						{
+							"char": from[at]["start_char"] + from[at]["consumed"],
+							"error": "Missing operand",
 						}
 					}
 				}
@@ -248,7 +259,7 @@ static func tokenize(input: String, command_db: GDShellCommandDB) -> Array[Dicti
 				tokens.push_back(_tokenize_background_and(input, current))
 			";":
 				tokens.push_back(_tokenize_sequence(input, current))
-			"\"", "'":
+			'"', "'":
 				tokens.push_back(_tokenize_quoted_text(input, current))
 			"!":
 				tokens.push_back(_tokenize_not(input, current))
@@ -264,7 +275,7 @@ static func tokenize(input: String, command_db: GDShellCommandDB) -> Array[Dicti
 	return _unalias_tokens(tokens, command_db)
 
 
-static func _token(type: TokenType, start_char: int, consumed: int, content: String="", error: Dictionary={}) -> Dictionary:
+static func _token(type: TokenType, start_char: int, consumed: int, content: String = "", error: Dictionary = {}) -> Dictionary:
 	return {
 		"type": type,
 		"start_char": start_char,
@@ -282,21 +293,11 @@ static func _tokenize_quoted_text(input: String, current: int) -> Dictionary:
 	
 	while true:
 		if current >= input.length():
-			return _token(
-					TokenType.UNTERMINATED_TEXT,
-					start_char,
-					content.length() + 1, # accounts for the starting quote
-					content.c_unescape()
-				)
+			return _token(TokenType.UNTERMINATED_TEXT, start_char, content.length() + 1, content.c_unescape())  # accounts for the starting quote
 		
 		if input[current] == quote_type:
-			if input[max(0, current-1)] != "\\":
-				return _token(
-						TokenType.TEXT,
-						start_char,
-						content.length() + 2, # accounts for the starting and ending quotes
-						content.c_unescape()
-					)
+			if input[max(0, current - 1)] != "\\":
+				return _token(TokenType.TEXT, start_char, content.length() + 2, content.c_unescape())  # accounts for the starting and ending quotes
 		
 		content += input[current]
 		current += 1
@@ -311,21 +312,21 @@ static func _tokenize_text(input: String, current: int) -> Dictionary:
 	while true:
 		if current == input.length() or input[current] in [" ", "&"]:
 			return _token(
-					TokenType.TEXT,
-					start_char,
-					content.length(),
-					content.c_unescape()
-				)
-		
-		if input[current] in [";", "|", "\"", "'", "!"]:
-			return _token(
-					TokenType.ERROR,
-					start_char,
-					content.length() + 1,
-					content,
-					{"char": current, "error": "Unexpected token"}
+				TokenType.TEXT,
+				start_char,
+				content.length(),
+				content.c_unescape()
 			)
 		
+		if input[current] in [";", "|", '"', "'", "!"]:
+			return _token(
+				TokenType.ERROR,
+				start_char,
+				content.length() + 1,
+				content,
+				{"char": current, "error": "Unexpected token"}
+			)
+	
 		content += input[current]
 		current += 1
 	
@@ -337,13 +338,13 @@ static func _tokenize_separator(_input: String, current: int) -> Dictionary:
 
 
 static func _tokenize_pipe_or(input: String, current: int) -> Dictionary:
-	if current < input.length()-1 and input[current+1] == "|":
+	if current < input.length() - 1 and input[current + 1] == "|":
 		return _token(TokenType.OR, current, 2, "||")
 	return _token(TokenType.PIPE, current, 1, "|")
 
 
 static func _tokenize_background_and(input: String, current: int) -> Dictionary:
-	if current < input.length()-1 and input[current+1] == "&":
+	if current < input.length() - 1 and input[current + 1] == "&":
 		return _token(TokenType.AND, current, 2, "&&")
 	return _token(TokenType.BACKGROUND, current, 1, "&")
 
@@ -368,13 +369,12 @@ static func _unalias_tokens(tokens: Array[Dictionary], command_db: GDShellComman
 	for i in tokens.size():
 		if tokens[i]["type"] != TokenType.TEXT:
 			continue
-		if i > 0 and (tokens[i-1]["type"] == TokenType.TEXT 
-				or tokens[i-1]["type"] == TokenType.TOKEN_SEQUENCE):
+		if i > 0 and (tokens[i - 1]["type"] == TokenType.TEXT or tokens[i - 1]["type"] == TokenType.TOKEN_SEQUENCE):
 			continue
 		# Alias is found for the aliasable token
 		if tokens[i]["content"] in command_db._aliases.keys():
 			tokens[i] = {
-				"type": TokenType.TOKEN_SEQUENCE, 
+				"type": TokenType.TOKEN_SEQUENCE,
 				"content": tokenize(command_db._aliases[tokens[i]["content"]], command_db)
 			}
 	
@@ -383,10 +383,9 @@ static func _unalias_tokens(tokens: Array[Dictionary], command_db: GDShellComman
 		for i in tokens.size():
 			if tokens[i]["type"] == TokenType.TOKEN_SEQUENCE:
 				var token_sequence: Dictionary = tokens.pop_at(i)
-				@warning_ignore(unsafe_method_access)
 				for ii in token_sequence["content"].size():
-					tokens.insert(i+ii, token_sequence["content"][ii])
-				break # Break because the indexing has changed because of the inserting
+					tokens.insert(i + ii, token_sequence["content"][ii])
+				break  # Break because the indexing has changed because of the inserting
 	
 	return tokens
 

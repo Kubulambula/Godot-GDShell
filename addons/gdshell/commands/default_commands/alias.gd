@@ -30,7 +30,8 @@ func _main(argv: Array, data) -> Dictionary:
 
 
 func _get_manual() -> String:
-	return """
+	return (
+"""
 [b]NAME[/b]
 	{COMMAND_NAME}
 
@@ -60,7 +61,10 @@ func _get_manual() -> String:
 	
 	[i]unalias print[/i]
 		-Same as [i]alias -r print[/i]
-""".format({
-	"COMMAND_NAME": COMMAND_NAME,
-	"COMMAND_AUTO_ALIASES": COMMAND_AUTO_ALIASES,
-})
+""".format(
+			{
+				"COMMAND_NAME": COMMAND_NAME,
+				"COMMAND_AUTO_ALIASES": COMMAND_AUTO_ALIASES,
+			}
+		)
+	)

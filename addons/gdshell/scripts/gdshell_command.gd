@@ -2,16 +2,15 @@
 class_name GDShellCommand
 extends Node
 
+
 signal command_end
 
-
 const DEFAULT_COMMAND_RESULT: Dictionary = {
-		"error": 0,
-		"error_string": "No error description",
-		"data": null,
-	}
+	"error": 0,
+	"error_string": "No error description",
+	"data": null,
+}
 
-@warning_ignore(unsafe_method_access)
 var COMMAND_NAME: String = get_script().get_path().get_file().get_basename()
 var COMMAND_AUTO_ALIASES: Dictionary = {}
 
@@ -26,11 +25,11 @@ func execute(command: String) -> Dictionary:
 	return await _PARENT_PROCESS._handle_execute(command)
 
 
-func input(out: String="") -> String:
+func input(out: String = "") -> String:
 	return await _PARENT_PROCESS._handle_input(self, out)
 
 
-func output(out, append_new_line: bool=true) -> void:
+func output(out, append_new_line: bool = true) -> void:
 	_PARENT_PROCESS._handle_output(str(out), append_new_line)
 
 
@@ -43,7 +42,8 @@ func get_ui_handler_rich_text_label() -> RichTextLabel:
 
 
 func _get_manual() -> String:
-	return """\
+	return (
+"""
 [b]NAME[/b]
 	{COMMAND_NAME}
 
@@ -52,13 +52,16 @@ func _get_manual() -> String:
 
 [b]NO MANUAL[/b]
 	-Override the [b]_get_manual()[/b] function for a custom manual page.
-""".format({
-	"COMMAND_NAME": COMMAND_NAME,
-	"COMMAND_AUTO_ALIASES": COMMAND_AUTO_ALIASES,
-})
+""".format(
+			{
+				"COMMAND_NAME": COMMAND_NAME,
+				"COMMAND_AUTO_ALIASES": COMMAND_AUTO_ALIASES,
+			}
+		)
+	)
 
 
-static func argv_parse_options(argv: Array, strip_name_dashes: bool=false, next_arg_as_value: bool=false) -> Dictionary:
+static func argv_parse_options(argv: Array, strip_name_dashes: bool = false, next_arg_as_value: bool = false) -> Dictionary:
 	var options: Dictionary = {}
 	for i in argv.size():
 		if argv[i][0] == "-":
