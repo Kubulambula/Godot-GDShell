@@ -9,12 +9,9 @@ const F_PIPE_PREVIOUS: int = 1 << 1
 const F_BACKGROUND: int = 1 << 2
 const F_NEGATED: int = 1 << 3
 
-
 var _PARENT_GDSHELL: GDShellMain
 
-
 var _background_commands: Array[GDShellCommand] = []
-
 
 var _is_running_command: bool = false
 
@@ -23,7 +20,7 @@ func execute(command_sequence: Dictionary) -> Dictionary:
 	if command_sequence["status"] != GDShellCommandParser.ParserResultStatus.OK:
 		return {
 			"error": 1,
-			"error_string": "Cannot execute command sequence. See \"data\" for the command_sequence",
+			"error_string": 'Cannot execute command sequence. See "data" for the command_sequence',
 			"data": command_sequence,
 		}
 	
@@ -85,7 +82,7 @@ func execute(command_sequence: Dictionary) -> Dictionary:
 	return last_command_result
 
 
-func _execute_command(path: String, params: Dictionary, in_background: bool=false) -> Dictionary:
+func _execute_command(path: String, params: Dictionary, in_background: bool = false) -> Dictionary:
 	@warning_ignore("unsafe_method_access", "unsafe_cast")
 	var command: GDShellCommand = ResourceLoader.load(path, "GDScript").new() as GDShellCommand
 	add_child(command)
@@ -97,12 +94,16 @@ func _execute_command(path: String, params: Dictionary, in_background: bool=fals
 	var result = await command._main(params["argv"], params["data"])
 	
 	if typeof(result) != TYPE_DICTIONARY:
-		push_error("[GDShell] The '%s' command does not return a value of TYPE_DICTIONARY.
-				'GDShellCommand.DEFAULT_COMMAND_RESULT' will be returned instead." % params["argv"][0])
+		push_error("[GDShell] The '%s' command does not return a value of TYPE_DICTIONARY.\n'GDShellCommand.DEFAULT_COMMAND_RESULT' will be returned instead."
+				% params["argv"][0]
+		)
 		# This assert statement acts as a hard error in the editor
-		assert(typeof(result) == TYPE_DICTIONARY, """[GDShell] The command does not return a value of TYPE_DICTIONARY.
+		assert(
+			typeof(result) == TYPE_DICTIONARY,
+			"""[GDShell] The command does not return a value of TYPE_DICTIONARY.
 				'GDShellCommand.DEFAULT_COMMAND_RESULT' will be returned instead.
-				See the Errors for more information about the failing command.""")
+				See the Errors for more information about the failing command."""
+		)
 		result = GDShellCommand.DEFAULT_COMMAND_RESULT
 	else:
 		@warning_ignore("unsafe_method_access")
@@ -118,6 +119,7 @@ func _execute_command(path: String, params: Dictionary, in_background: bool=fals
 # GDShellCommand-GDShell interface functions #
 ##############################################
 
+
 func _handle_execute(command: String) -> Dictionary:
 	return await _PARENT_GDSHELL.execute(command)
 
@@ -128,7 +130,7 @@ func _handle_input(command: GDShellCommand, out: String) -> String:
 	return await _PARENT_GDSHELL._request_input_from_ui_handler(out)
 
 
-func _handle_output(out: String, append_new_line: bool=true) -> void:
+func _handle_output(out: String, append_new_line: bool = true) -> void:
 	_PARENT_GDSHELL._request_output_from_ui_handler(out, append_new_line)
 
 

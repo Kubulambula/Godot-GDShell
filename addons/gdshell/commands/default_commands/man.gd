@@ -25,10 +25,12 @@ func _main(argv: Array, data) -> Dictionary:
 		output("Command not found")
 		return {"error": 2, "error_string": "Command not found"}
 	
-	# It's checked if the command in in command_db, co it's ok unless someone inserts data manually
+	# It's checked if the command is in command_db, co it's ok unless someone inserts data manually
 	@warning_ignore("unsafe_cast") 
-	var command: GDShellCommand = ResourceLoader.load(
-			command_db.get_command_path(command_name), "GDScript").new() as GDShellCommand
+  var command: GDShellCommand = (
+		ResourceLoader.load(command_db.get_command_path(command_name), "GDScript").new() as GDShellCommand
+	)
+
 	var manual: String = command._get_manual() if command else ""
 	command.queue_free()
 	
@@ -41,7 +43,8 @@ func _main(argv: Array, data) -> Dictionary:
 
 
 func _get_manual() -> String:
-	return """
+	return (
+"""
 [b]NAME[/b]
 	{COMMAND_NAME}
 
@@ -60,7 +63,10 @@ func _get_manual() -> String:
 	
 	[i]man man[/i]
 		-Prints the manual for the [i]man[/i] command
-""".format({
-	"COMMAND_NAME": COMMAND_NAME,
-	"COMMAND_AUTO_ALIASES": COMMAND_AUTO_ALIASES,
-})
+""".format(
+			{
+				"COMMAND_NAME": COMMAND_NAME,
+				"COMMAND_AUTO_ALIASES": COMMAND_AUTO_ALIASES,
+			}
+		)
+	)

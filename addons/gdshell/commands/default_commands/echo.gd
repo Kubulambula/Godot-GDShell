@@ -17,7 +17,8 @@ func _main(argv: Array, data) -> Dictionary:
 
 
 func _get_manual() -> String:
-	return """
+	return (
+"""
 [b]NAME[/b]
 	{COMMAND_NAME}
 
@@ -37,7 +38,10 @@ SYNOPSIS
 	
 	[i]echo "Hello 1" World![/i]
 		 -Prints Hello 1 World!
-""".format({
-	"COMMAND_NAME": COMMAND_NAME,
-	"COMMAND_AUTO_ALIASES": COMMAND_AUTO_ALIASES,
-})
+""".format(
+			{
+				"COMMAND_NAME": COMMAND_NAME,
+				"COMMAND_AUTO_ALIASES": COMMAND_AUTO_ALIASES,
+			}
+		)
+	)
