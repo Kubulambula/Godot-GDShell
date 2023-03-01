@@ -27,7 +27,7 @@ expand_margin_right = 3.0
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_b1ltg"]
 
 [node name="gdshell_ui_handler" type="PanelContainer"]
-custom_minimum_size = Vector2i(0, 100)
+custom_minimum_size = Vector2(0, 100)
 anchors_preset = -1
 anchor_right = 1.0
 anchor_bottom = 0.666667
@@ -38,48 +38,26 @@ metadata/_edit_use_anchors_ = true
 [node name="BackgroundPanel" type="Panel" parent="."]
 unique_name_in_owner = true
 layout_mode = 2
-offset_right = 1152.0
-offset_bottom = 432.0
-grow_horizontal = 2
-grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_hcxhe")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 2
-offset_right = 1152.0
-offset_bottom = 432.0
-grow_horizontal = 2
-grow_vertical = 2
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
-offset_right = 1152.0
-offset_bottom = 432.0
-grow_horizontal = 2
-grow_vertical = 2
 size_flags_vertical = 3
 
 [node name="HSpacer0" type="Control" parent="VBoxContainer/HBoxContainer"]
-custom_minimum_size = Vector2i(3, 0)
+custom_minimum_size = Vector2(3, 0)
 layout_mode = 2
-anchors_preset = 0
-offset_right = 3.0
-offset_bottom = 432.0
 
 [node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/HBoxContainer"]
 layout_mode = 2
-offset_left = 7.0
-offset_right = 1145.0
-offset_bottom = 432.0
-grow_horizontal = 2
-grow_vertical = 2
 size_flags_horizontal = 3
 
 [node name="OutputRichTextLabel" type="RichTextLabel" parent="VBoxContainer/HBoxContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
-offset_right = 1138.0
-offset_bottom = 403.0
 size_flags_vertical = 3
 focus_mode = 2
 theme_override_fonts/normal_font = ExtResource("2_cto07")
@@ -93,11 +71,8 @@ selection_enabled = true
 
 [node name="InputBarPanel" type="Panel" parent="VBoxContainer/HBoxContainer/VBoxContainer"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2i(0, 25)
+custom_minimum_size = Vector2(0, 25)
 layout_mode = 2
-offset_top = 407.0
-offset_right = 1138.0
-offset_bottom = 432.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_t83jw")
 
 [node name="InputHBoxContainer" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/VBoxContainer/InputBarPanel"]
@@ -112,8 +87,6 @@ grow_vertical = 2
 [node name="InputPromptLabel" type="Label" parent="VBoxContainer/HBoxContainer/VBoxContainer/InputBarPanel/InputHBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
-offset_right = 183.0
-offset_bottom = 25.0
 theme_override_fonts/font = ExtResource("2_cto07")
 theme_override_styles/normal = SubResource("StyleBoxEmpty_atmjn")
 text = "gdshell@GDShell:~$ "
@@ -121,10 +94,9 @@ text = "gdshell@GDShell:~$ "
 [node name="InputLineEdit" type="LineEdit" parent="VBoxContainer/HBoxContainer/VBoxContainer/InputBarPanel/InputHBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
-offset_left = 187.0
-offset_right = 1138.0
-offset_bottom = 25.0
 size_flags_horizontal = 3
+focus_next = NodePath(".")
+focus_previous = NodePath(".")
 theme_override_fonts/font = ExtResource("2_cto07")
 theme_override_styles/normal = SubResource("StyleBoxEmpty_eg7qu")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_gepu6")
@@ -134,11 +106,8 @@ caret_blink = true
 caret_blink_interval = 0.5
 
 [node name="HSpacer1" type="Control" parent="VBoxContainer/HBoxContainer"]
-custom_minimum_size = Vector2i(3, 0)
+custom_minimum_size = Vector2(3, 0)
 layout_mode = 2
-anchors_preset = 0
-offset_left = 1149.0
-offset_right = 1152.0
-offset_bottom = 432.0
 
+[connection signal="gui_input" from="VBoxContainer/HBoxContainer/VBoxContainer/InputBarPanel/InputHBoxContainer/InputLineEdit" to="." method="_on_input_line_edit_gui_input"]
 [connection signal="text_submitted" from="VBoxContainer/HBoxContainer/VBoxContainer/InputBarPanel/InputHBoxContainer/InputLineEdit" to="." method="_on_input_line_edit_text_submitted"]

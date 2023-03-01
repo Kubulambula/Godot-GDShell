@@ -12,6 +12,8 @@ var _PARENT_GDSHELL: GDShellMain
 func submit_input(input: String) -> void:
 	_PARENT_GDSHELL._submit_input(input)
 
+func autocomplete(input: String) -> String:
+	return _PARENT_GDSHELL._autocomplete(input)
 
 func toggle_visible() -> void:
 	visible = not visible

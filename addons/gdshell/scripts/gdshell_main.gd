@@ -93,6 +93,11 @@ func _request_input_from_ui_handler(out: String = "") -> String:
 func _request_output_from_ui_handler(output: String, append_new_line: bool) -> void:
 	ui_handler._output_requested.emit(output, append_new_line)
 
+func _autocomplete(input: String) -> String:
+	var matches = command_db.get_all_command_names().filter(func(str: String): return str.begins_with(input))
+	if matches.size() > 0:
+		return matches[0]
+	return input
 
 func _submit_input(input: String) -> void:
 	if _is_command_awaiting_input:
