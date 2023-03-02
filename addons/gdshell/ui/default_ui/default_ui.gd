@@ -105,8 +105,6 @@ func _handle_output(output: String, append_new_line: bool = true) -> void:
 
 func _on_input_line_edit_text_submitted(input: String) -> void:
 	input_line_edit.clear()
-	history.push_front(input)
-	hist_index = -1
 	if _is_input_requested:
 		submit_input(input)
 		_is_input_requested = false
@@ -126,22 +124,28 @@ func _on_visibility_changed() -> void:
 	else:
 		input_line_edit.release_focus()
 
-var history: Array = []
-var hist_index = -1
-
 func set_line_edit_caret_to_end():
+	input_line_edit.grab_focus()
 	input_line_edit.caret_column = input_line_edit.text.length()
+
+func set_line_edit_caret_to_beginning():
+	input_line_edit.caret_column = 0
+	
+func text_before_caret() -> String:
+	return input_line_edit.text.substr(0, input_line_edit.caret_column)
 
 func _on_input_line_edit_gui_input(event):
 	if (event is InputEventKey and event.pressed):
 		if event.keycode == KEY_TAB:
-			input_line_edit.text = autocomplete(input_line_edit.text)
+			input_line_edit.text = autocomplete(text_before_caret())
 			set_line_edit_caret_to_end.call_deferred()
-		elif input_line_edit.caret_column == 0 and history.size() > 0:
+		elif input_line_edit.caret_column == 0:
 			if event.keycode == KEY_UP:
-				hist_index = clamp(hist_index + 1, 0, history.size() - 1)
-				input_line_edit.text = history[hist_index]
+				input_line_edit.text = history_get_next()
+				set_line_edit_caret_to_beginning.call_deferred()
 			elif event.keycode == KEY_DOWN:
-				hist_index = clamp(hist_index - 1, 0, history.size() - 1)
-				input_line_edit.text = history[hist_index]
+				input_line_edit.text = history_get_previous()
+				set_line_edit_caret_to_beginning.call_deferred()
+		else:
+			history_reset_index()
 		

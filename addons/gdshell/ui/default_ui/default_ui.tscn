@@ -33,6 +33,9 @@ anchor_right = 1.0
 anchor_bottom = 0.666667
 script = ExtResource("2_7mabp")
 input_prompt = "gdshell@GDShell:~$ "
+input_bar_color = Color(0.176471, 0.196078, 0.219608, 1)
+input_bar_uneditable_color = Color(0.145098, 0.168627, 0.203922, 1)
+background_color = Color(0.113725, 0.133333, 0.160784, 0.705882)
 metadata/_edit_use_anchors_ = true
 
 [node name="BackgroundPanel" type="Panel" parent="."]
@@ -95,8 +98,6 @@ text = "gdshell@GDShell:~$ "
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-focus_next = NodePath(".")
-focus_previous = NodePath(".")
 theme_override_fonts/font = ExtResource("2_cto07")
 theme_override_styles/normal = SubResource("StyleBoxEmpty_eg7qu")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_gepu6")
