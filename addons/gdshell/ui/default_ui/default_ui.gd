@@ -123,3 +123,28 @@ func _on_visibility_changed() -> void:
 		input_line_edit.call_deferred(&"grab_focus")
 	else:
 		input_line_edit.release_focus()
+
+func set_line_edit_caret_to_end():
+	input_line_edit.grab_focus()
+	input_line_edit.caret_column = input_line_edit.text.length()
+
+func set_line_edit_caret_to_beginning():
+	input_line_edit.caret_column = 0
+	
+func text_before_caret() -> String:
+	return input_line_edit.text.substr(0, input_line_edit.caret_column)
+
+func _on_input_line_edit_gui_input(event):
+	if (event is InputEventKey and event.pressed):
+		if event.keycode == KEY_TAB:
+			input_line_edit.text = autocomplete(text_before_caret())
+			set_line_edit_caret_to_end.call_deferred()
+		elif event.keycode == KEY_UP:
+			input_line_edit.text = history_get_next()
+			set_line_edit_caret_to_end.call_deferred()
+		elif event.keycode == KEY_DOWN:
+			input_line_edit.text = history_get_previous()
+			set_line_edit_caret_to_end.call_deferred()
+		else:
+			history_reset_index()
+		

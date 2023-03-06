@@ -35,7 +35,7 @@ func setup_with_default_values() -> void:
 	setup_command_runner()
 	setup_command_db(COMMAND_DIR_PATH)
 	setup_ui_handler(load_ui_handler_from_path(UI_HANDLER_PATH), true)
-	
+
 	if execute_autorun_on_startup:
 		execute_autorun()
 
@@ -56,7 +56,7 @@ func setup_ui_handler(handler: GDShellUIHandler, add_as_child: bool = true) -> v
 	ui_handler = handler
 	ui_handler._PARENT_GDSHELL = self
 	ui_handler.set_visible(false)
-	
+
 	if add_as_child:
 		var canvas_layer: CanvasLayer = CanvasLayer.new()
 		canvas_layer.layer = GDSHELL_CANVAS_LAYER
@@ -93,14 +93,13 @@ func _request_input_from_ui_handler(out: String = "") -> String:
 func _request_output_from_ui_handler(output: String, append_new_line: bool) -> void:
 	ui_handler._output_requested.emit(output, append_new_line)
 
-
 func _submit_input(input: String) -> void:
 	if _is_command_awaiting_input:
 		_is_command_awaiting_input = false
 		_request_output_from_ui_handler(input, true)
 		_input_submitted.emit(input)
 		return
-	
+
 	_input_buffer += input
 	var command_sequence: Dictionary = GDShellCommandParser.parse(_input_buffer, command_db)
 	match command_sequence["status"]:
