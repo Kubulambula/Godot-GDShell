@@ -139,12 +139,12 @@ func _on_input_line_edit_gui_input(event):
 		if event.keycode == KEY_TAB:
 			input_line_edit.text = autocomplete(text_before_caret())
 			set_line_edit_caret_to_end.call_deferred()
-	elif event.keycode == KEY_UP:
-		input_line_edit.text = history_get_next()
-		set_line_edit_caret_to_end.call_deferred()
-	elif event.keycode == KEY_DOWN:
-		input_line_edit.text = history_get_previous()
-		set_line_edit_caret_to_end.call_deferred()
+		elif event.keycode == KEY_UP:
+			input_line_edit.text = history_get_next()
+			set_line_edit_caret_to_end.call_deferred()
+		elif event.keycode == KEY_DOWN:
+			input_line_edit.text = history_get_previous()
+			set_line_edit_caret_to_end.call_deferred()
 		else:
 			history_reset_index()
 		
