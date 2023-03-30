@@ -12,21 +12,20 @@ class ParserResult:
 	
 	var status: Status
 	var input: String
-	var result: Variant
-	var err_index: int
+	var result: Array[Token]
+	var err_token_index: int
 	var err_string: String = ""
 	
-	func _init(_status: Status, _input: String, _result: Array[Token], _err_index: int=-1, _err_string: String=""):
+	func _init(_status: Status, _input: String, _result: Array[Token], _err_token_index: int = -1, _err_string: String = ""):
 		status = _status
 		input = _input
 		result = _result
-		err_index = _err_index
+		err_token_index = _err_token_index
 		err_string = _err_string
 
 
 class Token:
 	enum Type {
-		ERROR,
 		SPACE,
 		WORD,
 		WORD_UNTERMINATED,
@@ -59,15 +58,7 @@ static func parse(input: String, command_db: GDShellCommandDB) -> ParserResult:
 		return ParserResult.new(
 				ParserResult.Status.OK,
 				input,
-				[],
-		)
-	elif tokens[-1].type == Token.Type.ERROR:
-		return ParserResult.new(
-				ParserResult.Status.ERROR,
-				input,
 				tokens,
-				tokens[-1].start_char_index,
-				tokens[-1].content,
 		)
 	elif tokens[-1].type == Token.Type.WORD_UNTERMINATED:
 		return ParserResult.new(
@@ -75,7 +66,8 @@ static func parse(input: String, command_db: GDShellCommandDB) -> ParserResult:
 				input,
 				tokens,
 				tokens[-1].start_char_index, # This points at the start of the token - opening quote
-				tokens[-1].content,
+				"The input is not terminated with corrent quote so another appended input is required.
+				See GDShell Docs for help",
 		)
 	
 	# Filters out Token.Type.SPACE tokens because their absence simplifies next processes
@@ -99,7 +91,7 @@ static func parse(input: String, command_db: GDShellCommandDB) -> ParserResult:
 	return ParserResult.new(ParserResult.Status.OK, input, tokens)
 
 
-static func _expand_aliases(tokens: Array[Token], command_db: GDShellCommandDB, forbidden_aliases: Array[String]=[]) -> Array[Token]:
+static func _expand_aliases(tokens: Array[Token], command_db: GDShellCommandDB, forbidden_aliases: Array[String] = []) -> Array[Token]:
 	for i in tokens.size():
 		if tokens[i].type != Token.Type.WORD:
 			# try to expand the next one
@@ -133,6 +125,11 @@ static func validate_operators(tokens: Array[Token]) -> int:
 
 
 static func _is_operator_valid(tokens: Array[Token], operator_token_index: int) -> bool:
+	
+	# TODO : make sure no word is outside parenthesis
+	
+	
+	
 	if operator_token_index < 0 or operator_token_index >= tokens.size():
 		push_error("[GDShell] 'operator_token_index' (index: %s) is out of range of 'tokens' (size: %s) - Handled as an invalid operator" % [operator_token_index, tokens.size()])
 		return false
@@ -144,11 +141,14 @@ static func _is_operator_valid(tokens: Array[Token], operator_token_index: int) 
 				return false
 			# check the left operand
 			if (not (tokens[operator_token_index-1].type == Token.Type.WORD 
-					or tokens[operator_token_index-1].type == Token.Type.OPERATOR_BACKGROUND)):
+					or tokens[operator_token_index-1].type == Token.Type.OPERATOR_BACKGROUND
+					or tokens[operator_token_index-1].type == Token.Type.OPERATOR_CLOSING_PARENTHESIS)
+				):
 				return false
 			# check the right operand
 			if (not (tokens[operator_token_index+1].type == Token.Type.WORD 
-					or tokens[operator_token_index+1].type == Token.Type.OPERATOR_NOT)):
+					or tokens[operator_token_index+1].type == Token.Type.OPERATOR_NOT
+					or tokens[operator_token_index+1].type == Token.Type.OPERATOR_OPENING_PARENTHESIS)):
 				return false
 		
 		# left operators (operator operand)
@@ -180,160 +180,121 @@ static func _is_operator_valid(tokens: Array[Token], operator_token_index: int) 
 
 static func tokenize(input: String) -> Array[Token]:
 	var tokens: Array[Token] = []
-	var current: int = 0
+	var current_char: int = 0
 	
-	while current < input.length():
-		match input[current]:
+	while current_char < input.length():
+		match input[current_char]:
 			" ":
-				tokens.push_back(_tokenize_space(input, current))
+				tokens.push_back(_tokenize_space(input, current_char))
 			";":
-				tokens.push_back(_tokenize_semicolon(input, current))
+				tokens.push_back(_tokenize_semicolon(input, current_char))
 			"&":
-				tokens.push_back(_tokenize_and(input, current))
+				tokens.push_back(_tokenize_and(input, current_char))
 			"|":
-				tokens.push_back(_tokenize_pipe(input, current))
+				tokens.push_back(_tokenize_pipe(input, current_char))
 			"!":
-				tokens.push_back(_tokenize_exclamation(input, current))
+				tokens.push_back(_tokenize_exclamation(input, current_char))
 			"$":
-				tokens.push_back(_tokenize_dollar_sign(input, current))
+				tokens.push_back(_tokenize_dollar_sign(input, current_char))
 			"(", ")":
-				tokens.push_back(_tokenize_parenthesis(input, current))
+				tokens.push_back(_tokenize_parenthesis(input, current_char))
 			"\"", "\'":
-				tokens.push_back(_tokenize_quoted_text(input, current))
+				tokens.push_back(_tokenize_quote(input, current_char))
 			_:
-				tokens.push_back(_tokenize_text(input, current))
+				tokens.push_back(_tokenize_text(input, current_char))
 		
-		if tokens[-1].type == Token.Type.ERROR:
-			return tokens
-		
-		current += tokens[-1].consumed
+		current_char += tokens[-1].consumed
 	
-	return _merge_word_tokens(tokens)
+	return merge_word_tokens(tokens)
 
 
-static func _tokenize_space(_input: String, current: int) -> Token:
-	return Token.new(Token.Type.SPACE, " ", current, 1)
+static func _tokenize_space(_input: String, current_char: int) -> Token:
+	return Token.new(Token.Type.SPACE, " ", current_char, 1)
 
 
-static func _tokenize_semicolon(_input: String, current: int) -> Token:
-	return Token.new(Token.Type.OPERATOR_SEQUENCE, ";", current, 1)
+static func _tokenize_semicolon(_input: String, current_char: int) -> Token:
+	return Token.new(Token.Type.OPERATOR_SEQUENCE, ";", current_char, 1)
 
 
-static func _tokenize_and(input: String, current: int) -> Token:
-	if current < input.length()-1 and input[current+1] == "&":
-		return Token.new(Token.Type.OPERATOR_AND, "&&", current, 2)
-	return Token.new(Token.Type.OPERATOR_BACKGROUND, "&", current, 1)
+static func _tokenize_and(input: String, current_char: int) -> Token:
+	if current_char < input.length()-1 and input[current_char+1] == "&":
+		return Token.new(Token.Type.OPERATOR_AND, "&&", current_char, 2)
+	return Token.new(Token.Type.OPERATOR_BACKGROUND, "&", current_char, 1)
 
 
-static func _tokenize_pipe(input: String, current: int) -> Token:
-	if current < input.length()-1 and input[current+1] == "|":
-		return Token.new(Token.Type.OPERATOR_OR, "||", current, 2)
-	return Token.new(Token.Type.OPERATOR_PIPE, "|", current, 1)
+static func _tokenize_pipe(input: String, current_char: int) -> Token:
+	if current_char < input.length()-1 and input[current_char+1] == "|":
+		return Token.new(Token.Type.OPERATOR_OR, "||", current_char, 2)
+	return Token.new(Token.Type.OPERATOR_PIPE, "|", current_char, 1)
 
 
-static func _tokenize_exclamation(_input: String, current: int) -> Token:
-	return Token.new(Token.Type.OPERATOR_NOT, "!", current, 1)
+static func _tokenize_exclamation(_input: String, current_char: int) -> Token:
+	return Token.new(Token.Type.OPERATOR_NOT, "!", current_char, 1)
 
 
-static func _tokenize_dollar_sign(_input: String, current: int) -> Token:
-	return Token.new(Token.Type.OPERATOR_EXPAND, "$", current, 1)
+static func _tokenize_dollar_sign(_input: String, current_char: int) -> Token:
+	return Token.new(Token.Type.OPERATOR_EXPAND, "$", current_char, 1)
 
 
-static func _tokenize_parenthesis(input: String, current: int) -> Token:
-	if input[current] == "(":
-		return Token.new(Token.Type.OPERATOR_OPENING_PARENTHESIS, "(", current, 1)
+static func _tokenize_parenthesis(input: String, current_char: int) -> Token:
+	if input[current_char] == "(":
+		return Token.new(Token.Type.OPERATOR_OPENING_PARENTHESIS, "(", current_char, 1)
 	else:
-		return Token.new(Token.Type.OPERATOR_CLOSING_PARENTHESIS, ")", current, 1)
+		return Token.new(Token.Type.OPERATOR_CLOSING_PARENTHESIS, ")", current_char, 1)
 
 
-static func _tokenize_quoted_text(input: String, current: int) -> Token:
-	var start_char = current
+static func _tokenize_quote(input: String, current_char: int) -> Token:
 	var content: String = ""
-	var quote_type: String = input[current]
-	current += 1 # skip the opening quote
+	var quote_type: String = input[current_char]
 	
-	while true:
-		if current >= input.length():
+	# Skip the opening quote and start on the char right after
+	for i in range(current_char + 1, input.length()):
+		if input[i] == quote_type and input[max(0, i - 1)] != "\\":
 			return Token.new(
-					Token.Type.WORD_UNTERMINATED,
-					"unterminated token",
-					start_char,
-					content.length() + 1 # accounts for the starting quote
-				)
-		
-		if input[current] == quote_type:
-			if input[max(0, current-1)] != "\\":
-				return Token.new(
-						Token.Type.WORD,
-						content.c_unescape(),
-						start_char,
-						content.length() + 2 # accounts for the starting and ending quotes
-					)
-		
-		content += input[current]
-		current += 1
-	
-	return null
+				Token.Type.WORD,
+				content.c_unescape(),
+				current_char,
+				content.length() + 2 # accounts for the starting and ending quotes
+			)
+		content += input[i]
+	# End of input was reached without finding a closing quote
+	return Token.new(
+		Token.Type.WORD_UNTERMINATED,
+		content.c_unescape(),
+		current_char,
+		content.length() + 1 # accounts for the starting quote
+	)
 
 
-static func _tokenize_text(input: String, current: int) -> Token:
-	var start_char = current
+static func _tokenize_text(input: String, current_char: int) -> Token:
 	var content: String = ""
 	
-	while true:
-		if current == input.length() or input[current] in [" ", ";", "&", "\"", "\'", ")"]:
-			return Token.new(
-					Token.Type.WORD,
-					content.c_unescape(),
-					start_char,
-					content.length()
-			)
-		
-		if input[current] in ["|", "!", "$", "("]:
-			return Token.new(
-					Token.Type.ERROR,
-					"unexpected token",
-					start_char,
-					content.length() + 1
-			)
-		
-		content += input[current]
-		current += 1
+	for i in range(current_char, input.length()):
+		if input[i] in [" ", ";", "&", "|", "!", "$", "(", ")", "\"", "\'"]:
+			break
+		content += input[i]
 	
-	return null
+	return Token.new(
+		Token.Type.WORD,
+		content.c_unescape(),
+		current_char,
+		content.length()
+	)
 
 
-# Merges WORD tokens if they are not separated by any other token
-static func _merge_word_tokens(tokens: Array[Token]) -> Array[Token]:
-	var merged_tokens: Array[Token] = []
-	var last_token_type: Token.Type = Token.Type.ERROR
-	var word_temp: Token = Token.new(Token.Type.WORD, "", 0, -1)
-	var current: int = 0
-	while current < tokens.size():
-		if tokens[current].type == Token.Type.WORD:
-			if last_token_type == Token.Type.WORD: # Merge words
-				# Append to word_temp
-				word_temp.content += tokens[current].content
-				word_temp.consumed += tokens[current].consumed
-				current += 1
-			elif last_token_type != Token.Type.WORD: # Prepare for possible future merge
-				# Setup a new word_temp
-				word_temp.start_char_index = tokens[current].start_char_index
-				word_temp.content = tokens[current].content
-				word_temp.consumed = tokens[current].consumed
-				current += 1
-				last_token_type = Token.Type.WORD
+## Merges WORD tokens if they are not separated by any other token
+static func merge_word_tokens(tokens: Array[Token]) -> Array[Token]:
+	if tokens.is_empty():
+		return tokens
+	# We now know that tokens is not empty so we append the first token for later simplification
+	var merged_tokens: Array[Token] = [tokens[0]]
+	
+	# Start from the second token as we already appended the first
+	for i in range(1, tokens.size()):
+		if tokens[i].type == Token.Type.WORD and merged_tokens[-1].type == Token.Type.WORD:
+			merged_tokens[-1].content += tokens[i].content
+			merged_tokens[-1].consumed += tokens[i].consumed
 		else:
-			if word_temp.consumed != -1: # If the word_temp is not empty
-				# Append and then clear word_temp
-				merged_tokens.append(word_temp)
-				word_temp = Token.new(Token.Type.WORD, "", 0, -1)
-			# Append the current non-word token
-			merged_tokens.append(tokens[current])
-			last_token_type = tokens[current].type
-			current += 1
-	# Append the word_temp if it is not empty
-	if word_temp.consumed != -1:
-		merged_tokens.append(word_temp)
+			merged_tokens.append(tokens[i])
 	
 	return merged_tokens
