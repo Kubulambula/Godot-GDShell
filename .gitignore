@@ -6,6 +6,6 @@ project.godot
 tests/
 **/assets/*.import
 
-# Ignore all addons expecpt GDShell (for plugin integrations)
+# Ignore all addons except GDShell (for plugin integrations)
 addons/*
-!gdshell/*
+!gdshell/
