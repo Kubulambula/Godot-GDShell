@@ -1,13 +1,14 @@
 extends CanvasItem
 
 
-const ICON_TO_VIEWPORT_RATIO: float = 1.0 / 3.0
+const ICON_TO_VIEWPORT_RATIO: float = 0.309018
 
 var icon: Sprite2D
 
 
 func _ready() -> void:
-#	$GDShellIcon/Label.text = "Press %s to toggle GDShell" % 
+	print(InputMap.action_get_events(GDShell.UI_TOGGLE_ACTION))
+	$GDShellIcon/Label.text = "Press '%s' to toggle GDShell" % InputMap.action_get_events(GDShell.UI_TOGGLE_ACTION)[0].as_text_keycode()
 	icon = $GDShellIcon
 	get_viewport().size_changed.connect(update_icon)
 	update_icon()
@@ -21,5 +22,8 @@ func update_icon() -> void:
 	var scale_factor: float = (min_viewport_side / max_texture_side) * ICON_TO_VIEWPORT_RATIO
 	icon.scale = Vector2(scale_factor, scale_factor)
 	
-	# center the icon
-	icon.position = get_viewport_rect().size / 2
+	# position the icon in a fancy way
+	icon.position = Vector2(
+		get_viewport_rect().size.x / 2, 
+		get_viewport_rect().size.y - (get_viewport_rect().size.y / 1.618033)
+	)
