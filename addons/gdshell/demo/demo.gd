@@ -7,7 +7,6 @@ var icon: Sprite2D
 
 
 func _ready() -> void:
-	print(InputMap.action_get_events(GDShell.UI_TOGGLE_ACTION))
 	$GDShellIcon/Label.text = "Press '%s' to toggle GDShell" % InputMap.action_get_events(GDShell.UI_TOGGLE_ACTION)[0].as_text_keycode()
 	icon = $GDShellIcon
 	get_viewport().size_changed.connect(update_icon)
