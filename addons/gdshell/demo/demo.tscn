@@ -1,0 +1,29 @@
+[gd_scene load_steps=3 format=3 uid="uid://cil8b81ctftx3"]
+
+[ext_resource type="Script" path="res://addons/gdshell/demo/demo.gd" id="1_cwk1x"]
+[ext_resource type="Texture2D" uid="uid://bmmfysofbp50p" path="res://addons/gdshell/icon.png" id="2_hso4g"]
+
+[node name="GDShellDemo" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_cwk1x")
+
+[node name="GDShellIcon" type="Sprite2D" parent="."]
+texture = ExtResource("2_hso4g")
+
+[node name="Label" type="Label" parent="GDShellIcon"]
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -115.0
+offset_top = 6.0
+offset_right = -13.0
+offset_bottom = 32.0
+grow_horizontal = 2
+text = "SAMPLE TEXT"
