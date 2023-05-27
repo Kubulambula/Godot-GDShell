@@ -2,12 +2,10 @@
 extends GDShellUIHandler
 # The default ui extends a PanelContainer instead of a plain Control
 
-
 const DEFAULT_FONT: Font = preload("res://addons/gdshell/ui/fonts/roboto_mono/RobotoMono-Regular.ttf")
 const BOLD_FONT: Font = preload("res://addons/gdshell/ui/fonts/roboto_mono/RobotoMono-Bold.ttf")
 const ITALICS_FONT: Font = preload("res://addons/gdshell/ui/fonts/roboto_mono/RobotoMono-Italic.ttf")
 const BOLD_ITALICS_FONT: Font = preload("res://addons/gdshell/ui/fonts/roboto_mono/RobotoMono-BoldItalic.ttf")
-
 
 # This looks scary, doesn't it?
 @export_category("GDShell UI")
@@ -51,9 +49,7 @@ const BOLD_ITALICS_FONT: Font = preload("res://addons/gdshell/ui/fonts/roboto_mo
 @export_group("Input Bar")
 @export var input_prompt: String = "gdshell@{PROJECT_NAME}:~$ ":
 	set(value):
-		input_prompt = value.format({
-			"PROJECT_NAME": ProjectSettings.get_setting("application/config/name")
-		})
+		input_prompt = value.format({"PROJECT_NAME": ProjectSettings.get_setting("application/config/name")})
 		if not is_inside_tree():
 			await ready
 		%InputPromptLabel.text = input_prompt
@@ -75,21 +71,18 @@ const BOLD_ITALICS_FONT: Font = preload("res://addons/gdshell/ui/fonts/roboto_mo
 			await ready
 		%BackgroundPanel.get_theme_stylebox(&"panel").bg_color = value
 
-
 @onready var output_rich_text_label: RichTextLabel = %OutputRichTextLabel as RichTextLabel
 @onready var input_bar_panel: Panel = %InputBarPanel as Panel
 @onready var input_prompt_label: Label = %InputPromptLabel as Label
 @onready var input_line_edit: LineEdit = %InputLineEdit as LineEdit
 @onready var background_panel: Panel = %BackgroundPanel as Panel
 
-
 var _is_input_requested: bool = true:
 	set(value):
 		_is_input_requested = value
 		input_line_edit.editable = value
 		input_bar_panel.get_theme_stylebox(&"panel").bg_color = (
-				input_bar_color if value 
-				else input_bar_uneditable_color
+			input_bar_color if value else input_bar_uneditable_color
 		)
 
 
@@ -105,7 +98,7 @@ func _handle_input(out: String) -> void:
 	_handle_output(out, false)
 
 
-func _handle_output(output: String, append_new_line: bool=true) -> void:
+func _handle_output(output: String, append_new_line: bool = true) -> void:
 	output_rich_text_label.append_text(("%s\n" if append_new_line else "%s") % output)
 	output_rich_text_label.scroll_to_line(output_rich_text_label.get_line_count())
 
@@ -130,3 +123,28 @@ func _on_visibility_changed() -> void:
 		input_line_edit.call_deferred(&"grab_focus")
 	else:
 		input_line_edit.release_focus()
+
+func set_line_edit_caret_to_end():
+	input_line_edit.grab_focus()
+	input_line_edit.caret_column = input_line_edit.text.length()
+
+func set_line_edit_caret_to_beginning():
+	input_line_edit.caret_column = 0
+	
+func text_before_caret() -> String:
+	return input_line_edit.text.substr(0, input_line_edit.caret_column)
+
+func _on_input_line_edit_gui_input(event):
+	if (event is InputEventKey and event.pressed):
+		if event.keycode == KEY_TAB:
+			input_line_edit.text = autocomplete(text_before_caret())
+			set_line_edit_caret_to_end.call_deferred()
+		elif event.keycode == KEY_UP:
+			input_line_edit.text = history_get_next()
+			set_line_edit_caret_to_end.call_deferred()
+		elif event.keycode == KEY_DOWN:
+			input_line_edit.text = history_get_previous()
+			set_line_edit_caret_to_end.call_deferred()
+		else:
+			history_reset_index()
+		

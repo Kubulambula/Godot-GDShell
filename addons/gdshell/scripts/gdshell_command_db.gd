@@ -16,7 +16,7 @@ func add_command(path: String) -> bool:
 	return true
 
 
-func add_commands_in_directory(path: String, recursive: bool=true) -> void:
+func add_commands_in_directory(path: String, recursive: bool = true) -> void:
 	for command in get_command_file_paths_in_directory(path, recursive):
 		add_command(command)
 
@@ -30,7 +30,15 @@ func get_command_path(command_name: String) -> String:
 
 
 func get_all_command_names() -> Array[String]:
-	return _commands.keys()
+	# This is required as GD4 doesn't allow upcast from Array -> Array[String]
+	# see: https://www.reddit.com/r/godot/comments/10rqh9g/problem_with_typed_arrays_since_40_beta_17/
+	# see: https://docs.godotengine.org/en/latest/classes/class_dictionary.html#class-dictionary-method-keys
+	var keys: Array[String]
+	for key in _commands.keys():
+		if key is String:
+			keys.append(key)
+
+	return keys
 
 
 func add_alias(alias: String, command: String) -> bool:
@@ -50,7 +58,7 @@ func get_all_aliases() -> Dictionary:
 	return _aliases.duplicate()
 
 
-static func get_file_paths_in_directory(path: String, recursive: bool=true) -> Array[String]:
+static func get_file_paths_in_directory(path: String, recursive: bool = true) -> Array[String]:
 	var paths: Array[String] = []
 	var dir: DirAccess = DirAccess.open(path)
 	if dir != null:
@@ -59,17 +67,19 @@ static func get_file_paths_in_directory(path: String, recursive: bool=true) -> A
 		while path:
 			if dir.current_is_dir():
 				if recursive:
-					paths += get_file_paths_in_directory(dir.get_current_dir().path_join(path), true)
+					paths.append_array(get_file_paths_in_directory(dir.get_current_dir().path_join(path), true))
 			else:
 				paths.append(dir.get_current_dir().path_join(path))
 			path = dir.get_next()
 		dir.list_dir_end()
 	if paths.is_empty():
-		push_warning("[GDShell] No commands found in directory. Check the'GDShellCommandDB.get_file_paths_from_directory() argument'")
+		push_warning(
+			"[GDShell] No commands found in directory. Check the'GDShellCommandDB.get_file_paths_from_directory() argument'"
+		)
 	return paths
 
 
-static func get_command_file_paths_in_directory(path: String, recursive: bool=true) -> Array[String]:
+static func get_command_file_paths_in_directory(path: String, recursive: bool = true) -> Array[String]:
 	return get_file_paths_in_directory(path, recursive).filter(func(x): return is_file_gdshell_command(x))
 
 

@@ -3,18 +3,19 @@ extends GDShellCommand
 
 func _init():
 	COMMAND_AUTO_ALIASES = {
-		"cls": "clear"
+		"cls": "clear",
 	}
 
 
 func _main(_argv: Array, _data) -> Dictionary:
-	# Truly unbelieveable progrmming skills
+	# Truly unbelieveable programming skills
 	get_ui_handler_rich_text_label().clear()
 	return DEFAULT_COMMAND_RESULT
 
 
 func _get_manual() -> String:
-	return """
+	return (
+"""
 [b]NAME[/b]
 	{COMMAND_NAME}
 
@@ -30,7 +31,10 @@ func _get_manual() -> String:
 	
 	[i]cls[/i]
 		-Same as [i]clear[/i]
-""".format({
-	"COMMAND_NAME": COMMAND_NAME,
-	"COMMAND_AUTO_ALIASES": COMMAND_AUTO_ALIASES,
-})
+""".format(
+			{
+				"COMMAND_NAME": COMMAND_NAME,
+				"COMMAND_AUTO_ALIASES": COMMAND_AUTO_ALIASES,
+			}
+		)
+	)

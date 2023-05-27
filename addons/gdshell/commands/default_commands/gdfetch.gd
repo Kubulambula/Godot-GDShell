@@ -1,7 +1,8 @@
 extends GDShellCommand
 
 
-const LOGO: String = """\
+const LOGO: String = (
+"""
 						   &&&&&&&                            
 					  &&&&&       &&&&&                       
 				 &&&&&                 &&&&&                  
@@ -31,6 +32,7 @@ const LOGO: String = """\
 					 &&&&&       &&&&&&&&&&&                  
 						  &&&&&&&&&&&&&                       
 """
+)
 
 
 func _init():
@@ -51,9 +53,9 @@ func _main(argv: Array, data) -> Dictionary:
 	return {"data": info}
 
 
-func construct_output(graphics: String, info: Dictionary, skip_lines: int=3) -> String:
+func construct_output(graphics: String, info: Dictionary, skip_lines: int = 3) -> String:
 	var out: String = ""
-	var unused_info_keys: Array[String] = info.keys()
+	var unused_info_keys: Array = info.keys()
 	
 	for line in graphics.split("\n", false):
 		out += line
@@ -84,7 +86,8 @@ static func get_info() -> Dictionary:
 
 
 func _get_manual() -> String:
-	return """
+	return (
+"""
 [b]NAME[/b]
 	{COMMAND_NAME}
 
@@ -111,7 +114,10 @@ func _get_manual() -> String:
 	[i]gdfetch -s[/i]
 		-Returns the information about the current project, but does not print it to the console.
 		 Can be used as a input for other commands when called silently.
-""".format({
-	"COMMAND_NAME": COMMAND_NAME,
-	"COMMAND_AUTO_ALIASES": COMMAND_AUTO_ALIASES,
-})
+""".format(
+			{
+				"COMMAND_NAME": COMMAND_NAME,
+				"COMMAND_AUTO_ALIASES": COMMAND_AUTO_ALIASES,
+			}
+		)
+	)

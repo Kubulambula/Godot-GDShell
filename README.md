@@ -10,13 +10,13 @@
 #### ⚠️ This plugin is still in early development
 
 
-Feature-packed linux-like in-game console for development, debugging, cheats and/or any other interaction with your game.
+Simple, linux-like, all-in-one, in-game console for development, debugging, cheats and/or any other interaction with your game.
 
 
 ## 📦 Out of the box
 GDShell works right away after installation with no need for a complex setup.
 
-Add you own commands, don't reinvent the wheel and get back to the important stuff that makes your game fun.
+Add you own commands, don't reinvent the wheel and get right back to the important stuff that makes your game fun!
 
 
 
@@ -63,7 +63,7 @@ The sky is the limit here. Even if you never need any of these features, you can
 
 Every part of GDShell can be modified, extended or replaced as long as you implement the necessary methods.
 
-Nearly anything your heart desire can be done done!
+Nearly anything your heart desires can be done!
 
 
 ## 🧪 Installation
@@ -88,7 +88,7 @@ You can also checkout the Godot's [Installing plugins](https://docs.godotengine.
 ## 📚 Documentation & Tutorials
 See the **[Docs](addons/gdshell/docs/en/docs.md)** page.
 
-For command examples, you can checkout the **[default commands](https://github.com/Kubulambula/Godot-GDShell/tree/main/addons/gdshell/commands/default_commands)**.
+For command examples, you can checkout the **[default commands](/addons/gdshell/commands/default_commands)**.
 
 
 ## 👥 Contributing
