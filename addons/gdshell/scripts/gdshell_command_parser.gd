@@ -12,16 +12,30 @@ class ParserResult:
 	
 	var status: Status
 	var input: String
-	var result: Array[Token]
+	var ast: ASTNode
+	var tokens: Array[Token]
+	var rpn_tokens: Array[Token]
 	var err_token_index: int
 	var err_string: String = ""
 	
-	func _init(_status: Status, _input: String, _result: Array[Token], _err_token_index: int = -1, _err_string: String = ""):
+	func _init(_status: Status, _input: String, _ast: ASTNode, _tokens: Array[Token], _err_token_index: int = -1, _err_string: String = ""):
 		status = _status
 		input = _input
-		result = _result
+		ast = _ast
+		tokens = _tokens
 		err_token_index = _err_token_index
 		err_string = _err_string
+
+
+class ASTNode:
+	var token: Token
+	var left: ASTNode
+	var right: ASTNode
+	
+	func _init(_token: Token, _left: ASTNode = null, _right: ASTNode = null):
+		token = _token
+		left = _left
+		right = _right
 
 
 class Token:
@@ -54,128 +68,254 @@ class Token:
 
 static func parse(input: String, command_db: GDShellCommandDB) -> ParserResult:
 	var tokens: Array[Token] = tokenize(input)
-	if tokens.is_empty():
+#	if tokens.is_empty():
+#		return ParserResult.new(
+#			ParserResult.Status.OK,
+#			input,
+#			tokens,
+#		)
+	if tokens[-1].type == Token.Type.WORD_UNTERMINATED:
 		return ParserResult.new(
-				ParserResult.Status.OK,
-				input,
-				tokens,
-		)
-	elif tokens[-1].type == Token.Type.WORD_UNTERMINATED:
-		return ParserResult.new(
-				ParserResult.Status.UNTERMINATED,
-				input,
-				tokens,
-				tokens[-1].start_char_index, # This points at the start of the token - opening quote
-				"The input is not terminated with corrent quote so another appended input is required.
-				See GDShell Docs for help",
+			ParserResult.Status.UNTERMINATED,
+			input,
+			ASTNode.new(null),
+			tokens,
+			tokens.size() - 1,
+			"The input is not terminated with corrent quote so another appended input is required. See GDShell Docs for help",
 		)
 	
-	# Filters out Token.Type.SPACE tokens because their absence simplifies next processes
-	tokens = tokens.filter(func(t: Token): return t.type != Token.Type.SPACE)
+	# Expand aliases and OPERATOR_EXPAND tokens
+	tokens = expand(tokens, command_db)
 	
-#	tokens = _expand_aliases(tokens, command_db)
 	
-	# Validate all the operators
-	var err_operator_index: int = validate_operators(tokens)
-	if err_operator_index != -1:
-		printerr("Bad operator on index: ", err_operator_index)
-		return ParserResult.new(
-				ParserResult.Status.ERROR,
-				input,
-				tokens,
-				tokens[err_operator_index].start_char_index,
-				"bad operator usage",
-		)
-	printerr("operators OK")
+	var ast: ASTNode = create_ast(tokens)
 	
-	return ParserResult.new(ParserResult.Status.OK, input, tokens)
+	# Validates logic of the expression
+#	var err: Dictionary = validate_expression(tokens)
+#	if err.err_token_index != -1:
+#		return ParserResult.new(
+#			ParserResult.Status.ERROR,
+#			input,
+#			tokens,
+#			err.err_token_index,
+#			err.err_string,
+#		)
+	
+	return ParserResult.new(ParserResult.Status.OK, input, ast, tokens)
 
 
-static func _expand_aliases(tokens: Array[Token], command_db: GDShellCommandDB, forbidden_aliases: Array[String] = []) -> Array[Token]:
+
+static func expand(tokens: Array[Token], command_db: GDShellCommandDB) -> Array[Token]:
+	return tokens
+
+
+static func create_ast(tokens: Array[Token]) -> ASTNode:
+	var ast_root: ASTNode
+	var token_stack: Array = []
+	
 	for i in tokens.size():
-		if tokens[i].type != Token.Type.WORD:
-			# try to expand the next one
-			pass
+		match tokens[i].type:
+			Token.Type.SPACE:
+				break
+			Token.Type.WORD:
+				pass
+#				command_construction.append(tokens[i].content)
+			Token.Type.OPERATOR_OPENING_PARENTHESIS:
+				pass
+			Token.Type.OPERATOR_CLOSING_PARENTHESIS:
+				pass
+			Token.Type.OPERATOR_PIPE:
+				pass
+			Token.Type.OPERATOR_AND:
+				pass
+			Token.Type.OPERATOR_OR:
+				pass
+			Token.Type.OPERATOR_NOT:
+				pass
+			Token.Type.OPERATOR_BACKGROUND:
+				pass
+			Token.Type.OPERATOR_SEQUENCE:
+				pass
+			Token.Type.OPERATOR_EXPAND:
+				pass
 	
-	return []
+	
+	
+	
+	return ast_root
 
 
-static func validate_operators(tokens: Array[Token]) -> int:
+
+static func _is_operator(token: Token) -> bool:
+	return token.type in [
+		Token.Type.OPERATOR_AND,
+		Token.Type.OPERATOR_BACKGROUND,
+		Token.Type.OPERATOR_OR,
+		Token.Type.OPERATOR_PIPE,
+		Token.Type.OPERATOR_NOT,
+		Token.Type.OPERATOR_SEQUENCE,
+	]
+
+
+
+# !(false || echo a) && echo b
+
+# man idk& && ((echo "success"); echo ":)") || (echo "failed"; echo ":(") ; !true& && echo hello
+# (true --idk&) && ((echo "success"); (echo ":)")) || ((echo "failed"); (echo ":(")) ; (!true&) && (echo hello)
+
+
+## Returns the index and error message for the first invalid operator 
+#static func validate_expression(tokens: Array[Token]) -> Dictionary:
+#	var err: Dictionary = {
+#		"err_token_index": -1,
+#		"err_string": ""
+#	}
+#
+#	err = _validate_parentheses(tokens)
+#	if err.err_token_index != -1:
+#		return err
+#
+#	for i in tokens.size():
+#		match tokens[i].type:
+#			Token.Type.OPERATOR_PIPE:
+#				err = _validate_pipe(tokens, i)
+#			Token.Type.OPERATOR_AND:
+#				err = _validate_and(tokens, i)
+#			Token.Type.OPERATOR_OR:
+#				err = _validate_or(tokens, i)
+#			Token.Type.OPERATOR_NOT:
+#				err = _validate_not(tokens, i)
+#			Token.Type.OPERATOR_BACKGROUND:
+#				err = _validate_background(tokens, i)
+#			Token.Type.OPERATOR_SEQUENCE:
+#				err = _validate_sequence(tokens, i)
+#			Token.Type.OPERATOR_EXPAND:
+#				pass
+#			_: # SPACE, WORD, WORD_UNTERMINATED, OPERATOR_OPENING_PARENTHESIS, OPERATOR_CLOSING_PARENTHESIS
+#				pass
+#
+#		if err.err_token_index != -1:
+#			return err
+#
+#	return err
+
+
+
+static func _validate_parentheses(tokens: Array[Token]) -> Dictionary:
 	var parenthesis_level: int = 0
-	var open_parenthesis_index: int = -1
+	var firt_opening_parenthesis_index: int = -1
 	
 	for i in tokens.size():
-		if tokens[i].type == Token.Type.WORD:
-			continue
-		if not _is_operator_valid(tokens, i):
-			return i
-			
-		# validate parenthesis pairs
 		if tokens[i].type == Token.Type.OPERATOR_OPENING_PARENTHESIS:
-			if parenthesis_level == 0:
-				open_parenthesis_index = i # tracks the parenthesis that would be closed last
 			parenthesis_level += 1
-			
+			if firt_opening_parenthesis_index == -1:
+				firt_opening_parenthesis_index = i
 		elif tokens[i].type == Token.Type.OPERATOR_CLOSING_PARENTHESIS:
 			parenthesis_level -= 1
-			if parenthesis_level < 0:
-				return i # more closing parenthesis than opening ones
-		
-	return -1 if parenthesis_level == 0 else open_parenthesis_index
+			if parenthesis_level < 0: # Found closing parenthesis with no opening one
+				return {
+					"err_token_index": i,
+					"err_string": "Closing \")\" token on index [%d] does not have an opening counterpart." % i,
+				}
+	
+	if parenthesis_level != 0: # Did not find a closing parenthesis for all opening parentheses
+		return {
+			"err_token_index": firt_opening_parenthesis_index,
+			"err_string": "Opening \"(\" token on index [%d] does not have a closing counterpart." % firt_opening_parenthesis_index,
+		}
+	
+	return {
+		"err_token_index": -1,
+		"err_string": ""
+	}
 
 
-static func _is_operator_valid(tokens: Array[Token], operator_token_index: int) -> bool:
-	
-	# TODO : make sure no word is outside parenthesis
-	
-	
-	
-	if operator_token_index < 0 or operator_token_index >= tokens.size():
-		push_error("[GDShell] 'operator_token_index' (index: %s) is out of range of 'tokens' (size: %s) - Handled as an invalid operator" % [operator_token_index, tokens.size()])
-		return false
-	
-	match tokens[operator_token_index].type:
-		# binary operators (operand operator operand)
-		Token.Type.OPERATOR_PIPE, Token.Type.OPERATOR_AND, Token.Type.OPERATOR_OR:
-			if operator_token_index-1 < 0 or operator_token_index+1 >= tokens.size():
-				return false
-			# check the left operand
-			if (not (tokens[operator_token_index-1].type == Token.Type.WORD 
-					or tokens[operator_token_index-1].type == Token.Type.OPERATOR_BACKGROUND
-					or tokens[operator_token_index-1].type == Token.Type.OPERATOR_CLOSING_PARENTHESIS)
-				):
-				return false
-			# check the right operand
-			if (not (tokens[operator_token_index+1].type == Token.Type.WORD 
-					or tokens[operator_token_index+1].type == Token.Type.OPERATOR_NOT
-					or tokens[operator_token_index+1].type == Token.Type.OPERATOR_OPENING_PARENTHESIS)):
-				return false
-		
-		# left operators (operator operand)
-		Token.Type.OPERATOR_NOT, Token.Type.OPERATOR_EXPAND:
-			if operator_token_index+1 >= tokens.size():
-				return false
-			# check the right operand
-			if tokens[operator_token_index+1].type != Token.Type.WORD:
-				return false
-		
-		# right operators (operand operator)
-		Token.Type.OPERATOR_BACKGROUND, Token.Type.OPERATOR_SEQUENCE:
-			if operator_token_index-1 < 0:
-				return false
-			# check the left operand
-			if tokens[operator_token_index-1].type != Token.Type.WORD:
-				return false
-		
-		# standalone operators
-		Token.Type.OPERATOR_OPENING_PARENTHESIS, Token.Type.OPERATOR_CLOSING_PARENTHESIS:
-			return true
-		
-		_:
-			push_error("[GDHell] Non-operator token: 'Token.Type.%s'" % str(Token.Type.find_key(tokens[operator_token_index].type)))
-			return false
-	
-	return true
+
+#static func _expand_aliases(tokens: Array[Token], command_db: GDShellCommandDB, forbidden_aliases: Array[String] = []) -> Array[Token]:
+#	for i in tokens.size():
+#		if tokens[i].type != Token.Type.WORD:
+#			# try to expand the next one
+#			pass
+#
+#	return []
+#
+#
+#static func validate_operators(tokens: Array[Token]) -> int:
+#	var parenthesis_level: int = 0
+#	var open_parenthesis_index: int = -1
+#
+#	for i in tokens.size():
+#		if tokens[i].type == Token.Type.WORD:
+#			continue
+#		if not _is_operator_valid(tokens, i):
+#			return i
+#
+#		# validate parenthesis pairs
+#		if tokens[i].type == Token.Type.OPERATOR_OPENING_PARENTHESIS:
+#			if parenthesis_level == 0:
+#				open_parenthesis_index = i # tracks the parenthesis that would be closed last
+#			parenthesis_level += 1
+#
+#		elif tokens[i].type == Token.Type.OPERATOR_CLOSING_PARENTHESIS:
+#			parenthesis_level -= 1
+#			if parenthesis_level < 0:
+#				return i # more closing parenthesis than opening ones
+#
+#	return -1 if parenthesis_level == 0 else open_parenthesis_index
+#
+#
+#static func _is_operator_valid(tokens: Array[Token], operator_token_index: int) -> bool:
+#
+#	# TODO : make sure no word is outside parenthesis
+#
+#
+#
+#	if operator_token_index < 0 or operator_token_index >= tokens.size():
+#		push_error("[GDShell] 'operator_token_index' (index: %s) is out of range of 'tokens' (size: %s) - Handled as an invalid operator" % [operator_token_index, tokens.size()])
+#		return false
+#
+#	match tokens[operator_token_index].type:
+#		# binary operators (operand operator operand)
+#		Token.Type.OPERATOR_PIPE, Token.Type.OPERATOR_AND, Token.Type.OPERATOR_OR:
+#			if operator_token_index-1 < 0 or operator_token_index+1 >= tokens.size():
+#				return false
+#			# check the left operand
+#			if (not (tokens[operator_token_index-1].type == Token.Type.WORD 
+#					or tokens[operator_token_index-1].type == Token.Type.OPERATOR_BACKGROUND
+#					or tokens[operator_token_index-1].type == Token.Type.OPERATOR_CLOSING_PARENTHESIS)
+#				):
+#				return false
+#			# check the right operand
+#			if (not (tokens[operator_token_index+1].type == Token.Type.WORD 
+#					or tokens[operator_token_index+1].type == Token.Type.OPERATOR_NOT
+#					or tokens[operator_token_index+1].type == Token.Type.OPERATOR_OPENING_PARENTHESIS)):
+#				return false
+#
+#		# left operators (operator operand)
+#		Token.Type.OPERATOR_NOT, Token.Type.OPERATOR_EXPAND:
+#			if operator_token_index+1 >= tokens.size():
+#				return false
+#			# check the right operand
+#			if tokens[operator_token_index+1].type != Token.Type.WORD:
+#				return false
+#
+#		# right operators (operand operator)
+#		Token.Type.OPERATOR_BACKGROUND, Token.Type.OPERATOR_SEQUENCE:
+#			if operator_token_index-1 < 0:
+#				return false
+#			# check the left operand
+#			if tokens[operator_token_index-1].type != Token.Type.WORD:
+#				return false
+#
+#		# standalone operators
+#		Token.Type.OPERATOR_OPENING_PARENTHESIS, Token.Type.OPERATOR_CLOSING_PARENTHESIS:
+#			return true
+#
+#		_:
+#			push_error("[GDHell] Non-operator token: 'Token.Type.%s'" % str(Token.Type.find_key(tokens[operator_token_index].type)))
+#			return false
+#
+#	return true
 
 
 static func tokenize(input: String) -> Array[Token]:
