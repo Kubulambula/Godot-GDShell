@@ -12,20 +12,20 @@ func _init():
 	}
 
 
-func _main(argv: Array, _data) -> Dictionary:
+func _main(argv: Array, _data) -> CommandResult:
 	if not argv.size() > 1:
 		output("What manual page do you want? For example, try '[b]man man[/b]'\nTo see the list of all commands run '[b]man --list[/b]'")
-		return DEFAULT_COMMAND_RESULT
+		return CommandResult.new()
 	
 	var options: Dictionary = GDShellCommand.argv_parse_options(argv, true, false)
 	
 	if LIST_FLAGS.any(func(option): return option in options): # If any LIST_FLAG is in options
 		output("[b][color=AQUAMARINE]Available GDShell commands:[/color][/b]")
-		for command_name in _PARENT_PROCESS._PARENT_GDSHELL.command_db.get_all_command_names():
+		for command_name in _PARENT_COMMAND_RUNNER._PARENT_GDSHELL.command_db.get_all_command_names():
 			output("[color=BISQUE]%s[/color]" % command_name)
 	
 	if not argv.size() > options.keys().size() + 1:
-		return DEFAULT_COMMAND_RESULT
+		return CommandResult.new()
 	
 	var manual: String = ""
 	for i in range(1, argv.size()): # first non-option arg
@@ -34,17 +34,17 @@ func _main(argv: Array, _data) -> Dictionary:
 			break
 	
 	if manual.is_empty():
-		return {"error": 1, "error_string": "No manual", "data": null}
+		return CommandResult.new(1, "No manual", null)
 	
 	if not SILENT_FLAGS.any(func(option): return option in options): # If NOT any LIST_FLAG is in options
 		var line: int = get_ui_handler_rich_text_label().get_line_count()
 		output(manual)
 		get_ui_handler_rich_text_label().call_deferred(&"scroll_to_line", line)
-	return {"data": manual}
+	return CommandResult.new(0, "", manual)
 
 
 func get_command_manual(command_name: String) -> String:
-	var command_db: GDShellCommandDB = _PARENT_PROCESS._PARENT_GDSHELL.command_db
+	var command_db: GDShellCommandDB = _PARENT_COMMAND_RUNNER._PARENT_GDSHELL.command_db
 	# unalias the name
 	while true:
 		if not command_name in command_db._aliases:

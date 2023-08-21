@@ -1,7 +1,7 @@
 extends GDShellCommand
 
 
-func _main(argv: Array, data) -> Dictionary:
+func _main(argv: Array, data) -> CommandResult:
 	var out: String = ""
 	
 	if data != null:
@@ -13,7 +13,7 @@ func _main(argv: Array, data) -> Dictionary:
 		output(out)
 	
 	@warning_ignore("incompatible_ternary")
-	return {"data": null if out.is_empty() else out}
+	return CommandResult.new(0, "", null if out.is_empty() else out)
 
 
 func _get_manual() -> String:

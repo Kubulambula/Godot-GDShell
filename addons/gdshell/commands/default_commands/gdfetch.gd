@@ -41,7 +41,7 @@ func _init():
 	}
 
 
-func _main(argv: Array, data) -> Dictionary:
+func _main(argv: Array, data) -> CommandResult:
 	var info: Dictionary = get_info()
 	
 	if "--i-am-a-linux-nerd-and-tried-to-use-neofetch" in argv:
@@ -50,7 +50,7 @@ func _main(argv: Array, data) -> Dictionary:
 	if not ("-s" in argv or "--silent" in argv):
 		output(construct_output(LOGO, info), false)
 	
-	return {"data": info}
+	return CommandResult.new(0, "", info)
 
 
 func construct_output(graphics: String, info: Dictionary, skip_lines: int = 3) -> String:

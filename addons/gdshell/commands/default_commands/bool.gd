@@ -1,15 +1,16 @@
 extends GDShellCommand
 
 
-const TRUE: Dictionary = {
-	"error": 0,
-	"data": "true",
-}
-const FALSE: Dictionary = {
-	"error": 1,
-	"error_string": "This is not an error, but false.",
-	"data": "false",
-}
+var TRUE: CommandResult = CommandResult.new(
+	0,
+	"",
+	true
+)
+var FALSE: CommandResult = CommandResult.new(
+	1,
+	"This is not an error, but false from bool command.",
+	false
+)
 
 
 func _init():
@@ -20,7 +21,7 @@ func _init():
 	}
 
 
-func _main(argv: Array, data) -> Dictionary:
+func _main(argv: Array, _data) -> CommandResult:
 	if not argv.size() > 1:
 		return TRUE
 	
@@ -33,11 +34,11 @@ func _main(argv: Array, data) -> Dictionary:
 			randomize()
 			return TRUE if randi() % 2 else FALSE
 		_:
-			return {
-				"error": ERR_INVALID_PARAMETER,
-				"error_string": "Parameter '%s' not recognized" % argv[1],
-				"data": null,
-			}
+			return CommandResult.new(
+				ERR_INVALID_PARAMETER,
+				"Parameter '%s' not recognized" % argv[1],
+				null
+			)
 
 
 func _get_manual() -> String:
