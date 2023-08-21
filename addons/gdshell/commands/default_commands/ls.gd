@@ -60,7 +60,7 @@ func output_tree(path) -> Dictionary:
 	elif regex_tscn_result != null:
 		node = load(path).instantiate()
 		if node == null:
-			return {"error": 7, "error_string": "File not found"}
+			return {"error": ERR_FILE_NOT_FOUND, "error_string": "File not found"}
 	else:
 		output('[color="red"] Path is not tscn file [/color]')
 		return {"error": ERR_PARAMETER_RANGE_ERROR, "error_string": "Node not found"}
