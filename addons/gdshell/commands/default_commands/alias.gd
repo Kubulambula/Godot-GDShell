@@ -15,17 +15,12 @@ func _main(argv: Array, data) -> Dictionary:
 		return {"error": 1, "error_string": "Not enough arguments"}
 	
 	if "-r" in argv[1] or "--remove" in argv[1]:
-		success = _PARENT_PROCESS._PARENT_GDSHELL.command_db.remove_alias(argv[2])
-		if success:
-			output("Alias '%s' removed" % argv[2])
+		_PARENT_PROCESS._PARENT_GDSHELL.command_db.remove_alias(argv[2])
 		return DEFAULT_COMMAND_RESULT
 	
-	success = _PARENT_PROCESS._PARENT_GDSHELL.command_db.add_alias(argv[1], argv[2])
-	if not success:
-		output("Could not add alias '%s'" % argv[1])
-		return {"error": 1, "error_string": "Could not add alias"}
+	_PARENT_PROCESS._PARENT_GDSHELL.command_db.add_alias(argv[1], argv[2])
 	
-	output("Alias '%s' added" % argv[1])
+#	output("Alias '%s' added" % argv[1])
 	return DEFAULT_COMMAND_RESULT
 
 
