@@ -22,7 +22,6 @@ func get_tree_dict(node: Node) -> Dictionary:
 	node_dict["scene_tree_path"] = node.get_path()
 	node_dict["parent"] = node.get_parent().name if node.get_parent() != null else "none"
 	node_dict["children"] = []
-	var node_children = []
 	
 	var child_count := node.get_child_count()
 	
@@ -46,39 +45,13 @@ func output_tree_dict(tree_dict: Dictionary, parent:= "", prefix:= "", root_node
 	
 	var dict_len:= len(tree_dict["children"]) if !tree_dict["is_instanced_scene"] or start else 0
 	
-	for i in range(dict_len):
+	for i in dict_len:
 		var item = tree_dict["children"][i]
 		if item is Dictionary:
 			var num_of_siblings:= dict_len
 			if item["parent"] != root_node:
 				new_prefix = "   " if last or start else " ┃ "
 			output_tree_dict(item, item["parent"], prefix + new_prefix, root_node, false, i == num_of_siblings - 1)
-
-func _get_all_children_old(node: Node, root_node := node, prefix := "", last := true, start := true):
-	var new_prefix := "" if start else " ┖╴" if last else " ┠╴"
-
-	root_node = node if start else root_node
-	var postfix = " (" + node.get_class() + ")"
-
-	if node.scene_file_path != "" and node != root_node:
-		postfix += " 🎬"
-	if node.get_script() != null:
-		postfix += " 📜"
-	output(prefix + new_prefix + node.name + postfix)
-
-	var child_count := node.get_child_count()
-
-	if node.scene_file_path == "" or node == root_node:
-		for i in range(child_count):
-			var child = node.get_child(i)
-			var num_of_siblings = child_count - 1
-			var is_last = i == num_of_siblings
-
-			if child.get_parent() != root_node:
-				new_prefix = "  " if last else " ┃ "
-			_get_all_children_old(child, root_node, prefix + new_prefix, is_last, false)
-
-	return []
 
 
 func output_tree(path: String) -> Dictionary:
