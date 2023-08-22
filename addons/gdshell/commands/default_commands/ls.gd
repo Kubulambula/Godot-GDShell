@@ -34,7 +34,22 @@ func get_tree_dict(node: Node) -> Dictionary:
 	return node_dict
 
 
-func _get_all_children(node: Node, root_node := node, prefix := "", last := true, start := true):
+func output_tree_dict(tree_dict: Dictionary, parent:= "", prefix:= "", root_node:= "", start:= true, last:= false):
+	var new_prefix := "" if start else " ┖╴" if last else " ┠╴"
+	root_node = tree_dict["name"] if start else root_node
+	output(prefix + new_prefix + tree_dict["name"])
+	
+	var dict_len:= len(tree_dict["children"]) if !tree_dict["is_instanced_scene"] or start else 0
+	
+	for i in range(dict_len):
+		var item = tree_dict["children"][i]
+		if item is Dictionary:
+			var num_of_siblings:= dict_len
+			if item["parent"] != root_node:
+				new_prefix = "   " if last or start else " ┃ "
+			output_tree_dict(item, item["parent"], prefix + new_prefix, root_node, false, i == num_of_siblings - 1)
+
+func _get_all_children_old(node: Node, root_node := node, prefix := "", last := true, start := true):
 	var new_prefix := "" if start else " ┖╴" if last else " ┠╴"
 
 	root_node = node if start else root_node
@@ -56,7 +71,7 @@ func _get_all_children(node: Node, root_node := node, prefix := "", last := true
 
 			if child.get_parent() != root_node:
 				new_prefix = "  " if last else " ┃ "
-			_get_all_children(child, root_node, prefix + new_prefix, is_last, false)
+			_get_all_children_old(child, root_node, prefix + new_prefix, is_last, false)
 
 	return []
 
@@ -79,7 +94,7 @@ func output_tree(path: String) -> Dictionary:
 		output('[color="red"] Wrong path, node not found [/color]')
 		return {"error": ERR_FILE_NOT_FOUND, "error_string": "Node not found"}
 
-	output(JSON.stringify(get_tree_dict(node)))
+	output_tree_dict(get_tree_dict(node))
 	#_get_all_children(node)
 	if is_scn_file:
 		node.queue_free()
