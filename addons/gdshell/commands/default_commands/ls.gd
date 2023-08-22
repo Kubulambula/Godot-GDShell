@@ -37,7 +37,12 @@ func get_tree_dict(node: Node) -> Dictionary:
 func output_tree_dict(tree_dict: Dictionary, parent:= "", prefix:= "", root_node:= "", start:= true, last:= false):
 	var new_prefix := "" if start else " ┖╴" if last else " ┠╴"
 	root_node = tree_dict["name"] if start else root_node
-	output(prefix + new_prefix + tree_dict["name"])
+	var postfix = " (" + tree_dict["type"] + ") "
+	if tree_dict["is_instanced_scene"] and tree_dict["name"] != root_node:
+		postfix += " 🎬"
+	if tree_dict["has_script"]:
+		postfix += " 📜"
+	output(prefix + new_prefix + tree_dict["name"] + postfix)
 	
 	var dict_len:= len(tree_dict["children"]) if !tree_dict["is_instanced_scene"] or start else 0
 	
