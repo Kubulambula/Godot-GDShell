@@ -51,7 +51,11 @@ func output_tree_dict(tree_dict: Dictionary, parent:= "", prefix:= "", root_node
 	# Couldn't figure out how to connect meta_clicked signal
 	#var meta: String = "[url=" + tree_dict["scene_tree_path"] + "]"
 	#var name_output: String = meta + tree_dict["name"] + "[/url]"
-	var name_output: String = "[hint=" + tree_dict["scene_tree_path"] + "]" + tree_dict["name"] + "[/hint]"
+	var name_output
+	if tree_dict["scene_tree_path"] != "":
+		name_output = "[hint=" + tree_dict["scene_tree_path"] + "]" + tree_dict["name"] + "[/hint]"
+	else:
+		name_output = tree_dict["name"]
 	output(prefix + new_prefix + name_output + postfix)
 	
 	var dict_len:= len(tree_dict["children"]) if !tree_dict["is_instanced_scene"] or start else 0
