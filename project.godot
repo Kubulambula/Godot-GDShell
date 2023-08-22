@@ -13,7 +13,7 @@ config_version=5
 config/name="GDShell"
 config/description="Feature-packed customizable in-game console for development, debugging, cheats, etc... for Godot 4"
 run/main_scene="res://addons/gdshell/demo/demo.tscn"
-config/features=PackedStringArray("4.0", "Forward Plus")
+config/features=PackedStringArray("4.1", "Forward Plus")
 config/icon="res://addons/gdshell/icon.png"
 
 [autoload]
@@ -23,11 +23,11 @@ GDShell="*res://addons/gdshell/scripts/gdshell_main.gd"
 [debug]
 
 gdscript/warnings/exclude_addons=false
-gdscript/warnings/return_value_discarded=1
 gdscript/warnings/unsafe_property_access=1
 gdscript/warnings/unsafe_method_access=1
 gdscript/warnings/unsafe_cast=1
 gdscript/warnings/unsafe_call_argument=1
+gdscript/warnings/return_value_discarded=1
 
 [editor_plugins]
 
