@@ -4,6 +4,8 @@ extends GDShellCommand
 func _main(argv: Array, data) -> Dictionary:
 	var path: String
 	
+	# If additional functionality is added, this should be moved to it's own function
+	# But i think i addressed most of what an ls command could do
 	var starting_node = get_starting_node(argv)
 	if starting_node is Dictionary:
 		return starting_node
@@ -18,10 +20,11 @@ func get_tree_dict(node: Node) -> Dictionary:
 	var node_dict = {}
 	node_dict["name"] = node.name
 	node_dict["has_script"] = node.get_script() != null
+	node_dict["script_file"] = node.get_script().get_path().get_file() if node_dict["has_script"] else "none"
 	node_dict["type"] = node.get_class()
 	node_dict["is_instanced_scene"] = node.scene_file_path != ""
-	node_dict["scene_file_path"] = node.scene_file_path
-	node_dict["scene_tree_path"] = node.get_path()
+	node_dict["scene_file_path"] = str(node.scene_file_path)
+	node_dict["scene_tree_path"] = str(node.get_path())
 	node_dict["parent"] = node.get_parent().name if node.get_parent() != null else "none"
 	node_dict["children"] = []
 	
@@ -42,8 +45,13 @@ func output_tree_dict(tree_dict: Dictionary, parent:= "", prefix:= "", root_node
 	if tree_dict["is_instanced_scene"] and tree_dict["name"] != root_node:
 		postfix += " 🎬"
 	if tree_dict["has_script"]:
-		postfix += " 📜"
-	output(prefix + new_prefix + tree_dict["name"] + postfix)
+		postfix += "[hint=" + tree_dict["script_file"] + "] 📜 [/hint]"
+	
+	# Couldn't figure out how to connect meta_clicked signal
+	#var meta: String = "[url=" + tree_dict["scene_tree_path"] + "]"
+	#var name_output: String = meta + tree_dict["name"] + "[/url]"
+	var name_output: String = tree_dict["name"]
+	output(prefix + new_prefix + name_output + postfix)
 	
 	var dict_len:= len(tree_dict["children"]) if !tree_dict["is_instanced_scene"] or start else 0
 	
@@ -54,10 +62,6 @@ func output_tree_dict(tree_dict: Dictionary, parent:= "", prefix:= "", root_node
 			if item["parent"] != root_node:
 				new_prefix = "   " if last or start else " ┃ "
 			output_tree_dict(item, item["parent"], prefix + new_prefix, root_node, false, i == num_of_siblings - 1)
-
-
-func output_tree(argv: Array) -> Dictionary:
-	return {}
 
 
 func get_starting_node(argv: Array):
@@ -96,14 +100,3 @@ func get_starting_node(argv: Array):
 		return {"error": ERR_DOES_NOT_EXIST, "error_string": "Node not found"}
 
 	return node
-
-
-
-
-
-
-
-
-
-
-
