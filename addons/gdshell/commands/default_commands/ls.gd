@@ -11,7 +11,8 @@ func _main(argv: Array, data) -> Dictionary:
 		return starting_node
 	var tree_dict = get_tree_dict(starting_node)
 	output_tree_dict(tree_dict)
-
+	
+	data = tree_dict
 	return {}
 
 
@@ -20,7 +21,7 @@ func get_tree_dict(node: Node) -> Dictionary:
 	var node_dict = {}
 	node_dict["name"] = node.name
 	node_dict["has_script"] = node.get_script() != null
-	node_dict["script_file"] = node.get_script().get_path().get_file() if node_dict["has_script"] else "none"
+	node_dict["script_file"] = node.get_script().get_path() if node_dict["has_script"] else "none"
 	node_dict["type"] = node.get_class()
 	node_dict["is_instanced_scene"] = node.scene_file_path != ""
 	node_dict["scene_file_path"] = str(node.scene_file_path)
@@ -43,14 +44,14 @@ func output_tree_dict(tree_dict: Dictionary, parent:= "", prefix:= "", root_node
 	root_node = tree_dict["name"] if start else root_node
 	var postfix = " (" + tree_dict["type"] + ") "
 	if tree_dict["is_instanced_scene"] and tree_dict["name"] != root_node:
-		postfix += " 🎬"
+		postfix += "[hint=" + tree_dict["scene_file_path"] + "] 🎬[/hint]"
 	if tree_dict["has_script"]:
-		postfix += "[hint=" + tree_dict["script_file"] + "] 📜 [/hint]"
+		postfix += "[hint=" + tree_dict["script_file"] + "] 📜[/hint]"
 	
 	# Couldn't figure out how to connect meta_clicked signal
 	#var meta: String = "[url=" + tree_dict["scene_tree_path"] + "]"
 	#var name_output: String = meta + tree_dict["name"] + "[/url]"
-	var name_output: String = tree_dict["name"]
+	var name_output: String = "[hint=" + tree_dict["scene_tree_path"] + "]" + tree_dict["name"] + "[/hint]"
 	output(prefix + new_prefix + name_output + postfix)
 	
 	var dict_len:= len(tree_dict["children"]) if !tree_dict["is_instanced_scene"] or start else 0

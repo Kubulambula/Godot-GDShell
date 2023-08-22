@@ -27,9 +27,3 @@ offset_right = -13.0
 offset_bottom = 32.0
 grow_horizontal = 2
 text = "SAMPLE TEXT"
-
-[node name="root" type="Control" parent="GDShellIcon"]
-layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
