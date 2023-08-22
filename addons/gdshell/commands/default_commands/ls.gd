@@ -11,6 +11,29 @@ func _main(argv: Array, data) -> Dictionary:
 	return {}
 
 
+func get_tree_dict(node: Node) -> Dictionary:
+	#root_node = node if start else root_node
+	var node_dict = {}
+	node_dict["name"] = node.name
+	node_dict["has_script"] = node.get_script() != null
+	node_dict["type"] = node.get_class()
+	node_dict["is_instanced_scene"] = node.scene_file_path != ""
+	node_dict["scene_file_path"] = node.scene_file_path
+	node_dict["scene_tree_path"] = node.get_path()
+	node_dict["parent"] = node.get_parent().name if node.get_parent() != null else "none"
+	node_dict["children"] = []
+	var node_children = []
+	
+	var child_count := node.get_child_count()
+	
+	for i in child_count:
+		#output(get_tree_dict(node.get_child(i), tree_dict, counter))
+		node_dict["children"].append(get_tree_dict(node.get_child(i)))
+
+	
+	return node_dict
+
+
 func _get_all_children(node: Node, root_node := node, prefix := "", last := true, start := true):
 	var new_prefix := "" if start else " ┖╴" if last else " ┠╴"
 
@@ -42,7 +65,6 @@ func output_tree(path: String) -> Dictionary:
 	var node: Node
 	var is_resource_path = path.begins_with("res://")
 	var is_scn_file = path.ends_with(".tscn") or path.ends_with(".scn")
-	print_debug(path)
 	if !is_resource_path and !is_scn_file:
 		node = get_node(path)
 	elif is_scn_file:
@@ -57,7 +79,8 @@ func output_tree(path: String) -> Dictionary:
 		output('[color="red"] Wrong path, node not found [/color]')
 		return {"error": ERR_FILE_NOT_FOUND, "error_string": "Node not found"}
 
-	_get_all_children(node)
+	output(JSON.stringify(get_tree_dict(node)))
+	#_get_all_children(node)
 	if is_scn_file:
 		node.queue_free()
 	return {}
@@ -84,7 +107,7 @@ func get_actual_path(argv) -> String:
 		_:
 			path = argv[1]
 
-	if path.begins_with("root"):
+	if path.begins_with("root") or path.begins_with("/root"):
 		path = "/" + path
 	else:
 		path = str(current_scene_path) + "/" + path
