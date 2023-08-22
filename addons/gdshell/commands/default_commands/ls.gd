@@ -3,10 +3,12 @@ extends GDShellCommand
 
 func _main(argv: Array, data) -> Dictionary:
 	var path: String
-	var options := argv_parse_options(argv, true)
-	path = get_actual_path(argv)
-
-	output_tree(path)
+	
+	var starting_node = get_starting_node(argv)
+	if starting_node is Dictionary:
+		return starting_node
+	var tree_dict = get_tree_dict(starting_node)
+	output_tree_dict(tree_dict)
 
 	return {}
 
@@ -54,55 +56,54 @@ func output_tree_dict(tree_dict: Dictionary, parent:= "", prefix:= "", root_node
 			output_tree_dict(item, item["parent"], prefix + new_prefix, root_node, false, i == num_of_siblings - 1)
 
 
-func output_tree(path: String) -> Dictionary:
-	var node: Node
-	var is_resource_path = path.begins_with("res://")
-	var is_scn_file = path.ends_with(".tscn") or path.ends_with(".scn")
-	if !is_resource_path and !is_scn_file:
-		node = get_node(path)
-	elif is_scn_file:
-		node = load(path).instantiate()
-		if node == null:
-			return {"error": ERR_FILE_NOT_FOUND, "error_string": "File not found"}
-	else:
-		output('[color="red"] Path is not a tscn or scn file [/color]')
-		return {"error": ERR_PARAMETER_RANGE_ERROR, "error_string": "Node not found"}
-
-	if node == null:
-		output('[color="red"] Wrong path, node not found [/color]')
-		return {"error": ERR_FILE_NOT_FOUND, "error_string": "Node not found"}
-
-	output_tree_dict(get_tree_dict(node))
-	#_get_all_children(node)
-	if is_scn_file:
-		node.queue_free()
+func output_tree(argv: Array) -> Dictionary:
 	return {}
 
 
-func get_ls_root_path(argv, path) -> String:
-	match len(argv):
-		1:
-			path = "/root"
-		_:
-			if path[0] != "/":
-				path = "/" + path
-	return path
-
-
-func get_actual_path(argv) -> String:
+func get_starting_node(argv: Array):
 	var path: String
-	var current_scene_path = get_tree().current_scene.get_path()
-	var options := argv_parse_options(argv, true)
-
-	match len(argv):
-		1:
-			return current_scene_path
-		_:
-			path = argv[1]
-
-	if path.begins_with("root") or path.begins_with("/root"):
-		path = "/" + path
+	var node: Node
+	if len(argv) == 1:
+		return get_tree().current_scene
 	else:
-		path = str(current_scene_path) + "/" + path
+		path = argv[1]
 
-	return path
+	var is_scn_file = path.ends_with(".tscn") or path.ends_with(".scn")
+	var is_resource_file = path.begins_with("res://")
+	var is_absolute_path = path.begins_with("/root") or path.begins_with("root")
+	
+	if is_resource_file and is_scn_file:
+		output(path)
+		if !FileAccess.file_exists(path):
+			output("[color=red]" + "Resource file does not exit" + "[/color]")
+			return {"error": ERR_FILE_NOT_FOUND, "error_string": "File not found"}
+		else:
+			node = load(path).instantiate()
+	
+	elif is_absolute_path:
+		output(path)
+		node = get_node("/" + path)
+	else:
+		var current_scene:= get_tree().current_scene
+		var current_scene_path:= "/root"
+		if !path.begins_with(current_scene.name):
+			current_scene_path = str(current_scene.get_path())
+		
+		path = current_scene_path + "/" + path
+		node = get_node(path)
+	if node == null:
+		output("[color=red]" + "Node does not exit at " + path + "[/color]")
+		return {"error": ERR_DOES_NOT_EXIST, "error_string": "Node not found"}
+
+	return node
+
+
+
+
+
+
+
+
+
+
+
