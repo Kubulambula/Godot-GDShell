@@ -77,6 +77,7 @@ func output_tree_dict(tree_dict: Dictionary, parent:= "", prefix:= "", root_node
 				new_prefix = "   " if last or start else " ┃ "
 			output_tree_dict(item, item["parent"], prefix + new_prefix, root_node, false, i == num_of_siblings - 1)
 
+
 func get_starting_node(argv: Array):
 	var path: String
 	var node: Node
