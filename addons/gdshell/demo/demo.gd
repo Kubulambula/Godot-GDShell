@@ -11,6 +11,7 @@ func _ready() -> void:
 	icon = $GDShellIcon
 	get_viewport().size_changed.connect(update_icon)
 	update_icon()
+	print(var_to_str(Control.new()))
 
 
 # responsive icon

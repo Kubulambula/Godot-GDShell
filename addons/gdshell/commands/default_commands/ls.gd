@@ -1,7 +1,14 @@
 extends GDShellCommand
 
 
+signal done_with_instance(instance: Node)
+
+
+var created_an_instance:= false
+
+
 func _main(argv: Array, data) -> Dictionary:
+	done_with_instance.connect(_on_done_with_instance)
 	var path: String
 	
 	# If additional functionality is added, this should be moved to it's own function
@@ -9,15 +16,15 @@ func _main(argv: Array, data) -> Dictionary:
 	var starting_node = get_starting_node(argv)
 	if starting_node is Dictionary:
 		return starting_node
-	var tree_dict = get_tree_dict(starting_node)
+	var tree_dict = get_tree_dict(starting_node, starting_node)
 	output_tree_dict(tree_dict)
 	
 	data = tree_dict
 	return {}
 
 
-func get_tree_dict(node: Node) -> Dictionary:
-	#root_node = node if start else root_node
+func get_tree_dict(node: Node, root_node: Node, start:= true) -> Dictionary:
+	root_node = node if start else root_node
 	var node_dict = {}
 	node_dict["name"] = node.name
 	node_dict["has_script"] = node.get_script() != null
@@ -33,9 +40,11 @@ func get_tree_dict(node: Node) -> Dictionary:
 	
 	for i in child_count:
 		#output(get_tree_dict(node.get_child(i), tree_dict, counter))
-		node_dict["children"].append(get_tree_dict(node.get_child(i)))
+		node_dict["children"].append(get_tree_dict(node.get_child(i), root_node, false))
 
-	
+	if created_an_instance and node.get_parent() == root_node and node.get_index() == root_node.get_child_count() - 1:
+		done_with_instance.emit(root_node)
+
 	return node_dict
 
 
@@ -68,7 +77,6 @@ func output_tree_dict(tree_dict: Dictionary, parent:= "", prefix:= "", root_node
 				new_prefix = "   " if last or start else " ┃ "
 			output_tree_dict(item, item["parent"], prefix + new_prefix, root_node, false, i == num_of_siblings - 1)
 
-
 func get_starting_node(argv: Array):
 	var path: String
 	var node: Node
@@ -82,15 +90,14 @@ func get_starting_node(argv: Array):
 	var is_absolute_path = path.begins_with("/root") or path.begins_with("root")
 	
 	if is_resource_file and is_scn_file:
-		output(path)
 		if !FileAccess.file_exists(path):
 			output("[color=red]" + "Resource file does not exit" + "[/color]")
 			return {"error": ERR_FILE_NOT_FOUND, "error_string": "File not found"}
 		else:
 			node = load(path).instantiate()
+			created_an_instance = true
 	
 	elif is_absolute_path:
-		output(path)
 		node = get_node("/" + path)
 	else:
 		var current_scene:= get_tree().current_scene
@@ -105,3 +112,7 @@ func get_starting_node(argv: Array):
 		return {"error": ERR_DOES_NOT_EXIST, "error_string": "Node not found"}
 
 	return node
+
+
+func _on_done_with_instance(node):
+	node.queue_free()
