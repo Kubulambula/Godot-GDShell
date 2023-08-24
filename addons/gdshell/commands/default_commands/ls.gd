@@ -3,7 +3,6 @@ extends GDShellCommand
 
 
 
-var created_an_instance:= false
 
 
 func _main(argv: Array, data) -> Dictionary:
