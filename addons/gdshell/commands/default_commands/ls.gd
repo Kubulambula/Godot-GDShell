@@ -113,6 +113,3 @@ func get_starting_node(argv: Array):
 
 	return node
 
-
-func _on_done_with_instance(node):
-	node.queue_free()
