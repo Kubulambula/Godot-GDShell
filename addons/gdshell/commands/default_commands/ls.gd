@@ -94,7 +94,6 @@ func get_starting_node(argv: Array):
 			return {"error": ERR_FILE_NOT_FOUND, "error_string": "File not found"}
 		else:
 			node = load(path).instantiate()
-			created_an_instance = true
 	
 	elif is_absolute_path:
 		node = get_node("/" + path)
