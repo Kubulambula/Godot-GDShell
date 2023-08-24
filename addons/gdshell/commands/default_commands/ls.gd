@@ -42,7 +42,7 @@ func get_tree_dict(node: Node, root_node: Node, start:= true) -> Dictionary:
 		node_dict["children"].append(get_tree_dict(child, root_node, false))
 
 	if created_an_instance and node.get_parent() == root_node and node.get_index() == root_node.get_child_count() - 1:
-		done_with_instance.emit(root_node)
+		root_node.queue_free()
 
 	return node_dict
 
