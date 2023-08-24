@@ -8,10 +8,10 @@ class CommandResult:
 	var err_string: String
 	var data: Variant
 	
-	func _init(Err: int=0, ErrString: String="", Data: Variant=null) -> void:
-		err = Err
-		data = Data
-		err_string = "No error description." if Err != 0 and ErrString.is_empty() else ErrString
+	func _init(_err: int=0, _err_string: String="", _data: Variant=null) -> void:
+		err = _err
+		data = _data
+		err_string = "No error description." if _err != 0 and _err_string.is_empty() else _err_string
 
 
 signal command_end
