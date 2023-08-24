@@ -18,8 +18,11 @@ func _main(argv: Array, data) -> Dictionary:
 	var tree_dict = get_tree_dict(starting_node, starting_node)
 	output_tree_dict(tree_dict)
 	
-	data = tree_dict
-	return {}
+	return {
+		"error": 0,
+		"error_string": "",
+		"data": tree_dict,
+	}
 
 
 func get_tree_dict(node: Node, root_node: Node, start:= true) -> Dictionary:
