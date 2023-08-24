@@ -13,15 +13,18 @@ class ParserResult:
 	var status: Status ## Status of the parsed input.
 	var input: String ## The input that was provided by the user.
 	var tokens: Array[Token] ## Tokenized input.
+	var command_db: GDShellCommandDB ## GDShellCommandDB, that was used for parsing and should be used for execution.
 	var err_token_index: int ## Index of the Token that caused an error. If the index is -1, no error occured.
 	var err_string: String = "" ## Description of the error. If empty, no error occured.
 	
-	func _init(_status: Status, _input: String, _tokens: Array[Token], _err_token_index: int = -1, _err_string: String = ""):
+	func _init(_status: Status, _input: String, _tokens: Array[Token], _command_db: GDShellCommandDB, _err_token_index: int = -1, _err_string: String = ""):
 		status = _status
 		input = _input
 		tokens = _tokens
+		command_db = _command_db
 		err_token_index = _err_token_index
 		err_string = _err_string
+
 
 class Token:
 	enum Type {
@@ -59,6 +62,7 @@ static func parse(input: String, command_db: GDShellCommandDB) -> ParserResult:
 			ParserResult.Status.OK,
 			input,
 			tokens,
+			command_db
 		)
 	
 	if tokens[-1].type == Token.Type.WORD_UNTERMINATED:
@@ -66,6 +70,7 @@ static func parse(input: String, command_db: GDShellCommandDB) -> ParserResult:
 			ParserResult.Status.UNTERMINATED,
 			input,
 			tokens,
+			command_db,
 			tokens.size() - 1,
 			"The input is not terminated with corrent quote so another appended input is required. See GDShell Docs for help.",
 		)
@@ -76,6 +81,7 @@ static func parse(input: String, command_db: GDShellCommandDB) -> ParserResult:
 			ParserResult.Status.ERROR,
 			input,
 			tokens,
+			command_db,
 			validated["err_token_index"],
 			validated["err_string"]
 		)
@@ -85,7 +91,8 @@ static func parse(input: String, command_db: GDShellCommandDB) -> ParserResult:
 	return ParserResult.new(
 		ParserResult.Status.OK,
 		input,
-		tokens
+		tokens,
+		command_db
 	)
 
 
