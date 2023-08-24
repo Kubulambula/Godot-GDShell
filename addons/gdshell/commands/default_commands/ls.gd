@@ -36,11 +36,8 @@ func get_tree_dict(node: Node, root_node: Node, start:= true) -> Dictionary:
 	node_dict["parent"] = node.get_parent().name if node.get_parent() != null else "none"
 	node_dict["children"] = []
 	
-	var child_count := node.get_child_count()
-	
-	for i in child_count:
-		#output(get_tree_dict(node.get_child(i), tree_dict, counter))
-		node_dict["children"].append(get_tree_dict(node.get_child(i), root_node, false))
+	for child in node.get_children():
+		node_dict["children"].append(get_tree_dict(child, root_node, false))
 
 	if created_an_instance and node.get_parent() == root_node and node.get_index() == root_node.get_child_count() - 1:
 		done_with_instance.emit(root_node)
