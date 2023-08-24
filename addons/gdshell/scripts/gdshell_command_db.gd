@@ -13,7 +13,7 @@ func has_command(command: String) -> bool:
 
 ## Returns the command name on success or empty String on failure
 func add_command(path: String) -> String:
-	var name_and_auto_aliases: Dictionary = {}#GDShellCommandDB.get_command_name_and_auto_aliases(path)
+	var name_and_auto_aliases: Dictionary = GDShellCommandDB.get_file_command_name_and_auto_aliases(path)
 	if name_and_auto_aliases.is_empty():
 		return ""
 	_commands[name_and_auto_aliases["name"]] = path
