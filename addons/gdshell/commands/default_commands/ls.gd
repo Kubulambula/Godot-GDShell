@@ -105,7 +105,7 @@ func get_starting_node(argv: Array):
 			current_scene_path = str(current_scene.get_path())
 		
 		path = current_scene_path + "/" + path
-		node = get_node(path)
+		node = get_node_or_null(path)
 	if node == null:
 		output("[color=red]" + "Node does not exit at " + path + "[/color]")
 		return {"error": ERR_DOES_NOT_EXIST, "error_string": "Node not found"}
