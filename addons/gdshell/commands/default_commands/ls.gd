@@ -96,7 +96,7 @@ func get_starting_node(argv: Array):
 			node = load(path).instantiate()
 	
 	elif is_absolute_path:
-		node = get_node("/" + path)
+		node = get_node(path)
 	else:
 		var current_scene:= get_tree().current_scene
 		var current_scene_path:= "/root"
