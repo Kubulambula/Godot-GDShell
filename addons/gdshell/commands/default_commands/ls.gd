@@ -97,6 +97,8 @@ func get_starting_node(argv: Array):
 			node = load(path).instantiate()
 
 	elif is_absolute_path:
+		# Add an extra slash in case the user forgets it
+		# Godot will ignore double slashes
 		node = get_node("/" + path)
 	else:
 		var current_scene := get_tree().current_scene
