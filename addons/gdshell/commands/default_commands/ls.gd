@@ -1,7 +1,6 @@
 extends GDShellCommand
 
 
-signal done_with_instance(instance: Node)
 
 
 var created_an_instance:= false
