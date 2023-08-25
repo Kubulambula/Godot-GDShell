@@ -137,16 +137,18 @@ static func _validate_operators(tokens: Array[Token]) -> Dictionary:
 			continue
 		
 		if _token_requires_left_operand(tokens[i]):
-			if i == 0 or not _token_can_be_considered_operand(tokens[i-1]):
+			if i == 0 or not _token_can_be_considered_operand(tokens[i], tokens[i-1]):
 				return {
 					"err_token_index": i,
-					"err_string": "\"%s\" does not have a required left operand." % tokens[i].content,
+					"err_string": "\"%s\" does not have a required left operand." % tokens[i].content if tokens[i].type != Token.Type.OPERATOR_CLOSING_PARENTHESIS
+					else "Parentheses pair does not have at least one required command.",
 				}
 		if _token_requires_right_operand(tokens[i]):
-			if i == tokens.size()-1 or not _token_can_be_considered_operand(tokens[i+1]):
+			if i == tokens.size()-1 or not _token_can_be_considered_operand(tokens[i], tokens[i+1]):
 				return {
 					"err_token_index": i,
-					"err_string": "\"%s\" does not have a required right operand." % tokens[i].content,
+					"err_string": "\"%s\" does not have a required right operand." % tokens[i].content if tokens[i].type != Token.Type.OPERATOR_OPENING_PARENTHESIS
+					else "Parentheses pair does not have at least one required command.",
 				}
 	
 	return {
@@ -191,6 +193,7 @@ static func _token_requires_left_operand(token: Token) -> bool:
 		Token.Type.OPERATOR_OR,
 		Token.Type.OPERATOR_BACKGROUND,
 		Token.Type.OPERATOR_SEQUENCE,
+		Token.Type.OPERATOR_CLOSING_PARENTHESIS,
 	]
 
 
@@ -200,18 +203,43 @@ static func _token_requires_right_operand(token: Token) -> bool:
 		Token.Type.OPERATOR_AND,
 		Token.Type.OPERATOR_OR,
 		Token.Type.OPERATOR_NOT,
-	]
-
-
-static func _token_can_be_considered_operand(token: Token) -> bool:
-	return token.type in [
-		Token.Type.WORD,
-		Token.Type.OPERATOR_NOT,
-		Token.Type.OPERATOR_BACKGROUND,
 		Token.Type.OPERATOR_OPENING_PARENTHESIS,
-		Token.Type.OPERATOR_CLOSING_PARENTHESIS,
 	]
 
+
+static func _token_can_be_considered_operand(operator: Token, operand: Token) -> bool:
+	match operator.type:
+		Token.Type.OPERATOR_PIPE, Token.Type.OPERATOR_AND, Token.Type.OPERATOR_OR, Token.Type.OPERATOR_SEQUENCE:
+			return operand.type in [
+				Token.Type.WORD,
+				Token.Type.OPERATOR_NOT,
+				Token.Type.OPERATOR_BACKGROUND,
+				Token.Type.OPERATOR_OPENING_PARENTHESIS,
+				Token.Type.OPERATOR_CLOSING_PARENTHESIS,
+			]
+		Token.Type.OPERATOR_NOT:
+			return operand.type in [
+				Token.Type.WORD,
+				Token.Type.OPERATOR_OPENING_PARENTHESIS,
+			]
+		Token.Type.OPERATOR_BACKGROUND:
+			return operand.type in [
+				Token.Type.WORD,
+			]
+		Token.Type.OPERATOR_OPENING_PARENTHESIS:
+			return operand.type in [
+				Token.Type.WORD,
+				Token.Type.OPERATOR_NOT,
+				Token.Type.OPERATOR_OPENING_PARENTHESIS,
+			]
+		Token.Type.OPERATOR_CLOSING_PARENTHESIS:
+			return operand.type in [
+				Token.Type.WORD,
+				Token.Type.OPERATOR_BACKGROUND,
+				Token.Type.OPERATOR_CLOSING_PARENTHESIS,
+			]
+	
+	return false
 
 static func _tokenize(input: String) -> Array[Token]:
 	var tokens: Array[Token] = []
