@@ -95,7 +95,7 @@ static func _get_file_paths_in_directory(path: String, recursive: bool = true) -
 
 
 static func get_command_file_paths_in_directory(path: String, recursive: bool = true) -> Array[String]:
-	return _get_file_paths_in_directory(path, recursive).filter(is_file_gdshell_command)
+	return _get_file_paths_in_directory(path, recursive).filter(GDShellCommandDB.is_file_gdshell_command)
 
 
 static func is_file_gdshell_command(path: String) -> bool:
