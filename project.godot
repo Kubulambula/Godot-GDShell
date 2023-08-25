@@ -1,13 +1,20 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
 config_version=5
 
 [application]
 
 config/name="GDShell"
-config/description="Feature-packed customizable in-game console for development, debugging, cheats, etc... for Godot 4"
+config/description="Light-weight customizable in-game console for development, debugging, cheats, etc... for Godot 4."
 run/main_scene="res://addons/gdshell/demo/demo.tscn"
-config/features=PackedStringArray("4.0", "Forward Plus")
+config/features=PackedStringArray("4.1")
 config/icon="res://addons/gdshell/icon.png"
-config/tags=PackedStringArray()
 
 [autoload]
 
@@ -16,15 +23,19 @@ GDShell="*res://addons/gdshell/scripts/gdshell_main.gd"
 [debug]
 
 gdscript/warnings/exclude_addons=false
-gdscript/warnings/return_value_discarded=1
 gdscript/warnings/unsafe_property_access=1
 gdscript/warnings/unsafe_method_access=1
 gdscript/warnings/unsafe_cast=1
 gdscript/warnings/unsafe_call_argument=1
+gdscript/warnings/return_value_discarded=1
 
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/gdshell/plugin.cfg")
+
+[filesystem]
+
+import/blender/enabled=false
 
 [input]
 
@@ -33,3 +44,7 @@ gdshell_toggle_ui={
 "events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":96,"physical_keycode":0,"key_label":0,"unicode":0,"echo":false,"script":null)
 ]
 }
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
