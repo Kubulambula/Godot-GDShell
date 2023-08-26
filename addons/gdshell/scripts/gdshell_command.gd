@@ -8,10 +8,10 @@ class CommandResult:
 	var err_string: String
 	var data: Variant
 	
-	func _init(_err: int=0, _err_string: String="", _data: Variant=null) -> void:
+	func _init(_err: int=OK, _err_string: String="", _data: Variant=null) -> void:
 		err = _err
+		err_string = "No error description." if _err != OK and _err_string.is_empty() else _err_string
 		data = _data
-		err_string = "No error description." if _err != 0 and _err_string.is_empty() else _err_string
 
 
 signal command_end
@@ -24,7 +24,7 @@ var COMMAND_AUTO_ALIASES: Dictionary = {}
 var _PARENT_COMMAND_RUNNER: GDShellCommandRunner
 
 
-func _main(_argv: Array[String], _data) -> CommandResult:
+func _main(_argv: Array[String], _data: CommandResult) -> CommandResult:
 	return CommandResult.new()
 
 
