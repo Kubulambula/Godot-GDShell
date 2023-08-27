@@ -121,10 +121,11 @@ func _execute_words(tokens: Array[GDShellCommandParser.Token], command_db: GDShe
 
 func _execute_command(words: Array[GDShellCommandParser.Token], command_db: GDShellCommandDB, piped_result: GDShellCommand.CommandResult=null, in_background: bool=false) -> GDShellCommand.CommandResult:
 	# Get argv
-	var argv: Array = words.map(
+	# Fancy way to make the Array typed
+	var argv: Array = Array(words.map(
 		func(token: GDShellCommandParser.Token) -> String:
 			return token.content
-	)
+	), TYPE_STRING, "", null)
 	
 	# Create command instance
 	var command: GDShellCommand = command_db.get_gdshell_command_instance(argv[0])
