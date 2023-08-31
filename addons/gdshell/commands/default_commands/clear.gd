@@ -7,10 +7,10 @@ func _init():
 	}
 
 
-func _main(_argv: Array, _data) -> Dictionary:
+func _main(_argv: Array, _data) -> CommandResult:
 	# Truly unbelieveable programming skills
 	get_ui_handler_rich_text_label().clear()
-	return DEFAULT_COMMAND_RESULT
+	return CommandResult.new()
 
 
 func _get_manual() -> String:

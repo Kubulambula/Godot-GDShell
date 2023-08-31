@@ -4,123 +4,183 @@ extends Node
 
 
 # Command execution flags
-const F_EXECUTE_CONDITION_MET: int = 1 << 0
-const F_PIPE_PREVIOUS: int = 1 << 1
-const F_BACKGROUND: int = 1 << 2
-const F_NEGATED: int = 1 << 3
+const F_EXECUTE_CONDITION_MET: int = 1
+const F_PIPE_PREVIOUS: int = 2
+const F_BACKGROUND: int = 4
+const F_NEGATED: int = 8
 
 var _PARENT_GDSHELL: GDShellMain
 
 var _background_commands: Array[GDShellCommand] = []
 
-var _is_running_command: bool = false
+
+func _init() -> void:
+	name = "GDShellCommandRunner   - "
 
 
-func execute(command_sequence: Dictionary) -> Dictionary:
-	if command_sequence["status"] != GDShellCommandParser.ParserResultStatus.OK:
-		return {
-			"error": 1,
-			"error_string": 'Cannot execute command sequence. See "data" for the command_sequence',
-			"data": command_sequence,
-		}
+func execute(parser_result: GDShellCommandParser.ParserResult, piped_result: GDShellCommand.CommandResult=null) -> GDShellCommand.CommandResult:
+	if parser_result.status != GDShellCommandParser.ParserResult.Status.OK:
+		push_error("[GDShell] Attempted to run invalid GDShellCommandParser.ParserResult.")
+		return null
+	if parser_result.tokens.is_empty():
+		push_error("[GDShell] Attempted to run an empty input.")
+		return null
+	if parser_result.command_db == null:
+		push_error("[GDShell] Attempted to run a command, but GDShellCommandParser.ParserResult.command_db is null.")
+		return null
 	
-	_is_running_command = true
+	var command_execution_flags: int = F_EXECUTE_CONDITION_MET
+	var last_command_result: GDShellCommand.CommandResult = piped_result
 	
-	var current_token: int = 0
-	var current_command_flags: int = F_EXECUTE_CONDITION_MET
-	var last_command_result: Dictionary = GDShellCommand.DEFAULT_COMMAND_RESULT
-	
-	@warning_ignore("unsafe_method_access")
-	while current_token < command_sequence["result"].size():
-		match command_sequence["result"][current_token]["type"]:
-			GDShellCommandParser.ParserBlockType.COMMAND:
-				var command: String = command_sequence["result"][current_token]["data"]["command"]
-				var params: Dictionary = command_sequence["result"][current_token]["data"]["params"]
+	var current_token_index: int = 0
+	while current_token_index < parser_result.tokens.size():
+		match parser_result.tokens[current_token_index].type:
+			
+			GDShellCommandParser.Token.Type.WORD:
+				var next_non_word_token_index: int = _get_next_non_word_token_index(parser_result.tokens, current_token_index)
+				var executed_command_result: GDShellCommand.CommandResult = await _execute_words(
+					parser_result.tokens.slice(current_token_index, next_non_word_token_index),
+					parser_result.command_db,
+					last_command_result,
+					command_execution_flags
+				)
 				
-				if not current_command_flags & F_EXECUTE_CONDITION_MET:
-					current_command_flags = F_EXECUTE_CONDITION_MET
-					continue
+				if executed_command_result != null:
+					last_command_result = executed_command_result
 				
-				if current_command_flags & F_PIPE_PREVIOUS:
-					params["data"] = last_command_result["data"]
-				
-				if current_command_flags & F_BACKGROUND:
-					last_command_result = GDShellCommand.DEFAULT_COMMAND_RESULT
-					_execute_command(command, params)
+				command_execution_flags &= F_EXECUTE_CONDITION_MET
+				current_token_index = next_non_word_token_index
+			
+			GDShellCommandParser.Token.Type.OPERATOR_PIPE:
+				pass
+			
+			GDShellCommandParser.Token.Type.OPERATOR_AND:
+				if not last_command_result.err:
+					command_execution_flags |= F_BACKGROUND
 				else:
-					last_command_result = await _execute_command(command, params)
-				
-				if current_command_flags & F_NEGATED:
-					last_command_result["error"] = 0 if last_command_result["error"] else 1
-				
-				current_command_flags = F_EXECUTE_CONDITION_MET
+					command_execution_flags ^= F_BACKGROUND
 			
-			GDShellCommandParser.ParserBlockType.BACKGROUND:
-				current_command_flags |= F_BACKGROUND
-			
-			GDShellCommandParser.ParserBlockType.NOT:
-				current_command_flags |= F_NEGATED
-			
-			GDShellCommandParser.ParserBlockType.PIPE:
-				current_command_flags |= F_PIPE_PREVIOUS
-			
-			GDShellCommandParser.ParserBlockType.AND:
-				if last_command_result["error"]:
-					current_command_flags ^= F_EXECUTE_CONDITION_MET
+			GDShellCommandParser.Token.Type.OPERATOR_OR:
+				if last_command_result.err:
+					command_execution_flags |= F_BACKGROUND
 				else:
-					current_command_flags |= F_EXECUTE_CONDITION_MET
+					command_execution_flags ^= F_BACKGROUND
 			
-			GDShellCommandParser.ParserBlockType.OR:
-				if last_command_result["error"]:
-					current_command_flags |= F_EXECUTE_CONDITION_MET
-				else:
-					current_command_flags ^= F_EXECUTE_CONDITION_MET
+			GDShellCommandParser.Token.Type.OPERATOR_NOT:
+				command_execution_flags |= F_NEGATED
+			
+			GDShellCommandParser.Token.Type.OPERATOR_BACKGROUND:
+				command_execution_flags |= F_BACKGROUND
+			
+			GDShellCommandParser.Token.Type.OPERATOR_SEQUENCE:
+				command_execution_flags |= F_EXECUTE_CONDITION_MET
+			
+			GDShellCommandParser.Token.Type.OPERATOR_OPENING_PARENTHESIS:
+				var parentheses_content: Array[GDShellCommandParser.Token] = _get_parenthesis_inner_tokens(parser_result.tokens, current_token_index)
+				var executed_parentheses_result: GDShellCommand.CommandResult = await execute(
+					GDShellCommandParser.ParserResult.new(
+						GDShellCommandParser.ParserResult.Status.OK,
+						"",
+						parentheses_content,
+						parser_result.command_db
+					)
+				)
+				if executed_parentheses_result == null:
+					return null
+				
+				last_command_result = executed_parentheses_result
+			
+			GDShellCommandParser.Token.Type.OPERATOR_CLOSING_PARENTHESIS:
+				pass # Do nothing (don't delete this. This token should not trigger an error)
+			
+			var token_type:
+				push_error("[GDShell] GDShellCommandRunner encountered an unexpected '%s' token." % str(GDShellCommandParser.Token.Type.find_key(token_type)))
+				return null
 		
-		current_token += 1
+		current_token_index += 1
 	
-	_is_running_command = false
 	return last_command_result
 
 
-func _execute_command(path: String, params: Dictionary, in_background: bool = false) -> Dictionary:
-	@warning_ignore("unsafe_method_access", "unsafe_cast")
-	var command: GDShellCommand = ResourceLoader.load(path, "GDScript").new() as GDShellCommand
-	add_child(command)
-	command._PARENT_PROCESS = self
+func _execute_words(tokens: Array[GDShellCommandParser.Token], command_db: GDShellCommandDB, last_result: GDShellCommand.CommandResult, command_execution_flags: int) -> GDShellCommand.CommandResult:
+	if not command_execution_flags & F_EXECUTE_CONDITION_MET:
+		return null
+	
+	var command_result: GDShellCommand.CommandResult = await _execute_command(
+		tokens,
+		command_db,
+		last_result if command_execution_flags & F_PIPE_PREVIOUS else null,
+		command_execution_flags & F_BACKGROUND
+	)
+	
+	if command_execution_flags & F_NEGATED:
+		command_result.err = OK if command_result.err else FAILED
+	
+	return command_result
+
+
+func _execute_command(words: Array[GDShellCommandParser.Token], command_db: GDShellCommandDB, piped_result: GDShellCommand.CommandResult=null, in_background: bool=false) -> GDShellCommand.CommandResult:
+	# Get argv
+	# Fancy way to make the Array typed
+	var argv: Array = Array(words.map(
+		func(token: GDShellCommandParser.Token) -> String:
+			return token.content
+	), TYPE_STRING, "", null)
+	
+	# Create command instance
+	var command: GDShellCommand = command_db.get_gdshell_command_instance(argv[0])
+	if command == null:
+		return null
+	
+	# Set up command
+	command._PARENT_COMMAND_RUNNER = self
+	command.name = "GDShellCommand: " + command.COMMAND_NAME
+	add_child(command, true)
 	if in_background:
+		command.name += " (in background)"
 		_background_commands.append(command)
 	
-	@warning_ignore("redundant_await")
-	var result = await command._main(params["argv"], params["data"])
+	# Run command
+	@warning_ignore("redundant_await") # We don't know if the user override will have await
+	var command_result: GDShellCommand.CommandResult = await command._main(argv, piped_result)
 	
-	if typeof(result) != TYPE_DICTIONARY:
-		push_error("[GDShell] The '%s' command does not return a value of TYPE_DICTIONARY.\n'GDShellCommand.DEFAULT_COMMAND_RESULT' will be returned instead."
-				% params["argv"][0]
-		)
-		# This assert statement acts as a hard error in the editor
-		assert(
-			typeof(result) == TYPE_DICTIONARY,
-			"""[GDShell] The command does not return a value of TYPE_DICTIONARY.
-				'GDShellCommand.DEFAULT_COMMAND_RESULT' will be returned instead.
-				See the Errors for more information about the failing command."""
-		)
-		result = GDShellCommand.DEFAULT_COMMAND_RESULT
-	else:
-		@warning_ignore("unsafe_method_access")
-		result.merge(GDShellCommand.DEFAULT_COMMAND_RESULT)
-	
-	command.queue_free()
+	# Cleanup command
 	_background_commands.erase(command)
+	command.queue_free()
+	return command_result
+
+
+func _get_next_non_word_token_index(tokens: Array[GDShellCommandParser.Token], starting_from: int) -> int:
+	var next_non_word_token_index: int = starting_from + 1
+	while next_non_word_token_index < tokens.size():
+		if tokens[next_non_word_token_index].type != GDShellCommandParser.Token.Type.WORD:
+			break
+		next_non_word_token_index += 1
+	return next_non_word_token_index
+
+
+func _find_matching_parenthesis_index(tokens: Array[GDShellCommandParser.Token], opening_parenthesis_index: int) -> int:
+	var current: int = opening_parenthesis_index
+	var parenthesis_level: int = 1
 	
-	return result
+	while current < tokens.size():
+		if tokens[current].type == GDShellCommandParser.Token.Type.OPERATOR_OPENING_PARENTHESIS:
+			parenthesis_level += 1
+		elif tokens[current].type == GDShellCommandParser.Token.Type.OPERATOR_CLOSING_PARENTHESIS:
+			parenthesis_level -= 1
+			if parenthesis_level == 0:
+				return current
+	return -1
 
 
-##############################################
-# GDShellCommand-GDShell interface functions #
-##############################################
+func _get_parenthesis_inner_tokens(tokens: Array[GDShellCommandParser.Token], opening_parenthesis_index: int) -> Array[GDShellCommandParser.Token]:
+	var matching_parenthesis_index: int = _find_matching_parenthesis_index(tokens, opening_parenthesis_index)
+	if matching_parenthesis_index == -1:
+		return []
+	return tokens.slice(opening_parenthesis_index + 1, matching_parenthesis_index)
 
 
-func _handle_execute(command: String) -> Dictionary:
+func _handle_execute(command: String) -> GDShellCommand.CommandResult:
 	return await _PARENT_GDSHELL.execute(command)
 
 
@@ -140,3 +200,4 @@ func _handle_get_ui_handler() -> GDShellUIHandler:
 
 func _handle_get_ui_handler_rich_text_label() -> RichTextLabel:
 	return _PARENT_GDSHELL.get_ui_handler_rich_text_label()
+

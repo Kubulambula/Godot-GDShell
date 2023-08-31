@@ -7,26 +7,21 @@ func _init():
 	}
 
 
-func _main(argv: Array, data) -> Dictionary:
+func _main(argv: Array, data) -> CommandResult:
 	var success: bool
 	
 	if not argv.size() > 2:
 		output("Not enough arguments")
-		return {"error": 1, "error_string": "Not enough arguments"}
+		return CommandResult.new(1, "Not enough arguments")
 	
 	if "-r" in argv[1] or "--remove" in argv[1]:
-		success = _PARENT_PROCESS._PARENT_GDSHELL.command_db.remove_alias(argv[2])
-		if success:
-			output("Alias '%s' removed" % argv[2])
-		return DEFAULT_COMMAND_RESULT
+		_PARENT_COMMAND_RUNNER._PARENT_GDSHELL.command_db.remove_alias(argv[2])
+		return CommandResult.new()
 	
-	success = _PARENT_PROCESS._PARENT_GDSHELL.command_db.add_alias(argv[1], argv[2])
-	if not success:
-		output("Could not add alias '%s'" % argv[1])
-		return {"error": 1, "error_string": "Could not add alias"}
+	_PARENT_COMMAND_RUNNER._PARENT_GDSHELL.command_db.add_alias(argv[1], argv[2])
 	
-	output("Alias '%s' added" % argv[1])
-	return DEFAULT_COMMAND_RESULT
+#	output("Alias '%s' added" % argv[1])
+	return CommandResult.new()
 
 
 func _get_manual() -> String:

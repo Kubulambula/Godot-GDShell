@@ -3,393 +3,370 @@ class_name GDShellCommandParser
 extends RefCounted
 
 
-enum TokenType {
-	ERROR,
-	TOKEN_SEQUENCE,
-	TEXT,
-	UNTERMINATED_TEXT,
-	SEPARATOR,
-	PIPE,
-	AND,
-	OR,
-	NOT,
-	BACKGROUND,
-	SEQUENCE,
-}
-
-enum ParserBlockType {
-	COMMAND,
-	BACKGROUND,
-	NOT,
-	PIPE,
-	AND,
-	OR,
-}
-
-enum ParserResultStatus {
-	OK,
-	UNTERMINATED,
-	ERROR,
-}
-
-# status - ParserResultStatus:
-# OK - result is an Array of Dictionaries (ParserBlockTypes)
-# ERROR - result is the error token Dictionary
-# UNTERMINATED - result is an empty Array - new input is necessary
+class ParserResult:
+	enum Status {
+		OK,
+		UNTERMINATED,
+		ERROR,
+	}
+	
+	var status: Status ## Status of the parsed input.
+	var input: String ## The input that was provided by the user.
+	var tokens: Array[Token] ## Tokenized input.
+	var command_db: GDShellCommandDB ## GDShellCommandDB, that was used for parsing and should be used for execution.
+	var err_token_index: int ## Index of the Token that caused an error. If the index is -1, no error occured.
+	var err_string: String = "" ## Description of the error. If empty, no error occured.
+	
+	func _init(_status: Status, _input: String, _tokens: Array[Token], _command_db: GDShellCommandDB, _err_token_index: int = -1, _err_string: String = ""):
+		status = _status
+		input = _input
+		tokens = _tokens
+		command_db = _command_db
+		err_token_index = _err_token_index
+		err_string = _err_string
 
 
-static func parse(input: String, command_db: GDShellCommandDB) -> Dictionary:
-	var tokens: Array[Dictionary] = tokenize(input, command_db)
+class Token:
+	enum Type {
+		SPACE,
+		WORD,
+		WORD_UNTERMINATED,
+		OPERATOR_PIPE,
+		OPERATOR_AND,
+		OPERATOR_OR,
+		OPERATOR_NOT,
+		OPERATOR_BACKGROUND,
+		OPERATOR_SEQUENCE,
+#		OPERATOR_EXPAND,
+		OPERATOR_OPENING_PARENTHESIS,
+		OPERATOR_CLOSING_PARENTHESIS,
+	}
+	
+	var type: Type
+	var content: String
+	var start_char_index: int
+	var consumed: int
+	
+	func _init(_type: Type, _content: String, _start_char_index: int, _consumed: int):
+		type = _type
+		content = _content
+		start_char_index = _start_char_index
+		consumed = _consumed
+
+
+static func parse(input: String, command_db: GDShellCommandDB) -> ParserResult:
+	var tokens: Array[Token] = _tokenize(input)
 	
 	if tokens.is_empty():
-		return {"status": ParserResultStatus.OK, "result": []}
+		return ParserResult.new(
+			ParserResult.Status.OK,
+			input,
+			tokens,
+			command_db
+		)
 	
-	if tokens[-1]["type"] == TokenType.UNTERMINATED_TEXT:
-		return {"status": ParserResultStatus.UNTERMINATED, "result": []}
+	if tokens[-1].type == Token.Type.WORD_UNTERMINATED:
+		return ParserResult.new(
+			ParserResult.Status.UNTERMINATED,
+			input,
+			tokens,
+			command_db,
+			tokens.size() - 1,
+			"The input is not terminated with corrent quote so another appended input is required. See GDShell Docs for help.",
+		)
 	
-	var command_sequence: Array[Dictionary] = []
-	var command_construction_temp: Array[String] = []
+	var validated: Dictionary = _validate_operators(tokens)
+	if validated["err_token_index"] != -1:
+		return ParserResult.new(
+			ParserResult.Status.ERROR,
+			input,
+			tokens,
+			command_db,
+			validated["err_token_index"],
+			validated["err_string"]
+		)
+	
+	tokens = _expand(tokens, command_db)
+	
+	return ParserResult.new(
+		ParserResult.Status.OK,
+		input,
+		tokens,
+		command_db
+	)
+
+
+static func _expand(tokens: Array[Token], command_db: GDShellCommandDB) -> Array[Token]:
+	var expanded_tokens: Array[Token] = []
+	var last_token_type: Token.Type = Token.Type.OPERATOR_AND
 	
 	for i in tokens.size():
-		match tokens[i]["type"]:
-			TokenType.ERROR:
-				return {"status": ParserResultStatus.ERROR, "result": tokens[i]}
-			
-			TokenType.TEXT:
-				command_construction_temp.push_back(tokens[i]["content"])
-			
-			TokenType.PIPE:
-				var operator_validation: Dictionary = _validate_operator(tokens, i, true, true)
-				if operator_validation["status"] == ParserResultStatus.ERROR:
-					return operator_validation
-				var command: Dictionary = _construct_command(command_construction_temp, command_db)
-				if command["status"] == ParserResultStatus.ERROR:
-					return command
-				
-				command_construction_temp = []
-				command_sequence.push_back(command["data"])
-				command_sequence.push_back({"type": ParserBlockType.PIPE})
-			
-			TokenType.OR:
-				var operator_validation: Dictionary = _validate_operator(tokens, i, true, true)
-				if operator_validation["status"] == ParserResultStatus.ERROR:
-					return operator_validation
-				var command: Dictionary = _construct_command(command_construction_temp, command_db)
-				if command["status"] == ParserResultStatus.ERROR:
-					return command
-				
-				command_construction_temp = []
-				command_sequence.push_back(command["data"])
-				command_sequence.push_back({"type": ParserBlockType.OR})
-			
-			TokenType.AND:
-				var operator_validation: Dictionary = _validate_operator(tokens, i, true, true)
-				if operator_validation["status"] == ParserResultStatus.ERROR:
-					return operator_validation
-				var command: Dictionary = _construct_command(command_construction_temp, command_db)
-				if command["status"] == ParserResultStatus.ERROR:
-					return command
-				
-				command_construction_temp = []
-				command_sequence.push_back(command["data"])
-				command_sequence.push_back({"type": ParserBlockType.AND})
-			
-			TokenType.NOT:
-				var operator_validation: Dictionary = _validate_operator(tokens, i, false, true)
-				if operator_validation["status"] == ParserResultStatus.ERROR:
-					return operator_validation
-				var command: Dictionary = _construct_command(command_construction_temp, command_db)
-				if command["status"] == ParserResultStatus.ERROR:
-					return command
-				
-				command_construction_temp = []
-				command_sequence.push_back(command["data"])
-				command_sequence.push_back({"type": ParserBlockType.NOT})
-			
-			TokenType.BACKGROUND:
-				var operator_validation: Dictionary = _validate_operator(tokens, i, true, false)
-				if operator_validation["status"] == ParserResultStatus.ERROR:
-					return operator_validation
-				var command: Dictionary = _construct_command(command_construction_temp, command_db)
-				if command["status"] == ParserResultStatus.ERROR:
-					return command
-				
-				command_construction_temp = []
-				command_sequence.push_back({"type": ParserBlockType.BACKGROUND})
-				command_sequence.push_back(command["data"])
-			
-			TokenType.SEQUENCE:
-				var command: Dictionary = _construct_command(command_construction_temp, command_db)
-				if command["status"] == ParserResultStatus.ERROR:
-					return command
-				
-				command_construction_temp = []
-				command_sequence.push_back(command["data"])
-			
-			_:
+		if last_token_type != Token.Type.WORD:
+			expanded_tokens.append_array(_expand_token(tokens[i], command_db))
+		else:
+			expanded_tokens.append(tokens[i])
+		last_token_type = tokens[i].type
+	
+	return expanded_tokens
+
+
+static func _expand_token(token: Token, command_db: GDShellCommandDB) -> Array[Token]:
+	if token.content in command_db._aliases.keys():
+		return _tokenize(command_db._aliases[token.content])
+	return [token]
+
+
+static func _is_operator(token: Token) -> bool:
+	return token.type in [
+		Token.Type.OPERATOR_AND,
+		Token.Type.OPERATOR_BACKGROUND,
+		Token.Type.OPERATOR_OR,
+		Token.Type.OPERATOR_PIPE,
+		Token.Type.OPERATOR_NOT,
+		Token.Type.OPERATOR_SEQUENCE,
+	]
+
+
+static func _validate_operators(tokens: Array[Token]) -> Dictionary:
+	var parenthesis_validation: Dictionary = _validate_parentheses(tokens)
+	if parenthesis_validation["err_token_index"] != -1:
+		return parenthesis_validation
+	
+	for i in tokens.size():
+		if tokens[i].type == Token.Type.WORD:
+			continue
+		
+		if _token_requires_left_operand(tokens[i]):
+			if i == 0 or not _token_can_be_considered_operand(tokens[i], tokens[i-1]):
 				return {
-					"status": ParserResultStatus.ERROR,
-					"result":
-					{
-						"error":
-						{
-							"char": tokens[i]["start_char"],
-							"error": "Unknown token",
-						}
-					}
+					"err_token_index": i,
+					"err_string": "\"%s\" does not have a required left operand." % tokens[i].content if tokens[i].type != Token.Type.OPERATOR_CLOSING_PARENTHESIS
+					else "Parentheses pair does not have at least one required command.",
 				}
-
-	# Empty the `command_construction_temp`
-	var command: Dictionary = _construct_command(command_construction_temp, command_db)
-	if command["status"] == ParserResultStatus.ERROR:
-		return command
-	command_sequence.push_back(command["data"])
-	
-	command_sequence = command_sequence.filter(func(x: Dictionary): return not x.is_empty())
-	
-	return {"status": ParserResultStatus.OK, "result": command_sequence}
-
-
-static func _construct_command(from: Array[String], command_db: GDShellCommandDB) -> Dictionary:
-	if from.size() == 0:
-		# Empty commands will be filtered out
-		return {
-			"status": ParserResultStatus.OK,
-			"data": {},
-		}
-	
-	var command_path: String = command_db.get_command_path(from[0])
-	if command_path.is_empty():
-		return {
-			"status": ParserResultStatus.ERROR,
-			"result": {"error": {"char": 0, "error": "Unknown command: %s" % from[0]}},
-		}
+		if _token_requires_right_operand(tokens[i]):
+			if i == tokens.size()-1 or not _token_can_be_considered_operand(tokens[i], tokens[i+1]):
+				return {
+					"err_token_index": i,
+					"err_string": "\"%s\" does not have a required right operand." % tokens[i].content if tokens[i].type != Token.Type.OPERATOR_OPENING_PARENTHESIS
+					else "Parentheses pair does not have at least one required command.",
+				}
 	
 	return {
-		"status": ParserResultStatus.OK,
-		"data":
-		{
-			"type": ParserBlockType.COMMAND,
-			"data":
-			{
-				"command": command_path,
-				"params":
-				{
-					"argv": from.duplicate(true),
-					"data": null,
-				}
-			}
-		}
+		"err_token_index": -1,
+		"err_string": "",
 	}
 
 
-# `from` - token array ; `at` - index of the operator
-# `lect`, `right` - determines if the oprator mush have left or RIGHT operands
-static func _validate_operator(from: Array[Dictionary], at: int, left: bool, right: bool) -> Dictionary:
-	if left:
-		if not at > 0:
-			return {
-				"status": ParserResultStatus.ERROR,
-				"result":
-				{
-					"error":
-					{
-						"char": from[at]["start_char"],
-						"error": "Missing operand",
-					}
-				}
-			}
-		if from[at - 1]["type"] != TokenType.TEXT:
-			if from[at - 1]["type"] == TokenType.BACKGROUND and from[at]["type"] == TokenType.BACKGROUND:
+static func _validate_parentheses(tokens: Array[Token]) -> Dictionary:
+	var parenthesis_level: int = 0
+	var firt_opening_parenthesis_index: int
+	
+	for i in tokens.size():
+		if tokens[i].type == Token.Type.OPERATOR_OPENING_PARENTHESIS:
+			parenthesis_level += 1
+			if parenthesis_level == 1:
+				firt_opening_parenthesis_index = i
+		elif tokens[i].type == Token.Type.OPERATOR_CLOSING_PARENTHESIS:
+			parenthesis_level -= 1
+			if parenthesis_level < 0: # Found closing parenthesis with no opening one
 				return {
-					"status": ParserResultStatus.ERROR,
-					"result": 
-					{
-						"error":
-						{
-							"char": from[at]["start_char"],
-							"error": "Missing operand",
-						}
-					}
+					"err_token_index": i,
+					"err_string": "Closing \")\" on index [%d] does not have an opening counterpart." % i,
 				}
 	
-	if right:
-		if not at < from.size() - 1:
-			return {
-				"status": ParserResultStatus.ERROR,
-				"result":
-				{
-					"error":
-					{
-						"char": from[at]["start_char"] + from[at]["consumed"],
-						"error": "Missing operand",
-					}
-				}
-			}
-		if from[at + 1]["type"] != TokenType.TEXT:
-			if (
-				from[at + 1]["type"] != TokenType.NOT
-				or (from[at + 1]["type"] == TokenType.NOT and from[at]["type"] == TokenType.NOT)
-			):
-				return {
-					"status": ParserResultStatus.ERROR,
-					"result":
-					{
-						"error":
-						{
-							"char": from[at]["start_char"] + from[at]["consumed"],
-							"error": "Missing operand",
-						}
-					}
-				}
-	return {"status": ParserResultStatus.OK}
-
-
-static func tokenize(input: String, command_db: GDShellCommandDB) -> Array[Dictionary]:
-	var tokens: Array[Dictionary] = []
-	var current: int = 0
+	if parenthesis_level > 0: # Did not find a closing parenthesis for all opening parentheses
+		return {
+			"err_token_index": firt_opening_parenthesis_index,
+			"err_string": "Opening \"(\" on index [%d] does not have a closing counterpart." % firt_opening_parenthesis_index,
+		}
 	
-	while current < input.length():
-		match input[current]:
+	return {
+		"err_token_index": -1,
+		"err_string": ""
+	}
+
+
+static func _token_requires_left_operand(token: Token) -> bool:
+	return token.type in [
+		Token.Type.OPERATOR_PIPE,
+		Token.Type.OPERATOR_AND,
+		Token.Type.OPERATOR_OR,
+		Token.Type.OPERATOR_BACKGROUND,
+		Token.Type.OPERATOR_SEQUENCE,
+		Token.Type.OPERATOR_CLOSING_PARENTHESIS,
+	]
+
+
+static func _token_requires_right_operand(token: Token) -> bool:
+	return token.type in [
+		Token.Type.OPERATOR_PIPE,
+		Token.Type.OPERATOR_AND,
+		Token.Type.OPERATOR_OR,
+		Token.Type.OPERATOR_NOT,
+		Token.Type.OPERATOR_OPENING_PARENTHESIS,
+	]
+
+
+static func _token_can_be_considered_operand(operator: Token, operand: Token) -> bool:
+	match operator.type:
+		Token.Type.OPERATOR_PIPE, Token.Type.OPERATOR_AND, Token.Type.OPERATOR_OR, Token.Type.OPERATOR_SEQUENCE:
+			return operand.type in [
+				Token.Type.WORD,
+				Token.Type.OPERATOR_NOT,
+				Token.Type.OPERATOR_BACKGROUND,
+				Token.Type.OPERATOR_OPENING_PARENTHESIS,
+				Token.Type.OPERATOR_CLOSING_PARENTHESIS,
+			]
+		Token.Type.OPERATOR_NOT:
+			return operand.type in [
+				Token.Type.WORD,
+				Token.Type.OPERATOR_OPENING_PARENTHESIS,
+			]
+		Token.Type.OPERATOR_BACKGROUND:
+			return operand.type in [
+				Token.Type.WORD,
+			]
+		Token.Type.OPERATOR_OPENING_PARENTHESIS:
+			return operand.type in [
+				Token.Type.WORD,
+				Token.Type.OPERATOR_NOT,
+				Token.Type.OPERATOR_OPENING_PARENTHESIS,
+			]
+		Token.Type.OPERATOR_CLOSING_PARENTHESIS:
+			return operand.type in [
+				Token.Type.WORD,
+				Token.Type.OPERATOR_BACKGROUND,
+				Token.Type.OPERATOR_CLOSING_PARENTHESIS,
+			]
+	
+	return false
+
+static func _tokenize(input: String) -> Array[Token]:
+	var tokens: Array[Token] = []
+	var current_char: int = 0
+	
+	while current_char < input.length():
+		match input[current_char]:
 			" ":
-				tokens.push_back(_tokenize_separator(input, current))
-			"|":
-				tokens.push_back(_tokenize_pipe_or(input, current))
-			"&":
-				tokens.push_back(_tokenize_background_and(input, current))
+				tokens.push_back(_tokenize_space(input, current_char))
 			";":
-				tokens.push_back(_tokenize_sequence(input, current))
-			'"', "'":
-				tokens.push_back(_tokenize_quoted_text(input, current))
+				tokens.push_back(_tokenize_semicolon(input, current_char))
+			"&":
+				tokens.push_back(_tokenize_and(input, current_char))
+			"|":
+				tokens.push_back(_tokenize_pipe(input, current_char))
 			"!":
-				tokens.push_back(_tokenize_not(input, current))
+				tokens.push_back(_tokenize_exclamation(input, current_char))
+#			"$":
+#				tokens.push_back(_tokenize_dollar_sign(input, current_char))
+			"(", ")":
+				tokens.push_back(_tokenize_parenthesis(input, current_char))
+			"\"", "\'":
+				tokens.push_back(_tokenize_quote(input, current_char))
 			_:
-				tokens.push_back(_tokenize_text(input, current))
+				tokens.push_back(_tokenize_text(input, current_char))
 		
-		if tokens[-1]["type"] == TokenType.ERROR:
-			return [tokens[-1]]
-		
-		current += tokens[-1]["consumed"]
+		current_char += tokens[-1].consumed
 	
-	tokens = _remove_separator_tokens(tokens)
-	return _unalias_tokens(tokens, command_db)
+	return _filter_out_space_tokens(_merge_word_tokens(tokens))
 
 
-static func _token(type: TokenType, start_char: int, consumed: int, content: String = "", error: Dictionary = {}) -> Dictionary:
-	return {
-		"type": type,
-		"start_char": start_char,
-		"consumed": consumed,
-		"content": content,
-		"error": error,
-	}
+static func _tokenize_space(_input: String, current_char: int) -> Token:
+	return Token.new(Token.Type.SPACE, " ", current_char, 1)
 
 
-static func _tokenize_quoted_text(input: String, current: int) -> Dictionary:
-	var start_char = current
+static func _tokenize_semicolon(_input: String, current_char: int) -> Token:
+	return Token.new(Token.Type.OPERATOR_SEQUENCE, ";", current_char, 1)
+
+
+static func _tokenize_and(input: String, current_char: int) -> Token:
+	if current_char < input.length()-1 and input[current_char+1] == "&":
+		return Token.new(Token.Type.OPERATOR_AND, "&&", current_char, 2)
+	return Token.new(Token.Type.OPERATOR_BACKGROUND, "&", current_char, 1)
+
+
+static func _tokenize_pipe(input: String, current_char: int) -> Token:
+	if current_char < input.length()-1 and input[current_char+1] == "|":
+		return Token.new(Token.Type.OPERATOR_OR, "||", current_char, 2)
+	return Token.new(Token.Type.OPERATOR_PIPE, "|", current_char, 1)
+
+
+static func _tokenize_exclamation(_input: String, current_char: int) -> Token:
+	return Token.new(Token.Type.OPERATOR_NOT, "!", current_char, 1)
+
+
+#static func _tokenize_dollar_sign(_input: String, current_char: int) -> Token:
+#	return Token.new(Token.Type.OPERATOR_EXPAND, "$", current_char, 1)
+
+
+static func _tokenize_parenthesis(input: String, current_char: int) -> Token:
+	if input[current_char] == "(":
+		return Token.new(Token.Type.OPERATOR_OPENING_PARENTHESIS, "(", current_char, 1)
+	else:
+		return Token.new(Token.Type.OPERATOR_CLOSING_PARENTHESIS, ")", current_char, 1)
+
+
+static func _tokenize_quote(input: String, current_char: int) -> Token:
 	var content: String = ""
-	var quote_type: String = input[current]
-	current += 1
+	var quote_type: String = input[current_char]
 	
-	while true:
-		if current >= input.length():
-			return _token(TokenType.UNTERMINATED_TEXT, start_char, content.length() + 1, content.c_unescape())  # accounts for the starting quote
-		
-		if input[current] == quote_type:
-			if input[max(0, current - 1)] != "\\":
-				return _token(TokenType.TEXT, start_char, content.length() + 2, content.c_unescape())  # accounts for the starting and ending quotes
-		
-		content += input[current]
-		current += 1
-	
-	return {}
+	# Skip the opening quote and start on the char right after
+	for i in range(current_char + 1, input.length()):
+		if input[i] == quote_type and input[max(0, i - 1)] != "\\":
+			return Token.new(
+				Token.Type.WORD,
+				content.c_unescape(),
+				current_char,
+				content.length() + 2 # accounts for the starting and ending quotes
+			)
+		content += input[i]
+	# End of input was reached without finding a closing quote
+	return Token.new(
+		Token.Type.WORD_UNTERMINATED,
+		content.c_unescape(),
+		current_char,
+		content.length() + 1 # accounts for the starting quote
+	)
 
 
-static func _tokenize_text(input: String, current: int) -> Dictionary:
-	var start_char = current
+static func _tokenize_text(input: String, current_char: int) -> Token:
 	var content: String = ""
 	
-	while true:
-		if current == input.length() or input[current] in [" ", "&"]:
-			return _token(
-				TokenType.TEXT,
-				start_char,
-				content.length(),
-				content.c_unescape()
-			)
-		
-		if input[current] in [";", "|", '"', "'", "!"]:
-			return _token(
-				TokenType.ERROR,
-				start_char,
-				content.length() + 1,
-				content,
-				{"char": current, "error": "Unexpected token"}
-			)
+	for i in range(current_char, input.length()):
+		# check if the character should end the WORD token.
+		if input[i] in [" ", ";", "&", "|", "!", "(", ")", "\"", "\'"]:
+			break
+		content += input[i]
 	
-		content += input[current]
-		current += 1
-	
-	return {}
+	return Token.new(
+		Token.Type.WORD,
+		content.c_unescape(),
+		current_char,
+		content.length()
+	)
 
 
-static func _tokenize_separator(_input: String, current: int) -> Dictionary:
-	return _token(TokenType.SEPARATOR, current, 1, " ")
-
-
-static func _tokenize_pipe_or(input: String, current: int) -> Dictionary:
-	if current < input.length() - 1 and input[current + 1] == "|":
-		return _token(TokenType.OR, current, 2, "||")
-	return _token(TokenType.PIPE, current, 1, "|")
-
-
-static func _tokenize_background_and(input: String, current: int) -> Dictionary:
-	if current < input.length() - 1 and input[current + 1] == "&":
-		return _token(TokenType.AND, current, 2, "&&")
-	return _token(TokenType.BACKGROUND, current, 1, "&")
-
-
-static func _tokenize_not(_input: String, current: int) -> Dictionary:
-	return _token(TokenType.NOT, current, 1, "!")
-
-
-static func _tokenize_sequence(_input: String, current: int) -> Dictionary:
-	return _token(TokenType.SEQUENCE, current, 1, ";")
-
-
-static func _unalias_tokens(tokens: Array[Dictionary], command_db: GDShellCommandDB) -> Array[Dictionary]:
-	if tokens.size() == 0:
+## Merges WORD tokens if they are not separated by any other token
+static func _merge_word_tokens(tokens: Array[Token]) -> Array[Token]:
+	if tokens.is_empty():
 		return tokens
-	if tokens[-1]["type"] == TokenType.UNTERMINATED_TEXT:
-		return tokens
+	# We now know that tokens is not empty so we append the first token for later simplification
+	var merged_tokens: Array[Token] = [tokens[0]]
 	
-	tokens = _remove_separator_tokens(tokens)
+	# Start from the second token as we already appended the first
+	for i in range(1, tokens.size()):
+		if tokens[i].type == Token.Type.WORD and merged_tokens[-1].type == Token.Type.WORD:
+			merged_tokens[-1].content += tokens[i].content
+			merged_tokens[-1].consumed += tokens[i].consumed
+		else:
+			merged_tokens.append(tokens[i])
 	
-	# Replace aliasable token by a token sequence representing the alias
-	for i in tokens.size():
-		if tokens[i]["type"] != TokenType.TEXT:
-			continue
-		if i > 0 and (tokens[i - 1]["type"] == TokenType.TEXT or tokens[i - 1]["type"] == TokenType.TOKEN_SEQUENCE):
-			continue
-		# Alias is found for the aliasable token
-		if tokens[i]["content"] in command_db._aliases.keys():
-			tokens[i] = {
-				"type": TokenType.TOKEN_SEQUENCE,
-				"content": tokenize(command_db._aliases[tokens[i]["content"]], command_db)
-			}
-	
-	# Insert token sequences as tokens into the `tokens` array
-	while tokens.any(func(x): return x["type"] == TokenType.TOKEN_SEQUENCE):
-		for i in tokens.size():
-			if tokens[i]["type"] == TokenType.TOKEN_SEQUENCE:
-				var token_sequence: Dictionary = tokens.pop_at(i)
-				@warning_ignore("unsafe_method_access")
-				for ii in token_sequence["content"].size():
-					tokens.insert(i + ii, token_sequence["content"][ii])
-				break  # Break because the indexing has changed because of the inserting
-	
-	return tokens
+	return merged_tokens
 
 
-static func _remove_separator_tokens(tokens: Array[Dictionary]) -> Array[Dictionary]:
-	return tokens.filter(func(x): return x["type"] != TokenType.SEPARATOR)
+## Filters out SPACE tokens. After _merge_word_tokens() they are useless and it simplifies next operations.
+static func _filter_out_space_tokens(tokens: Array[Token]) -> Array[Token]:
+	return tokens.filter(
+		func is_token_not_space(token: Token) -> bool:
+			return token.type != Token.Type.SPACE
+	)

@@ -49,23 +49,23 @@ const TYPE_NAMES: Array[String] = [
 ]
 
 
-func _main(argv: Array, _data) -> Dictionary:
+func _main(argv: Array, _data) -> CommandResult:
 	var monitor: Node = _get_monitor_overlay()
 	if monitor == null:
 		output("Cannot access Monitor Overlay. Make sure you have 'Monitor Overlay' plugin installed and try again")
-		return {
-			"error": 1,
-			"error_string": "Cannot access Monitor Overlay. Make sure you have 'Monitor Overlay' plugin installed and try again",
-			"data": null,
-		}
+		return CommandResult.new(
+			1,
+			"Cannot access Monitor Overlay. Make sure you have 'Monitor Overlay' plugin installed and try again",
+			null
+		)
 	
 	if argv.size() == 1:
 		output("Not enought arguments. Run 'man monitor' to see all available options")
-		return {
-			"error": 2,
-			"error_string": "Not enought arguments. Run 'man monitor' to see all available options",
-			"data": null,
-		}
+		return CommandResult.new(
+			2,
+			"Not enought arguments. Run 'man monitor' to see all available options",
+			null
+		)
 	
 	var safe_to_edit_properties: Array[Dictionary] = _get_monitor_overlay_safe_to_edit_properties(monitor)
 	var options: Dictionary = GDShellCommand.argv_parse_options(argv, true, false)
@@ -79,11 +79,11 @@ func _main(argv: Array, _data) -> Dictionary:
 	
 	_edit_monitor_properties_with_options(monitor, safe_to_edit_properties, options)
 	
-	return DEFAULT_COMMAND_RESULT
+	return CommandResult.new()
 
 
 func _get_monitor_overlay() -> Node:
-	if not _PARENT_PROCESS._PARENT_GDSHELL.has_node(NodePath(MONITOR_NODE_NAME)):
+	if not _PARENT_COMMAND_RUNNER._PARENT_GDSHELL.has_node(NodePath(MONITOR_NODE_NAME)):
 		if not ResourceLoader.exists(MONITOR_FILE_PATH):
 			return null # MonitorOverlay is not installed
 		
@@ -94,9 +94,9 @@ func _get_monitor_overlay() -> Node:
 		monitor.unique_name_in_owner = true
 		# disable the fps monitor as it is enabled  by default
 		monitor.set("fps", false)
-		_PARENT_PROCESS._PARENT_GDSHELL.add_child(monitor)
+		_PARENT_COMMAND_RUNNER._PARENT_GDSHELL.add_child(monitor)
 	
-	return _PARENT_PROCESS._PARENT_GDSHELL.get_node(NodePath(MONITOR_NODE_NAME))
+	return _PARENT_COMMAND_RUNNER._PARENT_GDSHELL.get_node(NodePath(MONITOR_NODE_NAME))
 
 
 # returns a list of properties that are used for MonitorOverlay UI control
