@@ -1,6 +1,5 @@
 @tool
 extends GDShellUIHandler
-# The default ui extends a PanelContainer instead of a plain Control
 
 const DEFAULT_FONT: Font = preload("res://addons/gdshell/ui/fonts/roboto_mono/RobotoMono-Regular.ttf")
 const BOLD_FONT: Font = preload("res://addons/gdshell/ui/fonts/roboto_mono/RobotoMono-Bold.ttf")
@@ -9,7 +8,6 @@ const BOLD_ITALICS_FONT: Font = preload("res://addons/gdshell/ui/fonts/roboto_mo
 
 # This looks scary, doesn't it?
 @export_category("GDShell UI")
-
 @export_group("Fonts")
 @export var default_font: Font = DEFAULT_FONT:
 	set(value):
@@ -86,11 +84,16 @@ var _is_input_requested: bool = true:
 		)
 
 
-func _ready():
+func _ready() -> void:
 	visibility_changed.connect(_on_visibility_changed)
-	_input_requested.connect(_handle_input)
-	_output_requested.connect(_handle_output)
+	#input_requested.connect(_handle_input)
+	#output_requested.connect(_handle_output)
 	set_deferred(&"_is_input_requested", true)
+
+
+func _input(event: InputEvent) -> void:
+	if event.is_action(_UI_TOGGLE_ACTION) and not event.is_echo() and event.is_pressed():
+		toggle_visible()
 
 
 func _handle_input(out: String) -> void:
@@ -124,25 +127,27 @@ func _on_visibility_changed() -> void:
 	else:
 		input_line_edit.release_focus()
 
-func set_line_edit_caret_to_end():
+func set_line_edit_caret_to_end() -> void:
 	input_line_edit.grab_focus()
 	input_line_edit.caret_column = input_line_edit.text.length()
 
-func set_line_edit_caret_to_beginning():
+func set_line_edit_caret_to_beginning() -> void:
 	input_line_edit.caret_column = 0
-	
+
+
 func text_before_caret() -> String:
 	return input_line_edit.text.substr(0, input_line_edit.caret_column)
 
-func _on_input_line_edit_gui_input(event):
+
+func _on_input_line_edit_gui_input(event: InputEvent) -> void:
 	if (event is InputEventKey and event.pressed):
-		if event.keycode == KEY_TAB:
+		if (event as InputEventKey).keycode == KEY_TAB:
 			input_line_edit.text = autocomplete(text_before_caret())
 			set_line_edit_caret_to_end.call_deferred()
-		elif event.keycode == KEY_UP:
+		elif (event as InputEventKey).keycode == KEY_UP:
 			input_line_edit.text = history_get_next()
 			set_line_edit_caret_to_end.call_deferred()
-		elif event.keycode == KEY_DOWN:
+		elif (event as InputEventKey).keycode == KEY_DOWN:
 			input_line_edit.text = history_get_previous()
 			set_line_edit_caret_to_end.call_deferred()
 		else:

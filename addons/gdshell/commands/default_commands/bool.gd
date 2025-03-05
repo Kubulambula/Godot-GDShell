@@ -13,14 +13,6 @@ var FALSE: CommandResult = CommandResult.new(
 )
 
 
-func _init():
-	COMMAND_AUTO_ALIASES = {
-		"true": "bool -t",
-		"false": "bool -f",
-		"random": "bool -r",
-	}
-
-
 func _main(argv: Array, _data) -> CommandResult:
 	if not argv.size() > 1:
 		return TRUE
@@ -39,6 +31,14 @@ func _main(argv: Array, _data) -> CommandResult:
 				"Parameter '%s' not recognized" % argv[1],
 				null
 			)
+
+
+func _get_command_auto_aliases():
+	return {
+		"true": "bool -t",
+		"false": "bool -f",
+		"random": "bool -r",
+	}
 
 
 func _get_manual() -> String:
@@ -79,8 +79,8 @@ func _get_manual() -> String:
 		 Same as: random && echo "true" || echo "false"
 """.format(
 			{
-				"COMMAND_NAME": COMMAND_NAME,
-				"COMMAND_AUTO_ALIASES": COMMAND_AUTO_ALIASES,
+				"COMMAND_NAME": _get_command_name(),
+				"COMMAND_AUTO_ALIASES": _get_command_auto_aliases(),
 			}
 		)
 	)

@@ -1,0 +1,181 @@
+@icon("res://addons/gdshell/icon.png")
+class_name GDShellExpressionCompiler
+extends RefCounted
+
+
+class CompilerResult extends RefCounted:
+	enum Status {
+		OK,
+		ERROR,
+		UNTERMINATED,
+	}
+	
+	var result: Dictionary
+	var status: Status
+	var input_expression: String
+	var error_description: String
+	var input_expression_error_start_index: int
+	var input_expression_error_length: int
+	
+	func _init(_result: Dictionary, _status: Status, _input_expression: String, _error_description: String, _input_expression_error_start_index: int, _input_expression_error_length: int) -> void:
+		result = _result
+		status = _status
+		input_expression = _input_expression
+		error_description = _error_description
+		input_expression_error_start_index = _input_expression_error_start_index
+		input_expression_error_length = _input_expression_error_length
+	
+	func _to_string() -> String:
+		return "{CompilerResult: %s, error_description: \"%s\"}" % [Status.find_key(status), error_description]
+
+
+static func compile(input_expression: String) -> CompilerResult:
+	var tokenizer_result: GDShellExpressionTokenizer.TokenizerResult = GDShellExpressionTokenizer.tokenize(input_expression)
+	if tokenizer_result.status == GDShellExpressionTokenizer.TokenizerResult.Status.ERROR:
+		return CompilerResult.new(
+			{},
+			CompilerResult.Status.ERROR,
+			input_expression,
+			tokenizer_result.description,
+			tokenizer_result.result[-1].start_char_index,
+			tokenizer_result.result[-1].consumed_chars
+		)
+	if tokenizer_result.status == GDShellExpressionTokenizer.TokenizerResult.Status.UNTERMINATED:
+		return CompilerResult.new(
+			{},
+			CompilerResult.Status.UNTERMINATED,
+			input_expression,
+			"unterminated expression",
+			tokenizer_result.result[-1].start_char_index,
+			tokenizer_result.result[-1].consumed_chars
+		)
+	if tokenizer_result.result.is_empty(): # empty input - dont even bother with parsing
+		return CompilerResult.new(
+			{},
+			CompilerResult.Status.OK,
+			input_expression,
+			tokenizer_result.description,
+			0,
+			0
+		)
+	
+	var parser_result: GDShellExpressionParser.ParserResult = GDShellExpressionParser.parse(tokenizer_result.result)
+	if parser_result.status == GDShellExpressionParser.ParserResult.Status.ERROR:
+		return CompilerResult.new(
+			parser_result.result,
+			CompilerResult.Status.ERROR,
+			input_expression,
+			parser_result.description,
+			parser_result.input_expression_error_start_index,
+			parser_result.input_expression_error_length
+		)
+	
+	return CompilerResult.new(
+		parser_result.result,
+		CompilerResult.Status.OK,
+		input_expression,
+		parser_result.description,
+		parser_result.input_expression_error_start_index,
+		parser_result.input_expression_error_length
+	)
+
+
+
+static func is_command_expression_valid(command_expression: Dictionary, error_info: bool = false, command_db: GDShellCommandDB = null) -> bool:
+	if not command_expression.has_all(["type", "name", "args"]):
+		return false
+	# type
+	if command_expression["type"] != "command":
+		return false
+	# name
+	if typeof(command_expression["name"]) != TYPE_STRING:
+		return false
+	if command_db != null:
+		push_error("CommandDB validation not yet implemented.")
+	# args
+	if typeof(command_expression["args"]) != TYPE_ARRAY:
+		return false
+	@warning_ignore("unsafe_method_access")
+	if command_expression["args"].any(
+		func(arg: Variant) -> bool:
+			return typeof(arg) != TYPE_STRING
+			):
+		return false
+	# for reporting where the error occurred
+	if error_info:
+		if not command_expression.has_all(["index", "lenght"]):
+			return false
+		# index
+		if typeof(command_expression["index"]) != TYPE_INT:
+			return false
+		if command_expression["index"] < 0:
+			return false
+		# length
+		if typeof(command_expression["length"]) != TYPE_INT:
+			return false
+		if command_expression["length"] < 1:
+			return false
+	
+	return true
+
+
+static func is_operator_expression_valid(operator_expression: Dictionary, error_info: bool = false) -> bool:
+	if not operator_expression.has_all(["type", "operator"]):
+		return false
+	# type
+	if operator_expression["type"] != "operator":
+		return false
+	# for reporting where the error occurred
+	if error_info:
+		if not operator_expression.has_all(["index", "lenght"]):
+			return false
+		# index
+		if typeof(operator_expression["index"]) != TYPE_INT:
+			return false
+		if operator_expression["index"] < 0:
+			return false
+		# length
+		if typeof(operator_expression["length"]) != TYPE_INT:
+			return false
+		if operator_expression["length"] < 1:
+			return false
+	# operator
+	if typeof(operator_expression["operator"]) != TYPE_STRING:
+		return false
+	match operator_expression["operator"]:
+		"!":
+			if not operator_expression.has("right"):
+				return false
+			if typeof(operator_expression["right"]) != TYPE_DICTIONARY:
+				return false
+		"&":
+			if not operator_expression.has("left"):
+				return false
+			if typeof(operator_expression["left"]) != TYPE_DICTIONARY:
+				return false
+		"|", "||", "&&", ";":
+			if not operator_expression.has_all(["left", "right"]):
+				return false
+			if typeof(operator_expression["left"]) != TYPE_DICTIONARY:
+				return false
+			if typeof(operator_expression["right"]) != TYPE_DICTIONARY:
+				return false
+	
+	return true
+
+
+static func is_expression_valid(expression: Dictionary, error_info: bool = false, command_db: GDShellCommandDB = null) -> bool:
+	if expression.get("type") == "command":
+		return is_command_expression_valid(expression, error_info, command_db)
+	
+	elif expression.get("type") == "operator":
+		if is_operator_expression_valid(expression, error_info) == false:
+			return false
+		if expression.has("left"):
+			if is_expression_valid(expression["left"], error_info, command_db) == false:
+				return false
+		if expression.has("right"):
+			if is_expression_valid(expression["right"], error_info, command_db) == false:
+				return false
+	
+	return true

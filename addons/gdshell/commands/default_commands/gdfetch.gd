@@ -35,12 +35,6 @@ const LOGO: String = (
 )
 
 
-func _init():
-	COMMAND_AUTO_ALIASES = {
-		"neofetch": "gdfetch --i-am-a-linux-nerd-and-tried-to-use-neofetch",
-	}
-
-
 func _main(argv: Array, data) -> CommandResult:
 	var info: Dictionary = get_info()
 	
@@ -85,6 +79,12 @@ static func get_info() -> Dictionary:
 	}
 
 
+func _get_command_auto_aliases():
+	return {
+		"neofetch": "gdfetch --i-am-a-linux-nerd-and-tried-to-use-neofetch",
+	}
+
+
 func _get_manual() -> String:
 	return (
 """
@@ -116,8 +116,8 @@ func _get_manual() -> String:
 		 Can be used as a input for other commands when called silently.
 """.format(
 			{
-				"COMMAND_NAME": COMMAND_NAME,
-				"COMMAND_AUTO_ALIASES": COMMAND_AUTO_ALIASES,
+				"COMMAND_NAME": _get_command_name(),
+				"COMMAND_AUTO_ALIASES": _get_command_auto_aliases(),
 			}
 		)
 	)

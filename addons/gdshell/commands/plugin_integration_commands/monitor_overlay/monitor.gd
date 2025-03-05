@@ -6,6 +6,7 @@ const MONITOR_NODE_NAME: String = "GDShellMonitorOverlayIntegration"
 
 const OPTIONS_FLAGS: Array[String] = ["o", "O", "options", "OPTIONS"]
 
+# TODO implement my own PR
 # Workaround until https://github.com/godotengine/godot/pull/69624 gets merged
 const TYPE_NAMES: Array[String] = [
 	"Nil",
@@ -165,6 +166,6 @@ func _get_manual() -> String:
 	[i]monitor -fps=true --process=true --physics_process=false --sampling_rate=10[/i]
 		-Enables fps and process monitors, disables physics_process monitor and sets sampling rate to 10
 """.format({
-	"COMMAND_NAME": COMMAND_NAME,
-	"COMMAND_AUTO_ALIASES": COMMAND_AUTO_ALIASES,
+	"COMMAND_NAME": _get_command_name(),
+	"COMMAND_AUTO_ALIASES": _get_command_auto_aliases(),
 })

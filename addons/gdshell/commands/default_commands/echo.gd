@@ -13,7 +13,7 @@ func _main(argv: Array, data) -> CommandResult:
 		output(out)
 	
 	@warning_ignore("incompatible_ternary")
-	return CommandResult.new(0, "", null if out.is_empty() else out)
+	return CommandResult.new(OK, "", null if out.is_empty() else out)
 
 
 func _get_manual() -> String:
@@ -40,8 +40,8 @@ SYNOPSIS
 		 -Prints Hello 1 World!
 """.format(
 			{
-				"COMMAND_NAME": COMMAND_NAME,
-				"COMMAND_AUTO_ALIASES": COMMAND_AUTO_ALIASES,
+				"COMMAND_NAME": _get_command_name(),
+				"COMMAND_AUTO_ALIASES": _get_command_auto_aliases(),
 			}
 		)
 	)

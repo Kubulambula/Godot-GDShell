@@ -13,7 +13,7 @@ config_version=5
 config/name="GDShell"
 config/description="Light-weight customizable in-game console for development, debugging, cheats, etc... for Godot 4."
 run/main_scene="res://addons/gdshell/demo/demo.tscn"
-config/features=PackedStringArray("4.1")
+config/features=PackedStringArray("4.3")
 config/icon="res://addons/gdshell/icon.png"
 
 [autoload]
@@ -23,6 +23,8 @@ GDShell="*res://addons/gdshell/scripts/gdshell_main.gd"
 [debug]
 
 gdscript/warnings/exclude_addons=false
+gdscript/warnings/untyped_declaration=1
+gdscript/warnings/inferred_declaration=1
 gdscript/warnings/unsafe_property_access=1
 gdscript/warnings/unsafe_method_access=1
 gdscript/warnings/unsafe_cast=1
@@ -41,7 +43,7 @@ import/blender/enabled=false
 
 gdshell_toggle_ui={
 "deadzone": 0.5,
-"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":96,"physical_keycode":0,"key_label":0,"unicode":0,"echo":false,"script":null)
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":96,"physical_keycode":0,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
 ]
 }
 

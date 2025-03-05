@@ -5,13 +5,6 @@ const LIST_FLAGS: Array[String] = ["l", "L", "list", "LIST"]
 const SILENT_FLAGS: Array[String] = ["s", "S", "silent", "SILENT"]
 
 
-func _init():
-	COMMAND_AUTO_ALIASES = {
-		"manual": "man",
-		"help": "man",
-	}
-
-
 func _main(argv: Array, _data) -> CommandResult:
 	if not argv.size() > 1:
 		output("What manual page do you want? For example, try '[b]man man[/b]'\nTo see the list of all commands run '[b]man --list[/b]'")
@@ -67,6 +60,13 @@ func get_command_manual(command_name: String) -> String:
 	return manual
 
 
+func _get_command_auto_aliases() -> Dictionary:
+	return {
+		"manual": "man",
+		"help": "man",
+	}
+
+
 func _get_manual() -> String:
 	return (
 """
@@ -90,8 +90,8 @@ func _get_manual() -> String:
 		-Prints the manual for the [i]man[/i] command
 """.format(
 			{
-				"COMMAND_NAME": COMMAND_NAME,
-				"COMMAND_AUTO_ALIASES": COMMAND_AUTO_ALIASES,
+				"COMMAND_NAME": _get_command_name(),
+				"COMMAND_AUTO_ALIASES": _get_command_auto_aliases(),
 			}
 		)
 	)

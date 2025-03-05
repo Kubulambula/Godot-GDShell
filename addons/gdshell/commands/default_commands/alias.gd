@@ -1,12 +1,6 @@
 extends GDShellCommand
 
 
-func _init():
-	COMMAND_AUTO_ALIASES = {
-		"unalias": "alias -r",
-	}
-
-
 func _main(argv: Array, data) -> CommandResult:
 	var success: bool
 	
@@ -22,6 +16,12 @@ func _main(argv: Array, data) -> CommandResult:
 	
 #	output("Alias '%s' added" % argv[1])
 	return CommandResult.new()
+
+
+func _get_command_auto_aliases() -> Dictionary:
+	return {
+		"unalias": "alias -r",
+	}
 
 
 func _get_manual() -> String:
@@ -58,8 +58,8 @@ func _get_manual() -> String:
 		-Same as [i]alias -r print[/i]
 """.format(
 			{
-				"COMMAND_NAME": COMMAND_NAME,
-				"COMMAND_AUTO_ALIASES": COMMAND_AUTO_ALIASES,
+				"COMMAND_NAME": _get_command_name(),
+				"COMMAND_AUTO_ALIASES": _get_command_auto_aliases(),
 			}
 		)
 	)

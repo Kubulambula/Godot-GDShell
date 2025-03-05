@@ -127,8 +127,8 @@ static func get_file_command_name_and_auto_aliases(path: String) -> Dictionary:
 	var command: GDShellCommand = get_file_gdshell_command_instance(path)
 	if command == null:
 		return out
-	out["name"] = command.COMMAND_NAME
-	out["aliases"] = command.COMMAND_AUTO_ALIASES
+	out["name"] = command._get_command_name()
+	out["aliases"] = command._get_command_auto_aliases()
 	return out
 
 

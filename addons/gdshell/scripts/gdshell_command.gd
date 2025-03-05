@@ -17,10 +17,6 @@ class CommandResult:
 signal command_end
 
 
-@warning_ignore("unsafe_method_access")
-var COMMAND_NAME: String = get_script().get_path().get_file().get_basename()
-var COMMAND_AUTO_ALIASES: Dictionary = {}
-
 var _PARENT_COMMAND_RUNNER: GDShellCommandRunner
 
 
@@ -36,12 +32,8 @@ func input(out: String = "") -> String:
 	return await _PARENT_COMMAND_RUNNER._handle_input(self, out)
 
 
-func output(out, append_new_line: bool = true) -> void:
+func output(out: Variant, append_new_line: bool = true) -> void:
 	_PARENT_COMMAND_RUNNER._handle_output(str(out), append_new_line)
-
-
-func get_parent_command_runner() -> GDShellCommandRunner:
-	return _PARENT_COMMAND_RUNNER
 
 
 func get_ui_handler() -> GDShellUIHandler:
@@ -50,6 +42,15 @@ func get_ui_handler() -> GDShellUIHandler:
 
 func get_ui_handler_rich_text_label() -> RichTextLabel:
 	return _PARENT_COMMAND_RUNNER._handle_get_ui_handler_rich_text_label()
+
+
+func _get_command_name() -> String:
+	@warning_ignore("unsafe_method_access")
+	return get_script().get_path().get_file().get_basename()
+
+
+func _get_command_auto_aliases() -> Dictionary:
+	return {}
 
 
 func _get_manual() -> String:
@@ -65,8 +66,8 @@ func _get_manual() -> String:
 	-Override the [b]_get_manual()[/b] function for a custom manual page.
 """.format(
 			{
-				"COMMAND_NAME": COMMAND_NAME,
-				"COMMAND_AUTO_ALIASES": COMMAND_AUTO_ALIASES,
+				"COMMAND_NAME": _get_command_name(),
+				"COMMAND_AUTO_ALIASES": _get_command_auto_aliases(),
 			}
 		)
 	)
@@ -74,7 +75,7 @@ func _get_manual() -> String:
 
 static func argv_parse_options(argv: Array[String], strip_name_dashes: bool = false, next_arg_as_value: bool = false) -> Dictionary:
 	var options: Dictionary = {}
-	for i in argv.size():
+	for i: int in argv.size():
 		if argv[i][0] == "-":
 			var option_name: String = argv[i].get_slice("=", 0).lstrip("-") if strip_name_dashes else argv[i].get_slice("=", 0)
 			var option_value: String = argv[i].get_slice("=", 1) if "=" in argv[i] else ""
