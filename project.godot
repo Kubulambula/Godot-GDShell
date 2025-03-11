@@ -13,7 +13,7 @@ config_version=5
 config/name="GDShell"
 config/description="Light-weight customizable in-game console for development, debugging, cheats, etc... for Godot 4."
 run/main_scene="res://addons/gdshell/demo/demo.tscn"
-config/features=PackedStringArray("4.3")
+config/features=PackedStringArray("4.4")
 config/icon="res://addons/gdshell/icon.png"
 
 [autoload]

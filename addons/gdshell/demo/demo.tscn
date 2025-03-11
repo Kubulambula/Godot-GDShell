@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://cil8b81ctftx3"]
 
-[ext_resource type="Script" path="res://addons/gdshell/demo/demo.gd" id="1_cwk1x"]
+[ext_resource type="Script" uid="uid://bg5laxgioyd86" path="res://addons/gdshell/demo/demo.gd" id="1_cwk1x"]
 [ext_resource type="Texture2D" uid="uid://bmmfysofbp50p" path="res://addons/gdshell/icon.png" id="2_hso4g"]
 
 [node name="GDShellDemo" type="Control"]

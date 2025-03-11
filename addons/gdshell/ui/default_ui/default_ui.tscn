@@ -1,6 +1,6 @@
 [gd_scene load_steps=14 format=3 uid="uid://dkixrvtb3a1f8"]
 
-[ext_resource type="Script" path="res://addons/gdshell/ui/default_ui/default_ui.gd" id="2_7mabp"]
+[ext_resource type="Script" uid="uid://dyo5rm5v27am7" path="res://addons/gdshell/ui/default_ui/default_ui.gd" id="2_7mabp"]
 [ext_resource type="FontFile" uid="uid://b8fo1gccd11mc" path="res://addons/gdshell/ui/fonts/roboto_mono/RobotoMono-Regular.ttf" id="2_cto07"]
 [ext_resource type="FontFile" uid="uid://by5705qqqugvi" path="res://addons/gdshell/ui/fonts/roboto_mono/RobotoMono-Bold.ttf" id="2_ncxo2"]
 [ext_resource type="FontFile" uid="uid://6d4ig2mw72j" path="res://addons/gdshell/ui/fonts/roboto_mono/RobotoMono-BoldItalic.ttf" id="2_xle7x"]
