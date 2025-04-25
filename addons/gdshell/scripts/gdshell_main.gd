@@ -15,17 +15,18 @@ var _input_buffer: String = ""
 var _input_requested: bool = false
 
 
-func _ready() -> void:
+func _ready() -> void: 
 	_ui_handler_canvas_layer = CanvasLayer.new()
 	_ui_handler_canvas_layer.layer = 100
 	add_child(_ui_handler_canvas_layer)
 	
 	setup_with_default_values()
 	
-	var result = GDShellExpressionCompiler.compile("a && b ; (c | d)")
-	print(GDShellExpressionCompiler.is_expression_valid(result.result))
-	print(result)
-	print(result.result)
+	var result = GDShellExpressionCompiler.compile("'a''a'")
+	#var result = GDShellExpressionCompiler.compile("a && b ; (c | d)")
+	printerr(GDShellExpressionCompiler.is_expression_valid(result.result))
+	print(JSON.stringify(result.result, "\t", false))
+	#print(result.result)
 	return
 	
 	#if "autorun" in command_db.get_all_command_names():

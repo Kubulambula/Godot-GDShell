@@ -200,4 +200,3 @@ func _handle_get_ui_handler() -> GDShellUIHandler:
 
 func _handle_get_ui_handler_rich_text_label() -> RichTextLabel:
 	return _PARENT_GDSHELL.get_ui_handler_rich_text_label()
-
