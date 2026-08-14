@@ -45,7 +45,7 @@ const BOLD_ITALICS_FONT: Font = preload("res://addons/gdshell/ui/fonts/roboto_mo
 		%OutputRichTextLabel.add_theme_font_override("bold_italics_font", bold_italics_font)
 
 @export_group("Input Bar")
-@export var input_prompt: String = "gdshell@{PROJECT_NAME}:~$ ":
+@export var input_prompt: String = "GDShell@{PROJECT_NAME}:~$ ":
 	set(value):
 		input_prompt = value.format({"PROJECT_NAME": ProjectSettings.get_setting("application/config/name")})
 		if not is_inside_tree():
@@ -91,9 +91,9 @@ func _ready() -> void:
 	set_deferred(&"_is_input_requested", true)
 
 
-func _input(event: InputEvent) -> void:
-	if event.is_action(_UI_TOGGLE_ACTION) and not event.is_echo() and event.is_pressed():
-		toggle_visible()
+#func _input(event: InputEvent) -> void:
+	#if event.is_action(_UI_TOGGLE_ACTION) and not event.is_echo() and event.is_pressed():
+		#toggle_visible()
 
 
 func _handle_input(out: String) -> void:
@@ -109,7 +109,7 @@ func _handle_output(output: String, append_new_line: bool = true) -> void:
 func _on_input_line_edit_text_submitted(input: String) -> void:
 	input_line_edit.clear()
 	if _is_input_requested:
-		submit_input(input)
+		#submit_input(input)
 		_is_input_requested = false
 
 
@@ -142,14 +142,14 @@ func text_before_caret() -> String:
 func _on_input_line_edit_gui_input(event: InputEvent) -> void:
 	if (event is InputEventKey and event.pressed):
 		if (event as InputEventKey).keycode == KEY_TAB:
-			input_line_edit.text = autocomplete(text_before_caret())
+			#input_line_edit.text = autocomplete(text_before_caret())
 			set_line_edit_caret_to_end.call_deferred()
 		elif (event as InputEventKey).keycode == KEY_UP:
-			input_line_edit.text = history_get_next()
+			#input_line_edit.text = history_get_next()
 			set_line_edit_caret_to_end.call_deferred()
 		elif (event as InputEventKey).keycode == KEY_DOWN:
-			input_line_edit.text = history_get_previous()
+			#input_line_edit.text = history_get_previous()
 			set_line_edit_caret_to_end.call_deferred()
-		else:
-			history_reset_index()
+		#else:
+			#history_reset_index()
 		

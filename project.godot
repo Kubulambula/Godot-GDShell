@@ -18,7 +18,7 @@ config/icon="res://addons/gdshell/icon.png"
 
 [autoload]
 
-GDShell="*res://addons/gdshell/scripts/gdshell_main.gd"
+GDShell="*res://addons/gdshell/scripts/gdshell_session.gd"
 
 [debug]
 

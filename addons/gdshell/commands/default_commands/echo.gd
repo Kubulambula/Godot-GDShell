@@ -16,7 +16,11 @@ func _main(argv: Array, data) -> CommandResult:
 	return CommandResult.new(OK, "", null if out.is_empty() else out)
 
 
-func _get_manual() -> String:
+static func _get_command_name() -> StringName:
+	return &"echo"
+
+
+static func _get_manual() -> String:
 	return (
 """
 [b]NAME[/b]

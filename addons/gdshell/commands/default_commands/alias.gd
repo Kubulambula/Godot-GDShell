@@ -2,29 +2,33 @@ extends GDShellCommand
 
 
 func _main(argv: Array, data) -> CommandResult:
-	var success: bool
-	
-	if not argv.size() > 2:
-		output("Not enough arguments")
-		return CommandResult.new(1, "Not enough arguments")
-	
-	if "-r" in argv[1] or "--remove" in argv[1]:
-		_PARENT_COMMAND_RUNNER._PARENT_GDSHELL.command_db.remove_alias(argv[2])
-		return CommandResult.new()
-	
-	_PARENT_COMMAND_RUNNER._PARENT_GDSHELL.command_db.add_alias(argv[1], argv[2])
+	#var success: bool
+	#
+	#if not argv.size() > 2:
+		#output("Not enough arguments")
+		#return CommandResult.new(1, "Not enough arguments")
+	#
+	#if "-r" in argv[1] or "--remove" in argv[1]:
+		#_PARENT_COMMAND_RUNNER._PARENT_GDSHELL.command_db.remove_alias(argv[2])
+		#return CommandResult.new()
+	#
+	#_PARENT_COMMAND_RUNNER._PARENT_GDSHELL.command_db.add_alias(argv[1], argv[2])
 	
 #	output("Alias '%s' added" % argv[1])
 	return CommandResult.new()
 
 
-func _get_command_auto_aliases() -> Dictionary:
+static func _get_command_name() -> StringName:
+	return &"alias"
+
+
+static func _get_command_auto_aliases() -> Dictionary:
 	return {
 		"unalias": "alias -r",
 	}
 
 
-func _get_manual() -> String:
+static func _get_manual() -> String:
 	return (
 """
 [b]NAME[/b]

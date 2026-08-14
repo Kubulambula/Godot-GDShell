@@ -33,7 +33,11 @@ func _main(argv: Array, _data) -> CommandResult:
 			)
 
 
-func _get_command_auto_aliases():
+static func _get_command_name() -> StringName:
+	return &"bool"
+
+
+static func _get_command_auto_aliases():
 	return {
 		"true": "bool -t",
 		"false": "bool -f",
@@ -41,7 +45,7 @@ func _get_command_auto_aliases():
 	}
 
 
-func _get_manual() -> String:
+static func _get_manual() -> String:
 	return (
 """
 [b]NAME[/b]

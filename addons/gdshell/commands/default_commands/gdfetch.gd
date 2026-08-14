@@ -34,6 +34,9 @@ const LOGO: String = (
 """
 )
 
+func _init() -> void:
+	printerr("hello")
+
 
 func _main(argv: Array, data) -> CommandResult:
 	var info: Dictionary = get_info()
@@ -68,7 +71,7 @@ func construct_output(graphics: String, info: Dictionary, skip_lines: int = 3) -
 static func get_info() -> Dictionary:
 	return {
 		"Project Name": ProjectSettings.get_setting("application/config/name"),
-		"GDShell Version": GDShellMain.get_gdshell_version(),
+		#"GDShell Version": GDShellEditorPlugin.get_gdshell_version(),
 		"Godot Version": Engine.get_version_info()["string"],
 		"Build": ("Debug" if OS.is_debug_build() else "Release") if OS.has_feature("standalone") else "Editor",
 		"OS": OS.get_distribution_name() + " " + OS.get_version(),
@@ -79,13 +82,17 @@ static func get_info() -> Dictionary:
 	}
 
 
-func _get_command_auto_aliases():
+static func _get_command_auto_aliases():
 	return {
 		"neofetch": "gdfetch --i-am-a-linux-nerd-and-tried-to-use-neofetch",
 	}
 
 
-func _get_manual() -> String:
+static func _get_command_name() -> StringName:
+	return &"gdfetch"
+
+
+static func _get_manual() -> String:
 	return (
 """
 [b]NAME[/b]

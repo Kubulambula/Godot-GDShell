@@ -16,7 +16,7 @@ class Token extends RefCounted:
 		# Tokenizer tokens
 		WORD,
 		WORD_UNTERMINATED,
-#		OPERATOR_EXPAND,
+#		OPERATOR_EXPAND, # (variable? macro?)
 		OPERATOR_NOT,
 		OPERATOR_BACKGROUND,
 		OPERATOR_AND,
@@ -75,7 +75,7 @@ static func tokenize(input_expression: String) -> TokenizerResult:
 				current_token = _tokenize_semicolon(input_expression, current_char_index)
 			"!":
 				current_token = _tokenize_exclamation(input_expression, current_char_index)
-			#"$": # TODO variable operator
+			#"$": # TODO variable/macro operator
 				#tokens.push_back(_tokenize_dollar_sign(input_expression, current_char))
 			"&":
 				current_token = _tokenize_and(input_expression, current_char_index)

@@ -20,11 +20,11 @@ expand_margin_right = 3.0
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_atmjn"]
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_eg7qu"]
-
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_gepu6"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_b1ltg"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_eg7qu"]
 
 [node name="gdshell_ui_handler" type="PanelContainer"]
 custom_minimum_size = Vector2(0, 100)
@@ -32,7 +32,7 @@ anchors_preset = -1
 anchor_right = 1.0
 anchor_bottom = 0.666667
 script = ExtResource("2_7mabp")
-input_prompt = "gdshell@GDShell:~$ "
+input_prompt = "GDShell@GDShell:~$ "
 input_bar_color = Color(0.176471, 0.196078, 0.219608, 1)
 input_bar_uneditable_color = Color(0.145098, 0.168627, 0.203922, 1)
 background_color = Color(0.113725, 0.133333, 0.160784, 0.705882)
@@ -64,9 +64,9 @@ layout_mode = 2
 size_flags_vertical = 3
 focus_mode = 2
 theme_override_fonts/normal_font = ExtResource("2_cto07")
-theme_override_fonts/bold_font = ExtResource("2_ncxo2")
 theme_override_fonts/italics_font = ExtResource("3_k4u6q")
 theme_override_fonts/bold_italics_font = ExtResource("2_xle7x")
+theme_override_fonts/bold_font = ExtResource("2_ncxo2")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_2tgqt")
 theme_override_styles/normal = SubResource("StyleBoxEmpty_ebie4")
 scroll_following = true
@@ -92,16 +92,16 @@ unique_name_in_owner = true
 layout_mode = 2
 theme_override_fonts/font = ExtResource("2_cto07")
 theme_override_styles/normal = SubResource("StyleBoxEmpty_atmjn")
-text = "gdshell@GDShell:~$ "
+text = "GDShell@GDShell:~$ "
 
 [node name="InputLineEdit" type="LineEdit" parent="VBoxContainer/HBoxContainer/VBoxContainer/InputBarPanel/InputHBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_fonts/font = ExtResource("2_cto07")
-theme_override_styles/normal = SubResource("StyleBoxEmpty_eg7qu")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_gepu6")
 theme_override_styles/read_only = SubResource("StyleBoxEmpty_b1ltg")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_eg7qu")
 context_menu_enabled = false
 caret_blink = true
 caret_blink_interval = 0.5

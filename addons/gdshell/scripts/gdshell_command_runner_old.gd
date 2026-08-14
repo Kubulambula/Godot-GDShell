@@ -1,5 +1,5 @@
 @icon("res://addons/gdshell/icon.png")
-class_name GDShellCommandRunner
+#class_name GDShellCommandRunner
 extends Node
 
 
@@ -9,7 +9,7 @@ const F_PIPE_PREVIOUS: int = 2
 const F_BACKGROUND: int = 4
 const F_NEGATED: int = 8
 
-var _PARENT_GDSHELL: GDShellMain
+var _PARENT_GDSHELL: GDShellSession
 
 var _background_commands: Array[GDShellCommand] = []
 

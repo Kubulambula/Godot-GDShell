@@ -3,17 +3,21 @@ extends GDShellCommand
 
 func _main(_argv: Array, _data) -> CommandResult:
 	# Truly unbelieveable programming skills
-	get_ui_handler_rich_text_label().clear()
+	#get_ui_handler_rich_text_label().clear()
 	return CommandResult.new()
 
 
-func _get_command_auto_aliases():
+static func _get_command_name() -> StringName:
+	return &"clear"
+
+
+static func _get_command_auto_aliases():
 	return {
 		"cls": "clear",
 	}
 
 
-func _get_manual() -> String:
+static func _get_manual() -> String:
 	return (
 """
 [b]NAME[/b]

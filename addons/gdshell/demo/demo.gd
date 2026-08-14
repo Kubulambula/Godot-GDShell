@@ -13,6 +13,7 @@ func _ready() -> void:
 	get_viewport().size_changed.connect(update_icon)
 	update_icon()
 	
+	return # TODO: remove this return and rework it so that it detects the toggle action from whereever it was moved
 	var gdshell_ui_toggle_action_input_events: Array[InputEvent] = InputMap.action_get_events(GDShell.ui_handler._UI_TOGGLE_ACTION)
 	if gdshell_ui_toggle_action_input_events.is_empty():
 		label.text = "No InputEvent is set for GDShell Ui Toggle Action.\nSet an action in settings at 'gdshell/settings/ui/ui_toggle_action'."

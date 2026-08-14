@@ -21,7 +21,7 @@ const UI_CANVAS_LAYER_DEFAULT: int = 100
 
 func _enter_tree() -> void:
 	create_gdshell_settings()
-	add_autoload_singleton("GDShell", "res://addons/gdshell/scripts/gdshell_main.gd")
+	add_autoload_singleton("GDShell", "res://addons/gdshell/scripts/gdshell_session.gd")
 
 
 func _exit_tree() -> void:
@@ -104,3 +104,10 @@ func create_default_ui_toggle_action() -> void:
 				]
 			}
 		)
+
+
+static func get_gdshell_version() -> String:
+	var config: ConfigFile = ConfigFile.new()
+	if config.load("res://addons/gdshell/plugin.cfg"):
+		return "Unknown"
+	return str(config.get_value("plugin", "version", "Unknown"))
