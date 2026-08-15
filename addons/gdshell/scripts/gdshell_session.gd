@@ -11,12 +11,18 @@ signal _input_submitted(input: String)
 
 var command_runner: GDShellCommandRunner
 var command_db: GDShellCommandDB
-var ui_handler: GDShellUIHandler
+#var ui_handler: GDShellUIHandler
 
 # Internal helper variables
-var _ui_handler_canvas_layer: CanvasLayer
+#var _ui_handler_canvas_layer: CanvasLayer
 var _input_buffer: String = ""
 var _input_requested: bool = false
+
+
+func _init(command_db: GDShellCommandDB = GDShellCommandDB.new(),
+		command_runner: GDShellCommandRunner = GDShellCommandRunner.new()) -> void:
+	self.command_db = command_db
+	self.command_runner = command_runner
 
 
 func _ready() -> void:
