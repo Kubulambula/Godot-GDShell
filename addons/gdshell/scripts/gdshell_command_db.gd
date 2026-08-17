@@ -3,7 +3,7 @@ class_name GDShellCommandDB
 extends RefCounted
 
 
-var _commands: Dictionary[String, Script] = {}
+var _commands: Dictionary[StringName, Script] = {}
 var _aliases: Dictionary[String, String] = {}
 
 

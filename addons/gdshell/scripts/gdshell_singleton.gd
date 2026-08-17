@@ -7,21 +7,14 @@ var session: GDShellSession
 
 
 func _ready() -> void:
-	ahoj()
-	ahoj()
-	ahoj()
-	bar()
-	bar()
-	bar()
-	#session = GDShellSession.new()
+	var t = Test.new()
+	var callable = func() -> void: print("kokot")
+	print(callable.get_object() == self.get_script())
+	t.free()
+	callable.call()
 
-func bar(arg = []):
-	print(arg)
-	arg.append(randi())
 
-func ahoj(arg = foo()):
-	print(arg)
-
-func foo() -> Object:
-	print("called")
-	return Object.new()
+class Test extends Object:
+	
+	func foo() -> void:
+		print("ahoj")

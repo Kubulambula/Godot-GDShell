@@ -1,7 +1,14 @@
-@icon("res://addons/gdshell/icon.png")
+@abstract @icon("res://addons/gdshell/icon.png")
 class_name GDShellCommand
 extends Node
 
+
+# just pass one param to the command and bobs yout uncle
+class CommandExecutionParameters:
+	var err
+	var piped_data
+	var parent_session
+	var is_in_background
 
 class CommandResult:
 	var err: int
