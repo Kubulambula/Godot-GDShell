@@ -1,6 +1,6 @@
 @icon("res://addons/gdshell/icon.png")
 class_name GDShellCallableCommand
-extends Node
+extends GDShellCommand
 
 
 var _callable: Callable
@@ -10,14 +10,40 @@ var _manual: String = ""
 
 func _init(callable: Callable) -> void:
 	_callable = callable
+	
+	@warning_ignore("return_value_discarded")
+	_can_execute() # Check for validity at initialization time, just for the error to show early
+
+
+func _can_execute() -> bool:
+	if _callable.is_valid():
+		return true
+	
+	var reason: String
+	if _callable.is_null():
+		reason = "[GDShell] Callable has no target to call the method on"
+	elif _callable.get_object() == null:
+		reason = "[GDShell] Callable's target object has been freed"
+	else:
+		reason = "[GDShell] Callable's target has no method \"%s\"" % _callable.get_method()
+	
+	push_error(reason)
+	return false
 
 
 func execute(parameters: GDShellCommand.Parameters) -> GDShellCommand.Result:
+	if not _can_execute():
+		return null
+	
+	var target: Callable = _callable
+	if _callable.get_argument_count() > 0:
+		target = _callable.bind(parameters)
+	
 	if _call_deferred:
-		_callable.call_deferred(parameters)
-		return GDShellCommand.Result.new()
-	else:
-		return _callable.call(parameters)
+		target.call_deferred()
+		return null
+	
+	return await target.call()
 
 
 static func from(callable: Callable) -> GDShellCallableCommand:

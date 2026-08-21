@@ -1,5 +1,5 @@
 @icon("res://addons/gdshell/icon.png")
-class_name GDShellCommandDB
+class_name GDShellCommandDBOld
 extends RefCounted
 
 
@@ -38,9 +38,10 @@ func add_command_from_file(file: String) -> String:
 
 
 func add_commands_from_directory(directory: String, recursive: bool = true) -> void:
-	for command_file_path: String in GDShellCommandDB.get_gdshell_command_file_paths_in_directory(directory, recursive):
-		@warning_ignore("return_value_discarded")
-		add_command_from_file(command_file_path)
+	pass
+	#for command_file_path: String in GDShellCommandDB.get_gdshell_command_file_paths_in_directory(directory, recursive):
+		#@warning_ignore("return_value_discarded")
+		#add_command_from_file(command_file_path)
 
 
 func remove_command(command_name: String) -> bool:

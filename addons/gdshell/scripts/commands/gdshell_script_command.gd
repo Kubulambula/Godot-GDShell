@@ -9,4 +9,5 @@ func _main(parameters: Parameters) -> Result
 
 
 func execute(parameters: Parameters) -> Result:
-	return _main(parameters)
+	@warning_ignore("redundant_await")
+	return await _main(parameters)

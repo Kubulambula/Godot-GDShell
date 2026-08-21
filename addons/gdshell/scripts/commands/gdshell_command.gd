@@ -3,9 +3,10 @@
 class_name GDShellCommand
 extends Node
 
+# script command names via consts? methods? do not even allow commands to dictate their own name?
 
 @warning_ignore("unused_signal")
-signal command_end
+signal ended
 
 
 @abstract

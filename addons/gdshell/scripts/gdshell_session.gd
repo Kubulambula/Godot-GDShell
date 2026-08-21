@@ -13,12 +13,19 @@ var command_db: GDShellCommandDB
 var command_runner: GDShellCommandRunner
 
 
-func _init(command_db_: GDShellCommandDB, command_runner_: GDShellCommandRunner = GDShellCommandRunner.new()) -> void:
+func _init(command_db_: GDShellCommandDB, command_runner_: GDShellCommandRunner) -> void:
 	command_db = command_db_
 	command_runner = command_runner_
 
 
 func execute() -> GDShellCommand.Result:
+	return null
+
+
+func execute_command(command: GDShellCommand, parameters: GDShellCommand.Parameters) -> GDShellCommand.Result:
+	#@warning_ignore("redundant_await")
+	#return await command.execute(parameters)
+	# must use runner, remember?
 	return null
 
 
