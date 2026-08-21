@@ -1,7 +1,7 @@
 extends GDShellCommand
 
 
-func _main(argv: Array, data) -> Dictionary:
+func _main(argv: Array, data) -> CommandResult:
 	var out: String = ""
 	
 	if data != null:
@@ -13,10 +13,14 @@ func _main(argv: Array, data) -> Dictionary:
 		output(out)
 	
 	@warning_ignore("incompatible_ternary")
-	return {"data": null if out.is_empty() else out}
+	return CommandResult.new(OK, "", null if out.is_empty() else out)
 
 
-func _get_manual() -> String:
+static func _get_command_name() -> StringName:
+	return &"echo"
+
+
+static func _get_manual() -> String:
 	return (
 """
 [b]NAME[/b]
@@ -40,8 +44,8 @@ SYNOPSIS
 		 -Prints Hello 1 World!
 """.format(
 			{
-				"COMMAND_NAME": COMMAND_NAME,
-				"COMMAND_AUTO_ALIASES": COMMAND_AUTO_ALIASES,
+				"COMMAND_NAME": _get_command_name(),
+				"COMMAND_AUTO_ALIASES": _get_command_auto_aliases(),
 			}
 		)
 	)

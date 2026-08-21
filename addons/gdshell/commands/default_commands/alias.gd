@@ -1,35 +1,34 @@
 extends GDShellCommand
 
 
-func _init():
-	COMMAND_AUTO_ALIASES = {
+func _main(argv: Array, data) -> CommandResult:
+	#var success: bool
+	#
+	#if not argv.size() > 2:
+		#output("Not enough arguments")
+		#return CommandResult.new(1, "Not enough arguments")
+	#
+	#if "-r" in argv[1] or "--remove" in argv[1]:
+		#_PARENT_COMMAND_RUNNER._PARENT_GDSHELL.command_db.remove_alias(argv[2])
+		#return CommandResult.new()
+	#
+	#_PARENT_COMMAND_RUNNER._PARENT_GDSHELL.command_db.add_alias(argv[1], argv[2])
+	
+#	output("Alias '%s' added" % argv[1])
+	return CommandResult.new()
+
+
+static func _get_command_name() -> StringName:
+	return &"alias"
+
+
+static func _get_command_auto_aliases() -> Dictionary:
+	return {
 		"unalias": "alias -r",
 	}
 
 
-func _main(argv: Array, data) -> Dictionary:
-	var success: bool
-	
-	if not argv.size() > 2:
-		output("Not enough arguments")
-		return {"error": 1, "error_string": "Not enough arguments"}
-	
-	if "-r" in argv[1] or "--remove" in argv[1]:
-		success = _PARENT_PROCESS._PARENT_GDSHELL.command_db.remove_alias(argv[2])
-		if success:
-			output("Alias '%s' removed" % argv[2])
-		return DEFAULT_COMMAND_RESULT
-	
-	success = _PARENT_PROCESS._PARENT_GDSHELL.command_db.add_alias(argv[1], argv[2])
-	if not success:
-		output("Could not add alias '%s'" % argv[1])
-		return {"error": 1, "error_string": "Could not add alias"}
-	
-	output("Alias '%s' added" % argv[1])
-	return DEFAULT_COMMAND_RESULT
-
-
-func _get_manual() -> String:
+static func _get_manual() -> String:
 	return (
 """
 [b]NAME[/b]
@@ -63,8 +62,8 @@ func _get_manual() -> String:
 		-Same as [i]alias -r print[/i]
 """.format(
 			{
-				"COMMAND_NAME": COMMAND_NAME,
-				"COMMAND_AUTO_ALIASES": COMMAND_AUTO_ALIASES,
+				"COMMAND_NAME": _get_command_name(),
+				"COMMAND_AUTO_ALIASES": _get_command_auto_aliases(),
 			}
 		)
 	)

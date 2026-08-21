@@ -1,26 +1,19 @@
 extends GDShellCommand
 
 
-const TRUE: Dictionary = {
-	"error": 0,
-	"data": "true",
-}
-const FALSE: Dictionary = {
-	"error": 1,
-	"error_string": "This is not an error, but false.",
-	"data": "false",
-}
+var TRUE: CommandResult = CommandResult.new(
+	0,
+	"",
+	true
+)
+var FALSE: CommandResult = CommandResult.new(
+	1,
+	"This is not an error, but false from bool command.",
+	false
+)
 
 
-func _init():
-	COMMAND_AUTO_ALIASES = {
-		"true": "bool -t",
-		"false": "bool -f",
-		"random": "bool -r",
-	}
-
-
-func _main(argv: Array, data) -> Dictionary:
+func _main(argv: Array, _data) -> CommandResult:
 	if not argv.size() > 1:
 		return TRUE
 	
@@ -33,14 +26,26 @@ func _main(argv: Array, data) -> Dictionary:
 			randomize()
 			return TRUE if randi() % 2 else FALSE
 		_:
-			return {
-				"error": ERR_INVALID_PARAMETER,
-				"error_string": "Parameter '%s' not recognized" % argv[1],
-				"data": null,
-			}
+			return CommandResult.new(
+				ERR_INVALID_PARAMETER,
+				"Parameter '%s' not recognized" % argv[1],
+				null
+			)
 
 
-func _get_manual() -> String:
+static func _get_command_name() -> StringName:
+	return &"bool"
+
+
+static func _get_command_auto_aliases():
+	return {
+		"true": "bool -t",
+		"false": "bool -f",
+		"random": "bool -r",
+	}
+
+
+static func _get_manual() -> String:
 	return (
 """
 [b]NAME[/b]
@@ -78,8 +83,8 @@ func _get_manual() -> String:
 		 Same as: random && echo "true" || echo "false"
 """.format(
 			{
-				"COMMAND_NAME": COMMAND_NAME,
-				"COMMAND_AUTO_ALIASES": COMMAND_AUTO_ALIASES,
+				"COMMAND_NAME": _get_command_name(),
+				"COMMAND_AUTO_ALIASES": _get_command_auto_aliases(),
 			}
 		)
 	)

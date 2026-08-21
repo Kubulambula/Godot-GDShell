@@ -34,14 +34,11 @@ const LOGO: String = (
 """
 )
 
-
-func _init():
-	COMMAND_AUTO_ALIASES = {
-		"neofetch": "gdfetch --i-am-a-linux-nerd-and-tried-to-use-neofetch",
-	}
+func _init() -> void:
+	printerr("hello")
 
 
-func _main(argv: Array, data) -> Dictionary:
+func _main(argv: Array, data) -> CommandResult:
 	var info: Dictionary = get_info()
 	
 	if "--i-am-a-linux-nerd-and-tried-to-use-neofetch" in argv:
@@ -50,7 +47,7 @@ func _main(argv: Array, data) -> Dictionary:
 	if not ("-s" in argv or "--silent" in argv):
 		output(construct_output(LOGO, info), false)
 	
-	return {"data": info}
+	return CommandResult.new(0, "", info)
 
 
 func construct_output(graphics: String, info: Dictionary, skip_lines: int = 3) -> String:
@@ -74,7 +71,7 @@ func construct_output(graphics: String, info: Dictionary, skip_lines: int = 3) -
 static func get_info() -> Dictionary:
 	return {
 		"Project Name": ProjectSettings.get_setting("application/config/name"),
-		"GDShell Version": GDShellMain.get_gdshell_version(),
+		#"GDShell Version": GDShellEditorPlugin.get_gdshell_version(),
 		"Godot Version": Engine.get_version_info()["string"],
 		"Build": ("Debug" if OS.is_debug_build() else "Release") if OS.has_feature("standalone") else "Editor",
 		"OS": OS.get_distribution_name() + " " + OS.get_version(),
@@ -85,7 +82,17 @@ static func get_info() -> Dictionary:
 	}
 
 
-func _get_manual() -> String:
+static func _get_command_auto_aliases():
+	return {
+		"neofetch": "gdfetch --i-am-a-linux-nerd-and-tried-to-use-neofetch",
+	}
+
+
+static func _get_command_name() -> StringName:
+	return &"gdfetch"
+
+
+static func _get_manual() -> String:
 	return (
 """
 [b]NAME[/b]
@@ -116,8 +123,8 @@ func _get_manual() -> String:
 		 Can be used as a input for other commands when called silently.
 """.format(
 			{
-				"COMMAND_NAME": COMMAND_NAME,
-				"COMMAND_AUTO_ALIASES": COMMAND_AUTO_ALIASES,
+				"COMMAND_NAME": _get_command_name(),
+				"COMMAND_AUTO_ALIASES": _get_command_auto_aliases(),
 			}
 		)
 	)

@@ -3,140 +3,185 @@ class_name GDShellCommandRunner
 extends Node
 
 
-# Command execution flags
-const F_EXECUTE_CONDITION_MET: int = 1 << 0
-const F_PIPE_PREVIOUS: int = 1 << 1
-const F_BACKGROUND: int = 1 << 2
-const F_NEGATED: int = 1 << 3
+class RunnerResult extends RefCounted:
+	enum Status {
+		OK,
+		COMPILE_ERROR,
+		VALIDATION_ERROR,
+		RUNTIME_ERROR,
+	}
 
-var _PARENT_GDSHELL: GDShellMain
-
-var _background_commands: Array[GDShellCommand] = []
-
-var _is_running_command: bool = false
-
-
-func execute(command_sequence: Dictionary) -> Dictionary:
-	if command_sequence["status"] != GDShellCommandParser.ParserResultStatus.OK:
-		return {
-			"error": 1,
-			"error_string": 'Cannot execute command sequence. See "data" for the command_sequence',
-			"data": command_sequence,
-		}
-	
-	_is_running_command = true
-	
-	var current_token: int = 0
-	var current_command_flags: int = F_EXECUTE_CONDITION_MET
-	var last_command_result: Dictionary = GDShellCommand.DEFAULT_COMMAND_RESULT
-	
-	@warning_ignore("unsafe_method_access")
-	while current_token < command_sequence["result"].size():
-		match command_sequence["result"][current_token]["type"]:
-			GDShellCommandParser.ParserBlockType.COMMAND:
-				var command: String = command_sequence["result"][current_token]["data"]["command"]
-				var params: Dictionary = command_sequence["result"][current_token]["data"]["params"]
-				
-				if not current_command_flags & F_EXECUTE_CONDITION_MET:
-					current_command_flags = F_EXECUTE_CONDITION_MET
-					continue
-				
-				if current_command_flags & F_PIPE_PREVIOUS:
-					params["data"] = last_command_result["data"]
-				
-				if current_command_flags & F_BACKGROUND:
-					last_command_result = GDShellCommand.DEFAULT_COMMAND_RESULT
-					_execute_command(command, params)
-				else:
-					last_command_result = await _execute_command(command, params)
-				
-				if current_command_flags & F_NEGATED:
-					last_command_result["error"] = 0 if last_command_result["error"] else 1
-				
-				current_command_flags = F_EXECUTE_CONDITION_MET
-			
-			GDShellCommandParser.ParserBlockType.BACKGROUND:
-				current_command_flags |= F_BACKGROUND
-			
-			GDShellCommandParser.ParserBlockType.NOT:
-				current_command_flags |= F_NEGATED
-			
-			GDShellCommandParser.ParserBlockType.PIPE:
-				current_command_flags |= F_PIPE_PREVIOUS
-			
-			GDShellCommandParser.ParserBlockType.AND:
-				if last_command_result["error"]:
-					current_command_flags ^= F_EXECUTE_CONDITION_MET
-				else:
-					current_command_flags |= F_EXECUTE_CONDITION_MET
-			
-			GDShellCommandParser.ParserBlockType.OR:
-				if last_command_result["error"]:
-					current_command_flags |= F_EXECUTE_CONDITION_MET
-				else:
-					current_command_flags ^= F_EXECUTE_CONDITION_MET
-		
-		current_token += 1
-	
-	_is_running_command = false
-	return last_command_result
+	var status: Status
+	var error_description: String
+	var command_result: GDShellCommand.Result
+	var error_index: int
+	var error_length: int
 
 
-func _execute_command(path: String, params: Dictionary, in_background: bool = false) -> Dictionary:
-	@warning_ignore("unsafe_method_access", "unsafe_cast")
-	var command: GDShellCommand = ResourceLoader.load(path, "GDScript").new() as GDShellCommand
-	add_child(command)
-	command._PARENT_PROCESS = self
-	if in_background:
-		_background_commands.append(command)
-	
-	@warning_ignore("redundant_await")
-	var result = await command._main(params["argv"], params["data"])
-	
-	if typeof(result) != TYPE_DICTIONARY:
-		push_error("[GDShell] The '%s' command does not return a value of TYPE_DICTIONARY.\n'GDShellCommand.DEFAULT_COMMAND_RESULT' will be returned instead."
-				% params["argv"][0]
+	func _init(_status: Status, _error_description: String, _command_result: GDShellCommand.Result, _error_index: int, _error_length: int) -> void:
+		status = _status
+		error_description = _error_description
+		command_result = _command_result
+		error_index = _error_index
+		error_length = _error_length
+
+
+static func execute(compiled_expression: Dictionary, session: GDShellSession, pipe: GDShellCommand.Result = null, in_background: bool = false) -> RunnerResult:
+	return await _execute(compiled_expression, session, pipe, in_background)
+
+
+static func _execute(compiled_expression: Dictionary, session: GDShellSession, pipe: GDShellCommand.Result, in_background: bool) -> RunnerResult:
+	match str(compiled_expression.get("type", "")):
+		"command":
+			return await _execute_command(compiled_expression, session, pipe, in_background)
+		"operator":
+			return await _execute_operator(compiled_expression, session, pipe, in_background)
+		var unknown_type:
+			return GDShellCommandRunner.RunnerResult.new(
+				GDShellCommandRunner.RunnerResult.Status.RUNTIME_ERROR,
+				"Ivalid or unknown expression type '%s'." % unknown_type,
+				null,
+				-1,
+				-1,
+			)
+
+
+static func _execute_command(command_expression: Dictionary, session: GDShellSession, pipe: GDShellCommand.Result, in_background: bool) -> RunnerResult:
+	var command_name: String = str(command_expression.get("name", ""))
+	var command_instance: GDShellCommand = session.command_db.get_gdshell_command_instance(command_name)
+	if command_instance == null:
+		@warning_ignore("unsafe_call_argument")
+		return GDShellCommandRunner.RunnerResult.new(
+			GDShellCommandRunner.RunnerResult.Status.RUNTIME_ERROR,
+			"Could not instantiate command '%s'." % command_name,
+			null,
+			str(command_expression.get("index", -1)).to_int(),
+			str(command_expression.get("length", -1)).to_int(),
 		)
-		# This assert statement acts as a hard error in the editor
-		assert(
-			typeof(result) == TYPE_DICTIONARY,
-			"""[GDShell] The command does not return a value of TYPE_DICTIONARY.
-				'GDShellCommand.DEFAULT_COMMAND_RESULT' will be returned instead.
-				See the Errors for more information about the failing command."""
-		)
-		result = GDShellCommand.DEFAULT_COMMAND_RESULT
-	else:
+
+	# Node.name - for remote scene tree debugging
+	command_instance.name = "GDShellCommand: %s %s" % [command_name, "(in background)" if in_background else ""]
+
+	# Check command args presence and type
+	var are_args_valid: Callable = func() -> bool:
+		if not command_expression.has("args"):
+			return false
+		if typeof(command_expression["args"]) != TYPE_ARRAY:
+			return false
 		@warning_ignore("unsafe_method_access")
-		result.merge(GDShellCommand.DEFAULT_COMMAND_RESULT)
-	
-	command.queue_free()
-	_background_commands.erase(command)
-	
-	return result
+		return command_expression["args"].all(
+			func(arg: Variant) -> bool:
+				return typeof(arg) == TYPE_STRING
+		)
+	if not are_args_valid.call(command_expression):
+		return GDShellCommandRunner.RunnerResult.new(
+			GDShellCommandRunner.RunnerResult.Status.RUNTIME_ERROR,
+			"Invalid command args '%s'." % str(command_expression["args"]),
+			null,
+			str(command_expression.get("index", -1)).to_int(),
+			str(command_expression.get("length", -1)).to_int(),
+		)
+	@warning_ignore("unsafe_call_argument")
+	var args: Array[String] = Array(command_expression["args"], TYPE_STRING, "", null)
+
+	var command_result: GDShellCommand.Result
+	if in_background:
+		# *** Call the _main() with black magic ***
+		# We need to wait until _main() finishes. await is necessary because we do not know if _main() is coroutine
+		# The wrapper lambda function is necessary so that this function continues and returns right away
+		# so that any following non-background commands can be run before the backgroun command finishes.
+		(func () -> void:
+			session.add_child(command_instance, true)
+			@warning_ignore("redundant_await", "unsafe_call_argument")
+			await command_instance._main(args, pipe)
+			command_instance.queue_free()
+		).call()
+		# Return generic OK Result - background commands discard the result
+		command_result = GDShellCommand.Result.new()
+	else:
+		session.add_child(command_instance, true)
+		@warning_ignore("redundant_await", "unsafe_call_argument")
+		command_result = await command_instance._main(args, pipe)
+		command_instance.queue_free()
+
+	return GDShellCommandRunner.RunnerResult.new(
+		GDShellCommandRunner.RunnerResult.Status.OK,
+		"",
+		command_result,
+		-1,
+		-1
+	)
 
 
-##############################################
-# GDShellCommand-GDShell interface functions #
-##############################################
+static func _execute_operator(operator_expression: Dictionary, session: GDShellSession, pipe: GDShellCommand.Result, in_background: bool) -> RunnerResult:
+	match operator_expression.get("operator"):
+		"!":
+			return await _execute_operator_not(operator_expression, session, pipe, in_background)
+		"&":
+			return await _execute_operator_background(operator_expression, session, pipe, in_background)
+		"|":
+			return await _execute_operator_pipe(operator_expression, session, pipe, in_background)
+		"||":
+			return await _execute_operator_or(operator_expression, session, pipe, in_background)
+		"&&":
+			return await _execute_operator_and(operator_expression, session, pipe, in_background)
+		";":
+			return await _execute_operator_sequence(operator_expression, session, pipe, in_background)
+		var unknown_operator:
+			@warning_ignore("unsafe_call_argument")
+			return GDShellCommandRunner.RunnerResult.new(
+				GDShellCommandRunner.RunnerResult.Status.RUNTIME_ERROR,
+				"Unknown operator encountered '%s'." % str(unknown_operator),
+				null,
+				str(operator_expression.get("index", -1)).to_int(),
+				str(operator_expression.get("length", -1)).to_int(),
+			)
 
 
-func _handle_execute(command: String) -> Dictionary:
-	return await _PARENT_GDSHELL.execute(command)
+static func _execute_operator_not(operator_expression: Dictionary, session: GDShellSession, pipe: GDShellCommand.Result, in_background: bool) -> RunnerResult:
+	@warning_ignore("unsafe_call_argument")
+	var right_operand_result: RunnerResult = await _execute(operator_expression["right"], session, pipe, in_background)
+	if right_operand_result.status == OK:
+		right_operand_result.command_result.err = FAILED if right_operand_result.command_result.err == OK else OK
+	return right_operand_result
 
 
-func _handle_input(command: GDShellCommand, out: String) -> String:
-	if command in _background_commands:
-		return ""
-	return await _PARENT_GDSHELL._request_input_from_ui_handler(out)
+static func _execute_operator_background(operator_expression: Dictionary, session: GDShellSession, pipe: GDShellCommand.Result, _in_background: bool) -> RunnerResult:
+	@warning_ignore("unsafe_call_argument")
+	return await _execute(operator_expression["left"], session, pipe, true)
 
 
-func _handle_output(out: String, append_new_line: bool = true) -> void:
-	_PARENT_GDSHELL._request_output_from_ui_handler(out, append_new_line)
+static func _execute_operator_pipe(operator_expression: Dictionary, session: GDShellSession, pipe: GDShellCommand.Result, in_background: bool) -> RunnerResult:
+	@warning_ignore("unsafe_call_argument")
+	var left_operand_result: RunnerResult = await _execute(operator_expression["left"], session, pipe, in_background)
+	if left_operand_result.status != OK:
+		return left_operand_result
+	@warning_ignore("unsafe_call_argument")
+	return await _execute(operator_expression["right"], session, left_operand_result.command_result, in_background)
 
 
-func _handle_get_ui_handler() -> GDShellUIHandler:
-	return _PARENT_GDSHELL.get_ui_handler()
+static func _execute_operator_or(operator_expression: Dictionary, session: GDShellSession, pipe: GDShellCommand.Result, in_background: bool) -> RunnerResult:
+	@warning_ignore("unsafe_call_argument")
+	var left_operand_result: RunnerResult = await _execute(operator_expression["left"], session, pipe, in_background)
+	if left_operand_result.status != OK:
+		return left_operand_result
+	@warning_ignore("unsafe_call_argument")
+	return await _execute(operator_expression["right"], session, null, in_background) if left_operand_result.command_result.err != OK else left_operand_result
 
 
-func _handle_get_ui_handler_rich_text_label() -> RichTextLabel:
-	return _PARENT_GDSHELL.get_ui_handler_rich_text_label()
+static func _execute_operator_and(operator_expression: Dictionary, session: GDShellSession, pipe: GDShellCommand.Result, in_background: bool) -> RunnerResult:
+	@warning_ignore("unsafe_call_argument")
+	var left_operand_result: RunnerResult = await _execute(operator_expression["left"], session, pipe, in_background)
+	if left_operand_result.status != OK:
+		return left_operand_result
+	@warning_ignore("unsafe_call_argument")
+	return await _execute(operator_expression["right"], session, null, in_background) if left_operand_result.command_result.err == OK else left_operand_result
+
+
+static func _execute_operator_sequence(operator_expression: Dictionary, session: GDShellSession, pipe: GDShellCommand.Result, in_background: bool) -> RunnerResult:
+	@warning_ignore("unsafe_call_argument")
+	var left_operand_result: RunnerResult = await _execute(operator_expression["left"], session, pipe, in_background)
+	if left_operand_result.status != OK:
+		return left_operand_result
+	@warning_ignore("unsafe_call_argument")
+	return await _execute(operator_expression["right"], session, null, in_background)

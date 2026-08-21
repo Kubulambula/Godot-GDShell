@@ -6,6 +6,7 @@ const MONITOR_NODE_NAME: String = "GDShellMonitorOverlayIntegration"
 
 const OPTIONS_FLAGS: Array[String] = ["o", "O", "options", "OPTIONS"]
 
+# TODO implement my own PR
 # Workaround until https://github.com/godotengine/godot/pull/69624 gets merged
 const TYPE_NAMES: Array[String] = [
 	"Nil",
@@ -49,23 +50,23 @@ const TYPE_NAMES: Array[String] = [
 ]
 
 
-func _main(argv: Array, _data) -> Dictionary:
+func _main(argv: Array, _data) -> CommandResult:
 	var monitor: Node = _get_monitor_overlay()
 	if monitor == null:
 		output("Cannot access Monitor Overlay. Make sure you have 'Monitor Overlay' plugin installed and try again")
-		return {
-			"error": 1,
-			"error_string": "Cannot access Monitor Overlay. Make sure you have 'Monitor Overlay' plugin installed and try again",
-			"data": null,
-		}
+		return CommandResult.new(
+			1,
+			"Cannot access Monitor Overlay. Make sure you have 'Monitor Overlay' plugin installed and try again",
+			null
+		)
 	
 	if argv.size() == 1:
 		output("Not enought arguments. Run 'man monitor' to see all available options")
-		return {
-			"error": 2,
-			"error_string": "Not enought arguments. Run 'man monitor' to see all available options",
-			"data": null,
-		}
+		return CommandResult.new(
+			2,
+			"Not enought arguments. Run 'man monitor' to see all available options",
+			null
+		)
 	
 	var safe_to_edit_properties: Array[Dictionary] = _get_monitor_overlay_safe_to_edit_properties(monitor)
 	var options: Dictionary = GDShellCommand.argv_parse_options(argv, true, false)
@@ -79,24 +80,25 @@ func _main(argv: Array, _data) -> Dictionary:
 	
 	_edit_monitor_properties_with_options(monitor, safe_to_edit_properties, options)
 	
-	return DEFAULT_COMMAND_RESULT
+	return CommandResult.new()
 
 
 func _get_monitor_overlay() -> Node:
-	if not _PARENT_PROCESS._PARENT_GDSHELL.has_node(NodePath(MONITOR_NODE_NAME)):
-		if not ResourceLoader.exists(MONITOR_FILE_PATH):
-			return null # MonitorOverlay is not installed
-		
-		@warning_ignore("unsafe_cast", "unsafe_method_access")
-		var monitor: Node = ResourceLoader.load(MONITOR_FILE_PATH, "GDScript").new() as Node
-		# Sets the name of the MonitorOverlay Node to make it clear that it belongs to and is managed by GDShell
-		monitor.name = StringName(MONITOR_NODE_NAME)
-		monitor.unique_name_in_owner = true
-		# disable the fps monitor as it is enabled  by default
-		monitor.set("fps", false)
-		_PARENT_PROCESS._PARENT_GDSHELL.add_child(monitor)
-	
-	return _PARENT_PROCESS._PARENT_GDSHELL.get_node(NodePath(MONITOR_NODE_NAME))
+	return null
+	#if not _PARENT_COMMAND_RUNNER._PARENT_GDSHELL.has_node(NodePath(MONITOR_NODE_NAME)):
+		#if not ResourceLoader.exists(MONITOR_FILE_PATH):
+			#return null # MonitorOverlay is not installed
+		#
+		#@warning_ignore("unsafe_cast", "unsafe_method_access")
+		#var monitor: Node = ResourceLoader.load(MONITOR_FILE_PATH, "GDScript").new() as Node
+		## Sets the name of the MonitorOverlay Node to make it clear that it belongs to and is managed by GDShell
+		#monitor.name = StringName(MONITOR_NODE_NAME)
+		#monitor.unique_name_in_owner = true
+		## disable the fps monitor as it is enabled  by default
+		#monitor.set("fps", false)
+		#_PARENT_COMMAND_RUNNER._PARENT_GDSHELL.add_child(monitor)
+	#
+	#return _PARENT_COMMAND_RUNNER._PARENT_GDSHELL.get_node(NodePath(MONITOR_NODE_NAME))
 
 
 # returns a list of properties that are used for MonitorOverlay UI control
@@ -109,14 +111,15 @@ func _get_monitor_overlay_safe_to_edit_properties(monitor: Object) -> Array[Dict
 
 
 func _print_available_options(safe_to_edit_properties: Array[Dictionary]) -> void:
-	get_ui_handler_rich_text_label().scroll_to_line.call_deferred(get_ui_handler_rich_text_label().get_line_count() - 1)
-	
-	output("Available monitor options ([color=BISQUE]name[/color] : [color=AQUAMARINE]type[/color])")
-	for property in safe_to_edit_properties:
-		output("[color=BISQUE]%s[/color] : [color=AQUAMARINE]%s[/color]" % [
-			property["name"],
-			TYPE_NAMES[property["type"]]
-		])
+	pass
+	#get_ui_handler_rich_text_label().scroll_to_line.call_deferred(get_ui_handler_rich_text_label().get_line_count() - 1)
+	#
+	#output("Available monitor options ([color=BISQUE]name[/color] : [color=AQUAMARINE]type[/color])")
+	#for property in safe_to_edit_properties:
+		#output("[color=BISQUE]%s[/color] : [color=AQUAMARINE]%s[/color]" % [
+			#property["name"],
+			#TYPE_NAMES[property["type"]]
+		#])
 
 
 func _edit_monitor_properties_with_options(monitor: Node, safe_to_edit_properties: Array[Dictionary], options: Dictionary) -> void:
@@ -129,7 +132,11 @@ func _edit_monitor_properties_with_options(monitor: Node, safe_to_edit_propertie
 			output("Parameter '[color=LIGHT_CORAL]%s[/color]' is not a valid option. Run '[color=AQUAMARINE]monitor --options[/color]' to see all available options" % option)
 
 
-func _get_manual() -> String:
+static func _get_command_name() -> StringName:
+	return &"monitor"
+
+
+static func _get_manual() -> String:
 	return """
 [b]NAME[/b]
 	{COMMAND_NAME}
@@ -165,6 +172,6 @@ func _get_manual() -> String:
 	[i]monitor -fps=true --process=true --physics_process=false --sampling_rate=10[/i]
 		-Enables fps and process monitors, disables physics_process monitor and sets sampling rate to 10
 """.format({
-	"COMMAND_NAME": COMMAND_NAME,
-	"COMMAND_AUTO_ALIASES": COMMAND_AUTO_ALIASES,
+	"COMMAND_NAME": _get_command_name(),
+	"COMMAND_AUTO_ALIASES": _get_command_auto_aliases(),
 })

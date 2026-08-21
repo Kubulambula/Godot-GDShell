@@ -1,6 +1,5 @@
 @tool
 extends GDShellUIHandler
-# The default ui extends a PanelContainer instead of a plain Control
 
 const DEFAULT_FONT: Font = preload("res://addons/gdshell/ui/fonts/roboto_mono/RobotoMono-Regular.ttf")
 const BOLD_FONT: Font = preload("res://addons/gdshell/ui/fonts/roboto_mono/RobotoMono-Bold.ttf")
@@ -9,7 +8,6 @@ const BOLD_ITALICS_FONT: Font = preload("res://addons/gdshell/ui/fonts/roboto_mo
 
 # This looks scary, doesn't it?
 @export_category("GDShell UI")
-
 @export_group("Fonts")
 @export var default_font: Font = DEFAULT_FONT:
 	set(value):
@@ -47,7 +45,7 @@ const BOLD_ITALICS_FONT: Font = preload("res://addons/gdshell/ui/fonts/roboto_mo
 		%OutputRichTextLabel.add_theme_font_override("bold_italics_font", bold_italics_font)
 
 @export_group("Input Bar")
-@export var input_prompt: String = "gdshell@{PROJECT_NAME}:~$ ":
+@export var input_prompt: String = "GDShell@{PROJECT_NAME}:~$ ":
 	set(value):
 		input_prompt = value.format({"PROJECT_NAME": ProjectSettings.get_setting("application/config/name")})
 		if not is_inside_tree():
@@ -86,11 +84,16 @@ var _is_input_requested: bool = true:
 		)
 
 
-func _ready():
+func _ready() -> void:
 	visibility_changed.connect(_on_visibility_changed)
-	_input_requested.connect(_handle_input)
-	_output_requested.connect(_handle_output)
+	#input_requested.connect(_handle_input)
+	#output_requested.connect(_handle_output)
 	set_deferred(&"_is_input_requested", true)
+
+
+#func _input(event: InputEvent) -> void:
+	#if event.is_action(_UI_TOGGLE_ACTION) and not event.is_echo() and event.is_pressed():
+		#toggle_visible()
 
 
 func _handle_input(out: String) -> void:
@@ -106,7 +109,7 @@ func _handle_output(output: String, append_new_line: bool = true) -> void:
 func _on_input_line_edit_text_submitted(input: String) -> void:
 	input_line_edit.clear()
 	if _is_input_requested:
-		submit_input(input)
+		#submit_input(input)
 		_is_input_requested = false
 
 
@@ -124,27 +127,28 @@ func _on_visibility_changed() -> void:
 	else:
 		input_line_edit.release_focus()
 
-func set_line_edit_caret_to_end():
+func set_line_edit_caret_to_end() -> void:
 	input_line_edit.grab_focus()
 	input_line_edit.caret_column = input_line_edit.text.length()
 
-func set_line_edit_caret_to_beginning():
+func set_line_edit_caret_to_beginning() -> void:
 	input_line_edit.caret_column = 0
-	
+
+
 func text_before_caret() -> String:
 	return input_line_edit.text.substr(0, input_line_edit.caret_column)
 
-func _on_input_line_edit_gui_input(event):
+
+func _on_input_line_edit_gui_input(event: InputEvent) -> void:
 	if (event is InputEventKey and event.pressed):
-		if event.keycode == KEY_TAB:
-			input_line_edit.text = autocomplete(text_before_caret())
+		if (event as InputEventKey).keycode == KEY_TAB:
+			#input_line_edit.text = autocomplete(text_before_caret())
 			set_line_edit_caret_to_end.call_deferred()
-		elif event.keycode == KEY_UP:
-			input_line_edit.text = history_get_next()
+		elif (event as InputEventKey).keycode == KEY_UP:
+			#input_line_edit.text = history_get_next()
 			set_line_edit_caret_to_end.call_deferred()
-		elif event.keycode == KEY_DOWN:
-			input_line_edit.text = history_get_previous()
+		elif (event as InputEventKey).keycode == KEY_DOWN:
+			#input_line_edit.text = history_get_previous()
 			set_line_edit_caret_to_end.call_deferred()
-		else:
-			history_reset_index()
-		
+		#else:
+			#history_reset_index()
