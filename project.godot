@@ -38,10 +38,6 @@ gdscript/warnings/unsafe_call_argument=1
 gdscript/warnings/return_value_discarded=1
 gdscript/warnings/missing_await=1
 
-[editor_plugins]
-
-enabled=PackedStringArray("res://addons/gdshell/plugin.cfg")
-
 [filesystem]
 
 import/blender/enabled=false

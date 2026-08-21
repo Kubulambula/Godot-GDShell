@@ -12,17 +12,17 @@ func add_command_from_script(script: Script) -> String:
 	if script == null:
 		push_error("[GDShell] Cannot add an empty Script as a command.")
 		return ""
-	
+
 	if not is_script_gdshell_command(script):
 		push_error("[GDShell] Cannot add Script as a command. Script must inherit from GDShellCommand. Command file: '%s'" % script.resource_path)
 		return ""
-	
+
 	var name: String = get_name_from_gdshell_command_script(script)
 	var auto_aliases: Dictionary[String, String] = get_auto_aliases_from_gdshell_command_script(script)
 	if name.is_empty():
 		push_error("[GDShell] Cannot add a GDShellCommand without a name. Override _get_command_name() method to set a the command name. Command file: '%s'" % script.resource_path)
 		return ""
-	
+
 	_commands[name] = script
 	_aliases.merge(auto_aliases, true)
 	return name
@@ -99,12 +99,12 @@ static func _get_file_paths_in_directory(path: String, recursive: bool = true) -
 	if dir == null:
 		push_error("[GDShell] Cannot get file paths in directory \"%s\" - %s." % [path, error_string(DirAccess.get_open_error())])
 		return []
-	
+
 	var err: int = dir.list_dir_begin()
 	if err:
 		push_error("[GDShell] Cannot get file paths in directory \"%s\" - %s." % [path, error_string(err)])
 		return []
-	
+
 	path = dir.get_next()
 	while not path.is_empty():
 		if dir.current_is_dir():
@@ -114,7 +114,7 @@ static func _get_file_paths_in_directory(path: String, recursive: bool = true) -
 			paths.append(dir.get_current_dir().path_join(path))
 		path = dir.get_next()
 	dir.list_dir_end()
-	
+
 	return paths
 
 

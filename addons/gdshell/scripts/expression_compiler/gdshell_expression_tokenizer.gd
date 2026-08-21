@@ -26,18 +26,18 @@ class Token extends RefCounted:
 		OPERATOR_OPENING_PARENTHESIS,
 		OPERATOR_CLOSING_PARENTHESIS,
 	}
-	
+
 	var type: Type
 	var content: String
 	var start_char_index: int
 	var consumed_chars: int
-	
+
 	func _init(_type: Type, _content: String, _start_char_index: int, _consumed_chars: int) -> void:
 		self.type = _type
 		self.content = _content
 		self.start_char_index = _start_char_index
 		self.consumed_chars = _consumed_chars
-	
+
 	func _to_string() -> String:
 		return "{Token: %s, Content: \"%s\", Start char index: %s}" % [str(Type.find_key(type)), content, start_char_index]
 
@@ -48,11 +48,11 @@ class TokenizerResult extends RefCounted:
 		ERROR,
 		UNTERMINATED,
 	}
-	
+
 	var result: Array[Token]
 	var status: Status
 	var description: String
-	
+
 	func _init(_result: Array[Token], _status: TokenizerResult.Status, _description: String) -> void:
 		result = _result
 		status = _status
@@ -63,10 +63,10 @@ static func tokenize(input_expression: String) -> TokenizerResult:
 	var tokens: Array[Token] = []
 	var current_token: Token = null
 	var current_char_index: int = 0
-	
+
 	if input_expression.is_empty():
 		return TokenizerResult.new([], TokenizerResult.Status.OK, "empty input expression")
-	
+
 	while current_char_index < input_expression.length():
 		match input_expression[current_char_index]:
 			" ":
@@ -87,10 +87,10 @@ static func tokenize(input_expression: String) -> TokenizerResult:
 				current_token = _tokenize_quote(input_expression, current_char_index)
 			_:
 				current_token = _tokenize_text(input_expression, current_char_index)
-		
+
 		current_char_index += current_token.consumed_chars
 		tokens.push_back(current_token)
-		
+
 		if current_token.type == Token.Type.ERROR:
 			return TokenizerResult.new(
 				tokens,
@@ -103,7 +103,7 @@ static func tokenize(input_expression: String) -> TokenizerResult:
 				TokenizerResult.Status.UNTERMINATED,
 				"unterminated expression"
 			)
-	
+
 	return TokenizerResult.new(
 		_filter_out_space_tokens(_merge_word_tokens(tokens)),
 		TokenizerResult.Status.OK,
@@ -119,7 +119,7 @@ static func _tokenize_space(input_expression: String, start_char_index: int) -> 
 			start_char_index,
 			0
 		)
-	
+
 	var space_chars_consumed: int = 0
 	while start_char_index + space_chars_consumed < input_expression.length() and input_expression[start_char_index + space_chars_consumed] == " ":
 		space_chars_consumed += 1
@@ -134,7 +134,7 @@ static func _tokenize_semicolon(input_expression: String, start_char_index: int)
 			start_char_index,
 			0
 		)
-	
+
 	return Token.new(Token.Type.OPERATOR_SEQUENCE, ";", start_char_index, 1)
 
 
@@ -146,7 +146,7 @@ static func _tokenize_exclamation(input_expression: String, start_char_index: in
 			start_char_index,
 			0
 		)
-	
+
 	return Token.new(Token.Type.OPERATOR_NOT, "!", start_char_index, 1)
 
 
@@ -158,7 +158,7 @@ static func _tokenize_and(input_expression: String, start_char_index: int) -> To
 			start_char_index,
 			0
 		)
-	
+
 	if start_char_index < input_expression.length() - 1 and input_expression[start_char_index + 1] == "&":
 		return Token.new(Token.Type.OPERATOR_AND, "&&", start_char_index, 2)
 	return Token.new(Token.Type.OPERATOR_BACKGROUND, "&", start_char_index, 1)
@@ -172,7 +172,7 @@ static func _tokenize_vertical_slash(input_expression: String, start_char_index:
 			start_char_index,
 			0
 		)
-	
+
 	if start_char_index < input_expression.length() - 1 and input_expression[start_char_index + 1] == "|":
 		return Token.new(Token.Type.OPERATOR_OR, "||", start_char_index, 2)
 	return Token.new(Token.Type.OPERATOR_PIPE, "|", start_char_index, 1)
@@ -200,7 +200,7 @@ static func _tokenize_quote(input_expression: String, start_char_index: int) -> 
 			start_char_index,
 			0
 		)
-	
+
 	var content: String = ""
 	for i: int in range(start_char_index + 1, input_expression.length()): # Skip the opening quote and start on the char right after
 		if input_expression[i] == input_expression[start_char_index] and input_expression[i - 1] != "\\": # check for string end
@@ -211,7 +211,7 @@ static func _tokenize_quote(input_expression: String, start_char_index: int) -> 
 				content.length() + 2 # accounts for the starting and ending quotes
 			)
 		content += input_expression[i]
-	
+
 	# End of input_expression was reached without finding a closing quote
 	return Token.new(
 		Token.Type.WORD_UNTERMINATED,
@@ -223,13 +223,13 @@ static func _tokenize_quote(input_expression: String, start_char_index: int) -> 
 
 static func _tokenize_text(input_expression: String, start_char_index: int) -> Token:
 	var content: String = ""
-	
+
 	for i: int in range(start_char_index, input_expression.length()):
 		# check if the character should end the WORD token.
 		if input_expression[i] in [" ", ";", "&", "|", "!", "(", ")", "\'", "\"", "\\", "\a", "\b", "\f", "\n", "\r", "\t", "\v"]:
 			break
 		content += input_expression[i]
-	
+
 	if content.is_empty():
 		return Token.new(
 			Token.Type.ERROR,
@@ -237,7 +237,7 @@ static func _tokenize_text(input_expression: String, start_char_index: int) -> T
 			start_char_index,
 			0
 		)
-	
+
 	return Token.new(
 		Token.Type.WORD,
 		content,
@@ -252,7 +252,7 @@ static func _merge_word_tokens(tokens: Array[Token]) -> Array[Token]:
 		return tokens
 	# We now know that tokens is not empty so we append the first token for later simplification
 	var merged_tokens: Array[Token] = [tokens[0]]
-	
+
 	# Start from the second token as we already appended the first
 	for i: int in range(1, tokens.size()):
 		if tokens[i].type == Token.Type.WORD and merged_tokens[-1].type == Token.Type.WORD:
@@ -260,7 +260,7 @@ static func _merge_word_tokens(tokens: Array[Token]) -> Array[Token]:
 			merged_tokens[-1].consumed_chars += tokens[i].consumed_chars
 		else:
 			merged_tokens.append(tokens[i])
-	
+
 	return merged_tokens
 
 

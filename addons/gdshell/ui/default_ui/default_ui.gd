@@ -152,4 +152,3 @@ func _on_input_line_edit_gui_input(event: InputEvent) -> void:
 			set_line_edit_caret_to_end.call_deferred()
 		#else:
 			#history_reset_index()
-		

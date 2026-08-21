@@ -4,56 +4,66 @@ extends Node
 
 
 signal input_requested()
-signal output_submitted(output: String)
-
+signal output_written(output: String)
 
 signal _input_submitted(input: String)
 
-var command_runner: GDShellCommandRunner
+
 var command_db: GDShellCommandDB
-#var ui_handler: GDShellUIHandler
-
-# Internal helper variables
-#var _ui_handler_canvas_layer: CanvasLayer
-var _input_buffer: String = ""
-var _input_requested: bool = false
+var command_runner: GDShellCommandRunner
 
 
-func _init(command_db: GDShellCommandDB = GDShellCommandDB.new(),
-		command_runner: GDShellCommandRunner = GDShellCommandRunner.new()) -> void:
-	self.command_db = command_db
-	self.command_runner = command_runner
+func _init(command_db_: GDShellCommandDB, command_runner_: GDShellCommandRunner = GDShellCommandRunner.new()) -> void:
+	command_db = command_db_
+	command_runner = command_runner_
 
 
-func _ready() -> void:
+func execute() -> GDShellCommand.Result:
+	return null
+
+
+func request_input() -> String:
+	input_requested.emit()
+	return await _input_submitted
+
+
+func write_output(output: String) -> void:
+	output_written.emit(output)
+
+
+func submit_input(input: String) -> void:
+	_input_submitted.emit(input)
+
+
+#func _ready() -> void:
 	#print(GDShellCommand._reverse_flag_option_dictionary({"hello": "world", "test": ["foo", "bar", "baz"], "kokot": ["x", "y", "z"]}))
-	
+
 	#print(GDShellCommand.argv_parse(["a=x=x"], {}, {"foo": "a"}))
 	#print(str_to_var("nulll") == null)
 	#return
-	command_db = GDShellCommandDB.new()
-	printerr(command_db.add_command_from_file("res://addons/gdshell/commands/autorun.gd"))
-	printerr(command_db.add_command_from_file("res://addons/gdshell/commands/test.gd"))
-	var runner: GDShellCommandRunner = GDShellCommandRunner.new()
-	add_child(runner, false, InternalMode.INTERNAL_MODE_FRONT)
+	#command_db = GDShellCommandDB.new()
+	#printerr(command_db.add_command_from_file("res://addons/gdshell/commands/autorun.gd"))
+	#printerr(command_db.add_command_from_file("res://addons/gdshell/commands/test.gd"))
+	#var runner: GDShellCommandRunner = GDShellCommandRunner.new()
+	#add_child(runner, false, InternalMode.INTERNAL_MODE_FRONT)
 	#var result: GDShellCommandRunner.RunnerResult = await runner.execute("autorun&", self)
 	#printerr(result.error_description)
-	
-	
-	
+
+
+
 	#database.add_commands_from_directory("res://addons/gdshell/commands/")
-	
+
 	#print(database._commands)
 	#
 	#
 	#print("ahoj".match("a*"))
 	#return
-	
+
 	#var result = GDShellExpressionCompiler.compile("'        ahoj svete command' ; kokot")
 	#print(result.input_expression_error_start_index)
 	#print(result.description)
 	#print(JSON.stringify(result.result, "\t", false))
-	
+
 	#if "autorun" in command_db.get_all_command_names():
 		#@warning_ignore("return_value_discarded")
 		#execute("autorun")
@@ -66,30 +76,36 @@ func _ready() -> void:
 
 
 
-func execute(expression: String) -> GDShellCommand.CommandResult:
-	var compiled_expression: GDShellExpressionCompiler.CompilerResult = GDShellExpressionCompiler.compile(expression)
-	if compiled_expression.status != GDShellExpressionCompiler.CompilerResult.Status.OK:
-		# TODO: error reporting
-		return null
-	return execute_compiled(compiled_expression)
+#func execute(expression: String) -> GDShellCommand.Result:
+	#var compiled_expression: GDShellExpressionCompiler.CompilerResult = GDShellExpressionCompiler.compile(expression)
+	#if compiled_expression.status != GDShellExpressionCompiler.CompilerResult.Status.OK:
+		## TODO: error reporting
+		#return null
+	#return execute_compiled(compiled_expression)
 
 
-func execute_compiled(compiled_expression: GDShellExpressionCompiler.CompilerResult) -> GDShellCommand.CommandResult:
+#func execute_compiled(compiled_expression: GDShellExpressionCompiler.CompilerResult) -> GDShellCommand.CommandResult:
 	# TODO: run the expression
-	return null
+	#return null
 
 
-func request_input() -> String:
-	input_requested.emit()
-	return await _input_submitted
+#func submit_input(input: String) -> void:
+	#_input_submitted.emit(input)
+#
+#
+#func request_input() -> String:
+	#input_requested.emit()
+	#return await _input_submitted
+#
+#
+#func request_output(output: String) -> void:
+	#output_submitted.emit(output)
 
 
-func submit_input(input: String) -> void:
-	_input_submitted.emit(input)
 
 
-func submit_output(output: String) -> void:
-	output_submitted.emit(output)
+#func submit_output(output: String) -> void:
+	#output_submitted.emit(output)
 
 
 
@@ -99,7 +115,7 @@ func submit_output(output: String) -> void:
 #func setup_with_default_values() -> void:
 	# GDShellCommandRunner
 	#set_command_runner(GDShellCommandRunner.new(), true)
-	
+
 	# GDShellCommandDB
 	#var database: GDShellCommandDB = GDShellCommandDB.new()
 	#for directory: String in ProjectSettings.get_setting(
@@ -108,7 +124,7 @@ func submit_output(output: String) -> void:
 	#):
 		#database.add_commands_in_directory(directory)
 	#set_command_db(database)
-	
+
 	#GDShellUIHandler
 	#set_ui_handler(
 		#GDShellSession._get_ui_handler_instance_from_path(

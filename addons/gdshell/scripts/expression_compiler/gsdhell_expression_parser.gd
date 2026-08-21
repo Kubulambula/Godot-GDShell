@@ -9,9 +9,9 @@ extends RefCounted
 ## [br] -   =   Push
 ## [br] -   !   Error
 ## [br] -   ?   Unknown token (not present in this table, but used internally for errors)
-## [br] -   .   End 
+## [br] -   .   End
 const _PRECEDENCE_TABLE: Array[Array] = [
-	#  !     &     &&    |     ||    ;     WORD  (     )     .       
+	#  !     &     &&    |     ||    ;     WORD  (     )     .
 	[&"<", &"<", &">", &">", &">", &">", &"<", &"<", &"!", &">"], # !
 	[&">", &"!", &">", &">", &">", &">", &"!", &"!", &">", &">"], # &
 	[&"<", &"<", &">", &">", &">", &">", &"<", &"<", &">", &">"], # &&
@@ -44,13 +44,13 @@ class ParserResult extends RefCounted:
 		OK,
 		ERROR,
 	}
-	
+
 	var result: Dictionary
 	var status: Status
 	var description: String
 	var input_expression_error_start_index: int
 	var input_expression_error_length: int
-	
+
 	func _init(_result: Dictionary, _status: Status, _description: String, _input_expression_error_start_index: int, _input_expression_error_length: int) -> void:
 		result = _result
 		status = _status
@@ -67,7 +67,7 @@ static func parse(tokens: Array[GDShellExpressionTokenizer.Token]) -> ParserResu
 	var token_stack: Array[GDShellExpressionTokenizer.Token] = [GDShellExpressionTokenizer.Token.new(GDShellExpressionTokenizer.Token.Type.EXPRESSION_END, ".", 0, 0)]
 	# Expresion stack for expression tree building
 	var expression_node_stack: Array[Dictionary] = []
-	
+
 	while current_token_index < tokens.size():
 		var topmost_terminal_index: int = _parse_precedence_get_topmost_terminal_index(token_stack)
 		if topmost_terminal_index == -1:
@@ -78,7 +78,7 @@ static func parse(tokens: Array[GDShellExpressionTokenizer.Token]) -> ParserResu
 				tokens[current_token_index].start_char_index,
 				tokens[current_token_index].consumed_chars
 			)
-		
+
 		match _parse_get_precedence_action(token_stack[topmost_terminal_index], tokens[current_token_index]):
 			&"<": # Shift
 				# Insert handle for expression reduction
@@ -92,7 +92,7 @@ static func parse(tokens: Array[GDShellExpressionTokenizer.Token]) -> ParserResu
 					)
 				token_stack.push_back(tokens[current_token_index])
 				current_token_index += 1
-			
+
 			&">": # Reduce
 				if _parse_precedence_reduce_to_expression(token_stack, expression_node_stack) == false:
 					return ParserResult.new(
@@ -102,11 +102,11 @@ static func parse(tokens: Array[GDShellExpressionTokenizer.Token]) -> ParserResu
 						tokens[current_token_index].start_char_index,
 						tokens[current_token_index].consumed_chars
 					)
-			
+
 			&"=": # Push
 				token_stack.push_back(tokens[current_token_index])
 				current_token_index += 1
-			
+
 			&"!": # Error
 				return ParserResult.new(
 					{},
@@ -115,7 +115,7 @@ static func parse(tokens: Array[GDShellExpressionTokenizer.Token]) -> ParserResu
 					tokens[current_token_index].start_char_index,
 					tokens[current_token_index].consumed_chars
 				)
-			
+
 			&"?": # Unexpected token while parsing
 				return ParserResult.new(
 					{},
@@ -124,7 +124,7 @@ static func parse(tokens: Array[GDShellExpressionTokenizer.Token]) -> ParserResu
 					tokens[current_token_index].start_char_index,
 					tokens[current_token_index].consumed_chars
 				)
-			
+
 			&".": # OK
 				return ParserResult.new(
 					{} if expression_node_stack.is_empty() else expression_node_stack[0],
@@ -133,7 +133,7 @@ static func parse(tokens: Array[GDShellExpressionTokenizer.Token]) -> ParserResu
 					0,
 					0
 				)
-			
+
 			var unknown_action: # Unknown action
 				return ParserResult.new(
 					{},
@@ -142,7 +142,7 @@ static func parse(tokens: Array[GDShellExpressionTokenizer.Token]) -> ParserResu
 					tokens[current_token_index].start_char_index,
 					tokens[current_token_index].consumed_chars
 				)
-	
+
 	return ParserResult.new(
 		{},
 		ParserResult.Status.ERROR,
@@ -175,12 +175,12 @@ static func _parse_precedence_reduce_to_expression(token_stack: Array[GDShellExp
 	if reduceable_tokens.is_empty():
 		assert(false, "[GDShell] No reduceable tokens found. Missing EXPRESSION_HANDLE Token?")
 		return false
-	
+
 	var reduceable_tokens_types: Array = reduceable_tokens.map(
 		func(token: GDShellExpressionTokenizer.Token) -> GDShellExpressionTokenizer.Token.Type:
 			return token.type
 	)
-	
+
 	match reduceable_tokens_types:
 		# E -> WORD+
 		[GDShellExpressionTokenizer.Token.Type.EXPRESSION_HANDLE, GDShellExpressionTokenizer.Token.Type.WORD, ..]:
@@ -215,7 +215,7 @@ static func _parse_precedence_reduce_to_expression(token_stack: Array[GDShellExp
 		[GDShellExpressionTokenizer.Token.Type.EXPRESSION_HANDLE, GDShellExpressionTokenizer.Token.Type.OPERATOR_OPENING_PARENTHESIS, GDShellExpressionTokenizer.Token.Type.OPERATOR_CLOSING_PARENTHESIS]:
 			# Tried to reduce empty parantheses. This is an error in the input expression string.
 			return false
-	
+
 	# ! -> ..
 	assert(
 		false,
@@ -237,11 +237,11 @@ static func _parse_reduce_words(token_stack: Array[GDShellExpressionTokenizer.To
 		if current_token.type != GDShellExpressionTokenizer.Token.Type.WORD:
 			break
 		word_tokens.push_front(current_token)
-	
+
 	if word_tokens.is_empty():
 		assert(false, "[GDShell] No reduceable WORDs.")
 		return false
-	
+
 	token_stack.push_back(GDShellExpressionTokenizer.Token.new(GDShellExpressionTokenizer.Token.Type.EXPRESSION, "", 0, 0))
 	expression_node_stack.push_back({
 		"type": "command",
@@ -380,7 +380,7 @@ static func _parse_reduce_sequence(token_stack: Array[GDShellExpressionTokenizer
 	return true
 
 
-## Finds the topmost terminal (not Expression) on the [param token_stack]. 
+## Finds the topmost terminal (not Expression) on the [param token_stack].
 static func _parse_precedence_get_topmost_terminal_index(token_stack: Array[GDShellExpressionTokenizer.Token]) -> int:
 	# Traverse token_stack array backwards
 	for i: int in range(token_stack.size() - 1, -1, -1):

@@ -12,7 +12,7 @@ func _ready() -> void:
 	@warning_ignore("return_value_discarded")
 	get_viewport().size_changed.connect(update_icon)
 	update_icon()
-	
+
 	return # TODO: remove this return and rework it so that it detects the toggle action from whereever it was moved
 	var gdshell_ui_toggle_action_input_events: Array[InputEvent] = InputMap.action_get_events(GDShell.ui_handler._UI_TOGGLE_ACTION)
 	if gdshell_ui_toggle_action_input_events.is_empty():
@@ -28,9 +28,9 @@ func update_icon() -> void:
 	var max_texture_side: float = max(icon.texture.get_size().x, icon.texture.get_size().y)
 	var scale_factor: float = (min_viewport_side / max_texture_side) * ICON_TO_VIEWPORT_RATIO
 	icon.scale = Vector2(scale_factor, scale_factor)
-	
+
 	# position the icon in a fancy way
 	icon.position = Vector2(
-		get_viewport_rect().size.x / 2, 
+		get_viewport_rect().size.x / 2,
 		get_viewport_rect().size.y - (get_viewport_rect().size.y / 1.618033)
 	)
